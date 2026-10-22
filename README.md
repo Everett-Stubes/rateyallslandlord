@@ -1,12 +1,11 @@
-# [Rate Yinz Landlord — Pittsburgh](https://rateyinzlandlord.com/)
+# [Rate Your Landlord — Template Repository]
 
-A community platform for Pittsburgh renters to search, review, and rate landlords. Users can submit reviews with optional student verification, and admins can moderate landlords and reviews.
+A community platform for tenants to search, review, and rate landlords. Users can submit reviews and add new landlords, and admins can moderate landlords and reviews.
 
 ## Tech Stack
 
 - **Framework:** React 19 + TypeScript
 - **Routing:** React Router v7
-- **Styling:** Tailwind CSS v4
 - **Backend:** Supabase (PostgreSQL + Auth + Storage)
 - **Build tool:** Vite
 - **Testing:** Vitest + Testing Library
@@ -133,5 +132,4 @@ npm run preview  # serve the built output locally
 ```
 
 ## Contribute:
-Note that the actual [website](https://rateyinzlandlord.com/) is on the ui-changes branch.
 To contribute, create a new branch and create a pull request with the main branch 
