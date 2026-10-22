@@ -1,0 +1,5 @@
+{
+  "name": "Rate My Landlord - Pittsburgh",
+  "description": "A web application for college students in Pittsburgh to rate and review their landlords, similar to Rate My Professor. Users can search for landlords, read existing reviews, and submit their own.",
+  "requestFramePermissions": []
+}

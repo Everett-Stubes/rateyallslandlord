@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="b" data-name="Layer 2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 375.4 114.78">
+  <defs>
+    <style>
+      @font-face {
+        font-family: "GT America Condensed";
+        src: url('GT-America/GT-America-Condensed-Bold-Trial.otf');
+        font-weight: bold;
+        font-style: normal;
+      }
+      .d {
+        letter-spacing: .02em;
+      }
+
+      .e {
+        letter-spacing: .02em;
+      }
+
+      .f {
+        letter-spacing: .05em;
+      }
+
+      .g, .h {
+        fill: #c7bbdd;
+      }
+
+      .i {
+        fill: #0e1221;
+      }
+
+      .j {
+        letter-spacing: .04em;
+      }
+
+      .k {
+        font-size: 38px;
+      }
+
+      .l {
+        letter-spacing: -.03em;
+      }
+
+      .m {
+        letter-spacing: .02em;
+      }
+
+      .n {
+        letter-spacing: -.01em;
+      }
+
+      .o {
+        font-size: 37px;
+      }
+
+      .h {
+        font-size: 19.09px;
+      }
+
+      .h, .p {
+        font-family: 'GT America Condensed', sans-serif;
+      }
+
+      .q {
+        letter-spacing: -.05em;
+      }
+
+      .r {
+        letter-spacing: -.02em;
+      }
+
+      .s {
+        letter-spacing: -.01em;
+      }
+
+      .t {
+        letter-spacing: .03em;
+      }
+
+      .u {
+        letter-spacing: 0em;
+      }
+
+      .p {
+        fill: #0f1222;
+        stroke: #0f1223;
+        stroke-miterlimit: 10;
+      }
+    </style>
+  </defs>
+  <g id="c" data-name="Layer 2">
+    <polygon class="i" points="190.31 5.24 190.39 78.95 196.91 77.65 375.4 42.03 196.5 6.47 190.31 5.24"/>
+    <polygon class="g" points="196.5 6.47 190.31 5.24 190.39 78.95 196.91 77.65 196.5 6.47"/>
+    <text class="h" transform="translate(202.65 50.29) rotate(-.42)"><tspan class="s" x="0" y="0">MPUNIVE</tspan><tspan class="l" x="73.65" y="0">R</tspan><tspan class="s" x="84.36" y="0">SI</tspan><tspan class="m" x="99.34" y="0">T</tspan><tspan class="r" x="109.42" y="0">Y</tspan></text>
+    <text class="p" transform="translate(.5 32.14)"><tspan class="o"><tspan class="j" x="0" y="0">R</tspan><tspan class="q" x="23.05" y="0">A</tspan><tspan class="d" x="43.66" y="0">TE </tspan><tspan class="n" x="91.83" y="0">Y</tspan><tspan class="t" x="111.74" y="0">O</tspan><tspan class="d" x="135.75" y="0">UR</tspan></tspan><tspan class="k"><tspan class="f" x="0" y="45.6">L</tspan><tspan class="e" x="19.49" y="45.6">AND</tspan><tspan class="u" x="93.52" y="45.6">L</tspan><tspan class="e" x="111.26" y="45.6">ORD</tspan></tspan></text>
+  </g>
+</svg>
