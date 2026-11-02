@@ -1,4 +1,4 @@
-name: Tests
+name: Build
 
 on:
   push:
@@ -7,7 +7,7 @@ on:
     branches: ["**"]
 
 jobs:
-  test:
+  build:
     runs-on: ubuntu-latest
 
     steps:
@@ -15,9 +15,12 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          # Match the Node.js version used for Cloudflare Pages (NODE_VERSION=22).
+          node-version: 22
           cache: "npm"
 
       - run: npm ci
 
-      - run: npm run test:run
+      # The same build Cloudflare Pages runs. The files in tests/ are not run here:
+      # their test packages are not installed and they need updating first.
+      - run: npm run build
