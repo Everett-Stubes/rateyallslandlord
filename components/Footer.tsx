@@ -8,8 +8,9 @@ const Footer: React.FC = () => {
       <div className="site-footer__inner">
         <div className="site-footer__copy">
           <strong>{siteSettings.siteName}</strong>
+          <span className="partner-badge">A More Perfect University Partner</span>
           <br />
-          Made by students, for {siteSettings.city} renters. A More Perfect University project.
+          Made by students, for {siteSettings.city} renters.
         </div>
         <div className="site-footer__links">
           <Link to="/about" className="site-footer__link">About</Link>

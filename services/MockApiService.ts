@@ -1,7 +1,7 @@
 import type { IApiService, ReviewUpdate } from './interfaces';
 import type { Landlord, Review } from '../types';
 
-// Clearly fake Atlanta landlord data (Home Park, Midtown high-rises, Downtown near GSU) for demo/development mode
+// Clearly fake Atlanta landlord data (Home Park, Midtown, Downtown near GSU) for demo/development mode
 const MOCK_LANDLORDS: Landlord[] = [
   {
     id: 1,
@@ -113,7 +113,7 @@ const MOCK_REVIEWS: Record<number, Review[]> = {
         '[DEMO REVIEW] One of the best renting experiences I have had. The apartment was clean, repairs were done quickly, and Margaret was always fair.',
       would_rent_again: true,
       rent_amount: 1000,
-      property_address: '456 State St NW, Apt 4',
+      property_address: '640 Lynch Ave NW, Apt 1',
       verification_status: 'verified',
       created_by_student: true,
       is_deleted: false,

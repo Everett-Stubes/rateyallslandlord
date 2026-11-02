@@ -23,14 +23,18 @@ const AboutPage: React.FC = () => {
 
         <section>
           <h2>Where We're Starting</h2>
-          {siteSettings.schools.map(school => (
-            <p key={school.name}>
-              <strong>{school.name}:</strong>{' '}
-              {school.focusAreas.length > 0
-                ? `we're focusing first on ${school.focusAreas.map(a => a.name).join(' and ')}.`
-                : `reviews from anywhere students rent are welcome.`}
-            </p>
-          ))}
+          {siteSettings.schools.map(school => {
+            // Named neighborhoods only; the catch-all "Other" area has no streets.
+            const named = school.focusAreas.filter(a => a.streets.length > 0).map(a => a.name);
+            return (
+              <p key={school.name}>
+                <strong>{school.name}:</strong>{' '}
+                {named.length > 0
+                  ? `we're focusing first on ${named.join(' and ')}, and reviews from anywhere else students rent are welcome.`
+                  : `reviews from anywhere students rent are welcome.`}
+              </p>
+            );
+          })}
         </section>
 
         <section>
@@ -44,10 +48,10 @@ const AboutPage: React.FC = () => {
         <section>
           <h2>Who We Are</h2>
           <p>
-            Rate Your Landlord started with student organizers at the University of Pittsburgh. More Perfect
-            University, the campus program of More Perfect Union, has since helped students launch it at other
-            schools and released the software as open source. This {siteSettings.city} site is run by students
-            here.
+            {siteSettings.siteName} is a More Perfect University Partner. Rate Your Landlord started with student
+            organizers at the University of Pittsburgh. More Perfect University, the campus program of More Perfect
+            Union, has since helped students launch it at other schools and released the software as open source.
+            This {siteSettings.city} site is run by students here.
           </p>
         </section>
 

@@ -7,8 +7,9 @@ import LoadingSpinner from '../components/LoadingSpinner';
 import type { Landlord, Review } from '../types';
 import ReviewCard from '../components/ReviewCard';
 import { useApiService } from '../context/ServicesContext';
-import { toLetterGrade } from '../utils/grading';
-import { formatLandlordAddress, getDisplayLandlordCity } from '../utils/landlordLocation';
+import { toLetterGrade, gradeColors } from '../utils/grading';
+import { getDisplayLandlordCity } from '../utils/landlordLocation';
+import { getLandlordProperties, isReviewForProperty, toBuildingAddress } from '../utils/properties';
 import { AddressAutofill } from '@mapbox/search-js-react';
 import type { AddressAutofillRetrieveResponse } from '@mapbox/search-js-core';
 import { siteSettings } from '../siteSettings';
@@ -26,6 +27,7 @@ const LandlordPage: React.FC = () => {
   const [isEditingAddresses, setIsEditingAddresses] = useState(false);
   const [newAddress, setNewAddress] = useState('');
   const [isSaving, setIsSaving] = useState(false);
+  const [selectedPropertyKey, setSelectedPropertyKey] = useState<string | null>(null);
 
   useEffect(() => {
     const landlordId = Number(id);
@@ -50,11 +52,14 @@ const LandlordPage: React.FC = () => {
     } finally { setIsSaving(false); }
   };
 
-  const handleRemoveAddress = async (addressToRemove: string) => {
+  // Removes every saved address for this building (e.g. both "123 Main St" and "123 Main St, Apt 2").
+  const handleRemoveAddress = async (propertyKey: string) => {
     if (!landlord) return;
     setIsSaving(true);
     try {
-      const updatedAddresses = (landlord.addresses || []).filter(addr => addr !== addressToRemove);
+      const updatedAddresses = (landlord.addresses || []).filter(
+        addr => toBuildingAddress(addr).toLowerCase() !== propertyKey
+      );
       await api.updateLandlordAddresses(landlord.id, updatedAddresses);
       setLandlord({ ...landlord, addresses: updatedAddresses });
     } catch (error) {
@@ -74,6 +79,15 @@ const LandlordPage: React.FC = () => {
 
   if (loading && !landlord) return <LoadingSpinner />;
   if (!landlord) return <div style={{ textAlign: 'center', padding: '2rem' }}>Landlord not found.</div>;
+
+  const properties = getLandlordProperties(landlord, activeReviews);
+  const savedAddressKeys = new Set((landlord.addresses ?? []).map(a => toBuildingAddress(a).toLowerCase()));
+  const selectedProperty = properties.find(p => p.key === selectedPropertyKey) ?? null;
+  const shownReviews = selectedProperty
+    ? visibleReviews.filter(r => isReviewForProperty(r, selectedProperty.key))
+    : visibleReviews;
+  const average = (reviews: Review[], pick: (r: Review) => number) =>
+    reviews.reduce((sum, r) => sum + (Number(pick(r)) || 0), 0) / reviews.length;
 
   return (
     <div className="page-container">
@@ -108,26 +122,58 @@ const LandlordPage: React.FC = () => {
                 </div>
               )}
 
-              {landlord.addresses && landlord.addresses.length > 0 && (
+              {properties.length > 0 && (
                 <div className="landlord-addresses">
-                  <div className="landlord-addresses__label">Known Addresses</div>
-                  {landlord.addresses.map((address, index) => (
-                    <div key={index} className="landlord-address-row">
-                      <span style={{ fontSize: '0.875rem' }}>{formatLandlordAddress(address)}</span>
-                      {isAdmin && isEditingAddresses && (
-                        <button
-                          onClick={() => handleRemoveAddress(address)}
-                          disabled={isSaving}
-                          className="landlord-address-remove"
-                          title="Remove address"
-                        >
-                          <svg xmlns="http://www.w3.org/2000/svg" style={{ width: '1rem', height: '1rem' }} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                          </svg>
-                        </button>
-                      )}
-                    </div>
-                  ))}
+                  <div className="landlord-addresses__label">
+                    {properties.length === 1 ? 'Property' : `${properties.length} Properties`}
+                  </div>
+                  <ul className="property-list">
+                    {properties.map(property => {
+                      const isSelected = property.key === selectedPropertyKey;
+                      const count = property.reviews.length;
+                      const landlordGrade = count > 0 ? toLetterGrade(average(property.reviews, r => r.landlord_rating)) : null;
+                      const buildingGrade = count > 0 ? toLetterGrade(average(property.reviews, r => r.building_rating)) : null;
+                      return (
+                        <li key={property.key} className="property-row">
+                          <button
+                            type="button"
+                            className={`property-row__btn${isSelected ? ' property-row__btn--active' : ''}`}
+                            aria-pressed={isSelected}
+                            disabled={count === 0}
+                            title={count > 0 ? 'Show reviews for this property' : 'No reviews for this property yet'}
+                            onClick={() => setSelectedPropertyKey(isSelected ? null : property.key)}
+                          >
+                            <span className="property-row__address">{property.address}</span>
+                            <span className="property-row__meta">
+                              {landlordGrade && (
+                                <span className="property-row__grade" style={gradeColors(landlordGrade)} title="Landlord grade at this property">
+                                  {landlordGrade}
+                                </span>
+                              )}
+                              {buildingGrade && (
+                                <span className="property-row__building">Building {buildingGrade}</span>
+                              )}
+                              <span className="property-row__count">
+                                {count === 0 ? 'No reviews yet' : `${count} ${count === 1 ? 'review' : 'reviews'}`}
+                              </span>
+                            </span>
+                          </button>
+                          {isAdmin && isEditingAddresses && savedAddressKeys.has(property.key) && (
+                            <button
+                              onClick={() => handleRemoveAddress(property.key)}
+                              disabled={isSaving}
+                              className="landlord-address-remove"
+                              title="Remove address"
+                            >
+                              <svg xmlns="http://www.w3.org/2000/svg" style={{ width: '1rem', height: '1rem' }} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                              </svg>
+                            </button>
+                          )}
+                        </li>
+                      );
+                    })}
+                  </ul>
                 </div>
               )}
 
@@ -255,6 +301,14 @@ const LandlordPage: React.FC = () => {
             {isAdmin && reviews.length > activeReviews.length && (
               <span className="reviews-hidden-badge">{reviews.length - activeReviews.length} hidden</span>
             )}
+            {selectedProperty && (
+              <span className="reviews-filter-note">
+                at {selectedProperty.address}
+                <button type="button" className="section-heading__clear" onClick={() => setSelectedPropertyKey(null)}>
+                  Show all
+                </button>
+              </span>
+            )}
           </div>
           {activeReviews.length > 0 && (
             <Link to={`/landlord/${id}/add-review`} className="btn btn-primary">
@@ -264,8 +318,8 @@ const LandlordPage: React.FC = () => {
         </div>
 
         <div className="reviews-list">
-          {visibleReviews.length > 0 ? (
-            visibleReviews.map(review => <ReviewCard key={review.id} review={review} />)
+          {shownReviews.length > 0 ? (
+            shownReviews.map(review => <ReviewCard key={review.id} review={review} />)
           ) : (
             <div className="reviews-empty">
               <div className="reviews-empty-icon">

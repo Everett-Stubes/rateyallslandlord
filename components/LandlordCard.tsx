@@ -7,6 +7,8 @@ import { formatLandlordAddress, getDisplayLandlordCity } from '../utils/landlord
 
 interface LandlordCardProps {
   landlord: Landlord;
+  // One address per building, including buildings only mentioned in reviews.
+  propertyAddresses?: string[];
   averageRating?: number | null;
   reviewCount?: number;
   wouldRentAgainPct?: number | null;
@@ -17,6 +19,7 @@ interface LandlordCardProps {
 
 const LandlordCard: React.FC<LandlordCardProps> = ({
   landlord,
+  propertyAddresses,
   averageRating,
   reviewCount,
   wouldRentAgainPct,
@@ -25,10 +28,11 @@ const LandlordCard: React.FC<LandlordCardProps> = ({
   deleting = false,
 }) => {
   const displayCity = getDisplayLandlordCity(landlord.city);
+  const addresses = propertyAddresses ?? (landlord.addresses ?? []).map(formatLandlordAddress).filter(Boolean);
   const displayAddress = [
-    ...(landlord.addresses ?? []).map(formatLandlordAddress).filter(Boolean),
+    ...addresses,
     ...(displayCity ? [displayCity] : []),
-  ].join(', ');
+  ].join(' · ');
 
   return (
     <div className="landlord-card-wrapper">
@@ -66,6 +70,16 @@ const LandlordCard: React.FC<LandlordCardProps> = ({
               </span>
               <span className="landlord-card__stat-label">building</span>
             </span>
+
+            {addresses.length > 1 && (
+              <>
+                <span className="landlord-card__stat-divider">|</span>
+                <span className="landlord-card__stat">
+                  <span className="landlord-card__stat-value">{addresses.length}</span>
+                  <span className="landlord-card__stat-label">properties</span>
+                </span>
+              </>
+            )}
           </div>
 
           {displayAddress && (

@@ -57,8 +57,9 @@ const FaqPage: React.FC = () => {
       q: 'Is this affiliated with More Perfect University?',
       a: (
         <>
-          More Perfect University, the campus program of More Perfect Union, provides the open-source software, templates,
-          and guidance. This {city} site is run by students here.
+          Yes. {siteName} is a More Perfect University Partner. More Perfect University, the campus program of More
+          Perfect Union, provides the open-source software, templates, and guidance. This {city} site is run by
+          students here.
         </>
       ),
     },

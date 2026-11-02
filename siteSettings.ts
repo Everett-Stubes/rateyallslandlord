@@ -20,13 +20,19 @@ export const siteSettings = {
       emailDomains: ["gatech.edu"],
       focusAreas: [
         {
-          name: "Midtown high-rises",
-          // Clicking this area on the homepage shows landlords with an address on one of these streets.
-          streets: ["Peachtree St", "W Peachtree St", "Spring St", "Juniper St", "Crescent Ave", "Peachtree Pl"],
+          name: "Home Park",
+          // Clicking this area on the homepage shows landlords with a property on one of these
+          // streets (from the landlord's addresses or from the addresses in their reviews).
+          streets: ["Hemphill Ave", "State St", "Atlantic Dr", "Lynch Ave", "Francis St", "Holly St", "Mecaslin St", "Ethel St"],
         },
         {
-          name: "Home Park",
-          streets: ["Hemphill Ave", "State St", "Atlantic Dr", "Lynch Ave", "Francis St", "Holly St", "Mecaslin St", "Ethel St"],
+          name: "Midtown",
+          streets: ["Peachtree St", "W Peachtree St", "Spring St", "Juniper St", "Crescent Ave", "Peachtree Pl", "Techwood Dr", "10th St NE", "14th St NE", "Piedmont Ave NE"],
+        },
+        {
+          name: "Other",
+          // An empty street list means "every landlord not in this school's other areas".
+          streets: [],
         },
       ],
     },

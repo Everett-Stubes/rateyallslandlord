@@ -16,10 +16,18 @@ The playbook says More Perfect University will pay for a domain for at least two
 
 | School | Student email domains | Focus areas | Where it's set |
 | --- | --- | --- | --- |
-| Georgia Tech | gatech.edu | Midtown high-rises, Home Park | `siteSettings.ts` (`schools`) |
+| Georgia Tech | gatech.edu | Home Park, Midtown, Other | `siteSettings.ts` (`schools`) |
 | Georgia State | gsu.edu, student.gsu.edu | To be decided | `siteSettings.ts` (`schools`) |
 
-Each focus area has a list of streets. The homepage button for that area shows landlords with an address on one of those streets. Add streets to widen an area.
+Each focus area has a list of streets. The homepage button for that area shows landlords with a property on one of those streets, counting both the landlord's saved addresses and the addresses tenants give in reviews. Add streets to widen an area. An area with an empty street list (Georgia Tech's **Other**) shows every landlord outside the school's named areas.
+
+Street matching is approximate: Peachtree Street, for example, runs through both Midtown and Downtown.
+
+## Landlords with several properties
+
+A landlord's page lists each building separately, with its own landlord grade, building grade, and review count; click a building to see only its reviews. Buildings come from the landlord's saved addresses plus every address tenants give in reviews, with unit numbers removed ("123 Hemphill Ave NW, Apt 2B" counts as "123 Hemphill Ave NW"). Admins can still add or remove saved addresses with **Manage Addresses**.
+
+If tenants add the same company twice (for example, the owner and its management company), the two pages are separate. There is no merge tool yet.
 
 ## Landlords to list at launch
 

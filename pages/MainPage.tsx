@@ -8,8 +8,21 @@ import LandlordCard from '../components/LandlordCard';
 import type { Landlord, Review } from '../types';
 import BrandLogo from '../components/BrandLogo';
 import { siteSettings } from '../siteSettings';
+import { getAllLandlordAddresses, getLandlordProperties } from '../utils/properties';
 
-type FocusArea = (typeof siteSettings.schools)[number]['focusAreas'][number];
+type School = (typeof siteSettings.schools)[number];
+type FocusArea = School['focusAreas'][number];
+type ActiveFocus = { school: School; area: FocusArea };
+
+const isOnStreets = (addresses: string[], streets: string[]) =>
+  streets.some(street => addresses.some(a => a.toLowerCase().includes(street.toLowerCase())));
+
+// An area with streets matches landlords with a property on one of them. An area with no
+// streets ("Other") matches landlords outside all of the school's other areas.
+const isInFocusArea = (addresses: string[], { school, area }: ActiveFocus) =>
+  area.streets.length > 0
+    ? isOnStreets(addresses, area.streets)
+    : !school.focusAreas.some(other => other.streets.length > 0 && isOnStreets(addresses, other.streets));
 
 const MainPage: React.FC = () => {
   const { landlords, loading, deleteLandlord } = useData();
@@ -17,7 +30,7 @@ const MainPage: React.FC = () => {
   const { api } = useServices();
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
-  const [activeFocus, setActiveFocus] = useState<FocusArea | null>(null);
+  const [activeFocus, setActiveFocus] = useState<ActiveFocus | null>(null);
   const [ratings, setRatings] = useState<{ [landlordId: number]: number | null }>({});
   const [reviewsByLandlord, setReviewsByLandlord] = useState<{ [landlordId: number]: Review[] }>({});
   const [deletingLandlordId, setDeletingLandlordId] = useState<number | null>(null);
@@ -52,19 +65,23 @@ const MainPage: React.FC = () => {
 
   const filteredLandlords = useMemo(() => {
     const term = searchTerm.trim().toLowerCase();
-    const streets = activeFocus?.streets.map(s => s.toLowerCase()) ?? [];
     return landlords.filter(landlord => {
-      if (streets.length > 0 && !landlord.addresses?.some(a => streets.some(s => a.toLowerCase().includes(s)))) {
-        return false;
-      }
+      const reviews = reviewsByLandlord[landlord.id] ?? [];
+      const addresses = getAllLandlordAddresses(landlord, reviews);
+      if (activeFocus && !isInFocusArea(addresses, activeFocus)) return false;
       if (!term) return true;
       if (landlord.name.toLowerCase().includes(term)) return true;
-      if (landlord.addresses?.some(a => a.toLowerCase().includes(term))) return true;
-      const reviews = reviewsByLandlord[landlord.id] ?? [];
+      if (addresses.some(a => a.toLowerCase().includes(term))) return true;
       if (reviews.some(r => r.comment?.toLowerCase().includes(term))) return true;
       return false;
     });
   }, [searchTerm, activeFocus, landlords, reviewsByLandlord]);
+
+  const focusTitle = activeFocus
+    ? activeFocus.area.streets.length > 0
+      ? activeFocus.area.name
+      : `${activeFocus.school.name}: ${activeFocus.area.name}`
+    : null;
 
   const handleAddLandlordClick = () => {
     navigate(user ? '/add-landlord' : '/login');
@@ -129,14 +146,14 @@ const MainPage: React.FC = () => {
               <div key={school.name} className="focus-areas__school">
                 <span className="focus-areas__school-name">{school.name}</span>
                 {school.focusAreas.map(area => {
-                  const isActive = activeFocus?.name === area.name;
+                  const isActive = activeFocus?.school.name === school.name && activeFocus.area.name === area.name;
                   return (
                     <button
                       key={area.name}
                       type="button"
                       className={`focus-chip${isActive ? ' focus-chip--active' : ''}`}
                       aria-pressed={isActive}
-                      onClick={() => setActiveFocus(isActive ? null : area)}
+                      onClick={() => setActiveFocus(isActive ? null : { school, area })}
                     >
                       {area.name}
                     </button>
@@ -152,7 +169,7 @@ const MainPage: React.FC = () => {
       <div className="content-section">
         <div className="section-heading">
           <h2 className="section-heading__title">
-            {activeFocus ? activeFocus.name : `${siteSettings.city} landlords`}
+            {focusTitle ?? `${siteSettings.city} landlords`}
           </h2>
           {!loading && (
             <span className="section-heading__meta">
@@ -176,6 +193,7 @@ const MainPage: React.FC = () => {
                 <LandlordCard
                   key={landlord.id}
                   landlord={landlord}
+                  propertyAddresses={getLandlordProperties(landlord, reviewsByLandlord[landlord.id] ?? []).map(p => p.address)}
                   onDelete={isAdmin ? () => handleDeleteLandlord(landlord) : undefined}
                   deleting={deletingLandlordId === landlord.id}
                   averageRating={ratings[landlord.id] ?? null}
@@ -200,9 +218,9 @@ const MainPage: React.FC = () => {
                 <h3 className="landlord-grid__empty-title">No landlords found</h3>
                 <p className="landlord-grid__empty-desc">
                   {searchTerm
-                    ? `We couldn't find any landlords matching "${searchTerm}"${activeFocus ? ` in ${activeFocus.name}` : ''}`
-                    : activeFocus
-                      ? `No landlords have been added in ${activeFocus.name} yet.`
+                    ? `We couldn't find any landlords matching "${searchTerm}"${focusTitle ? ` in ${focusTitle}` : ''}`
+                    : focusTitle
+                      ? `No landlords have been added in ${focusTitle} yet.`
                       : 'No landlords have been added yet.'}
                 </p>
                 <button onClick={handleAddLandlordClick} className="btn btn-primary">
