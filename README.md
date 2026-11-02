@@ -1,135 +1,63 @@
-# [Rate Your Landlord — Template Repository]
+# Make your own Rate Your Landlord website
 
-A community platform for tenants to search, review, and rate landlords. Users can submit reviews and add new landlords, and admins can moderate landlords and reviews.
+This repository contains a website for finding landlords, reading reviews, and submitting ratings. It currently includes Pittsburgh-specific examples, branding, and text. A personal copy does not automatically become a working public service.
 
-## Tech Stack
+**Start here: [the step-by-step setup guide](docs/replication_guide.md).** It covers Windows and Mac, a local demonstration, Supabase, Cloudflare Pages, a domain name, email sign-in links, and checks before sharing.
 
-- **Framework:** React 19 + TypeScript
-- **Routing:** React Router v7
-- **Backend:** Supabase (PostgreSQL + Auth + Storage)
-- **Build tool:** Vite
-- **Testing:** Vitest + Testing Library
+## What you will use
 
-## Project Structure
+| Tool or service | What it does |
+| --- | --- |
+| GitHub | Keeps your personal copy of the website's files online. |
+| Node.js and npm | Run the website on your computer and install its required software packages. npm comes with Node.js. |
+| Visual Studio Code | A text editor used to open the downloaded folder, create a settings file, and run a few commands. |
+| Supabase | Holds real landlord and review data and manages email/password accounts. |
+| Cloudflare Pages | Builds the website from your GitHub copy and puts it online. |
+| Cloudflare Turnstile | Shows the security challenge on certain forms. Its current limitations are explained in the guide. |
+| Cloudflare DNS | Connects a domain name to the website, if you choose to use your own domain. |
+| Mapbox | Supplies address suggestions in the forms. |
 
-```
-App.tsx               # Root component, wires up service layer + routing
-pages/                # One file per route
-components/           # Shared UI components (Header, Footer, cards, forms)
-context/              # React context providers (Auth, Data, Services)
-services/             # Service layer
-  interfaces.ts       # IApiService / IAuthService interfaces
-  SupabaseApiService.ts
-  SupabaseAuthService.ts
-  MockApiService.ts   # Used when Supabase env vars are not set
-  MockAuthService.ts
-  supabase.ts         # Client init + isMockMode flag
-tests/
-  flows/              # Integration-style tests per user flow
-  utils/
-    renderWithProviders.tsx   # Test render helpers
-    createMockServices.ts     # Mock service factories
-  setup.ts            # jest-dom setup
-types.ts              # Shared TypeScript types (Landlord, Review, etc.)
-init.sql              # Database schema
-```
+Check each provider's current pricing, limits, and account requirements before enabling a service. This guide does not promise that running a public website is free.
 
-## Getting Started
+## Choose your next step
 
-**Prerequisites:** Node.js 18+
+1. **Just looking?** Follow [parts 1–3](docs/replication_guide.md#1-make-your-personal-github-copy) of the guide. Without Supabase settings, the website displays fake data. Registration and sign-in do not work in this demonstration.
+2. **Connecting real data?** Continue with [Supabase setup](docs/replication_guide.md#4-create-a-supabase-project). Stop at any failed check; do not enter real tenant information to troubleshoot.
+3. **Putting a trial site online?** Follow [Cloudflare Pages setup](docs/replication_guide.md#8-publish-a-trial-site-with-cloudflare-pages), then the domain and sign-in sections.
+4. **Before inviting anyone?** Complete [the sharing checklist](docs/replication_guide.md#11-test-before-sharing). A successful build alone is not a security review or evidence that every feature works.
 
-1. Install dependencies:
-   ```
-   npm install
-   ```
+## Important limits in the checked repository
 
-2. Copy the environment template and fill in your values:
-   ```
-   cp .env.local.example .env.local
-   ```
-   Required variables:
-   ```
-   VITE_SUPABASE_URL=https://<your-project>.supabase.co
-   VITE_SUPABASE_ANON_KEY=<your-anon-key>
-   ```
+- The checked base version of `package-lock.json` contains private Replit download addresses. A personal copy needs the public-registry correction before installation outside Replit. The guide explains how to check this without editing dependency versions.
+- `package.json` has `dev`, `build`, and `preview` commands. It does **not** have `test` or `test:run` commands. Test files are present, but there is no runnable test command configured.
+- The demonstration stores changes in memory, not in a real database.
+- Turnstile completion is checked in the browser, but its token is not sent for server verification. Do not treat the displayed challenge as complete spam protection.
+- The real data service does not implement verification-document uploads. Do not collect real verification documents.
+- The review form and database setup use different rating fields. See the [setup checks and limitations](docs/architecture.md#setup-checks-and-limitations) before trying real submissions.
+- Existing branding, legal placeholders, contact information, and local assumptions need review for your own site.
 
-3. Start the dev server (runs on port 3000):
-   ```
-   npm run dev
-   ```
+This documentation does **not** certify the project as production-ready, select a license, or grant rights to reuse branding, fonts, or other assets.
 
-> **Demo / mock mode:** If `VITE_SUPABASE_URL` or `VITE_SUPABASE_ANON_KEY` are missing, the app automatically runs in mock mode using in-memory fake data. A yellow banner is shown at the top. This is useful for frontend-only development without a Supabase project.
+## Commands you will actually use
 
-## Documentation & Architecture
+Only type the command itself into the terminal. Do **not** type Markdown fences, backticks, a language label such as `bash`, a `$` prompt, or explanatory text.
 
-For comprehensive guides on the project, check the following resources:
-- [Replication & Setup Guide](file:///Ubuntu/home/sebas/coding/ratemylandlord/docs/replication_guide.md) — Step-by-step instructions to configure Supabase (Database, Auth, Storage, SMTP) and host on Cloudflare Pages.
-- [Architecture & Background](file:///Ubuntu/home/sebas/coding/ratemylandlord/docs/architecture.md) — Explains the folder structure, Row Level Security (RLS) model, and testing patterns.
+| When | Command | What you should see |
+| --- | --- | --- |
+| Install packages, after the lockfile check | `npm ci --registry=https://registry.npmjs.org/` | Installation finishes without an `npm error`. |
+| Start the local website | `npm run dev` | Vite prints a local URL, normally `http://localhost:5000/`. |
+| Check that the website can be built | `npm run build` | A successful Vite build and a `dist` folder. |
+| Look at the built website locally | `npm run preview` | A local preview URL, normally port 4173. |
 
-The SQL schema and policies are defined in [init.sql](file:///Ubuntu/home/sebas/coding/ratemylandlord/init.sql).
+The full guide explains how to open the correct folder and terminal first. Do not use commands from an unrelated Vite or Supabase tutorial in place of this repository's commands.
 
-## Service Layer
+## More information
 
-All backend calls go through two interfaces: `IApiService` and `IAuthService` (see `services/interfaces.ts`). The app selects the real Supabase implementations or the mock implementations at startup based on `isMockMode`.
+- [Setup guide and “If something goes wrong”](docs/replication_guide.md)
+- [How the repository works, known limits, and verification sources](docs/architecture.md)
+- [Database setup file](init.sql)
+- [Package commands](package.json)
 
-Tests also use dependency injection to mock services directly rather than mocking fetch/Supabase internals.
+## Reviewing documentation changes
 
-## Testing
-
-Tests use **Vitest** with **Testing Library** and run in a **jsdom** environment. There are no network calls in tests — all backend interactions go through the mock service layer.
-
-### Run tests
-
-```bash
-# Watch mode (re-runs on file changes)
-npm test
-
-# Single run (CI / one-off)
-npm run test:run
-```
-
-### Test structure
-
-Tests live in `tests/flows/` and are organized by user flow:
-
-| File | What it covers |
-|------|----------------|
-| `flow1-search.test.tsx` | Searching and filtering landlords |
-| `flow2-register.test.tsx` | User registration |
-| `flow3-login.test.tsx` | Login / logout |
-| `flow4-submit-review-logged-in.test.tsx` | Submitting a review as a logged-in user |
-| `flow5-submit-review-guest.test.tsx` | Submitting a review as a guest |
-| `flow6-edit-review.test.tsx` | Editing an existing review |
-| `flow7-add-landlord.test.tsx` | Adding a new landlord |
-| `flow8-admin-landlords.test.tsx` | Admin: managing landlord approvals |
-| `flow9-admin-reviews.test.tsx` | Admin: managing review verification |
-| `flow10-admin-delete-restore.test.tsx` | Admin: deleting and restoring reviews |
-| `flow11-reset-password.test.tsx` | Password reset flow |
-
-### Test helpers
-
-- **`renderPage(ui, options)`** — renders a single page component inside the full provider tree (Services + Auth + Data + Router).
-- **`renderWithRoutes(routes, options)`** — renders multiple routes, useful for testing navigation between pages.
-- Both helpers accept optional `api` and `auth` overrides so individual tests can customize mock behaviour.
-
-Example:
-```tsx
-import { renderPage } from '../utils/renderWithProviders';
-import { createMockApiService } from '../utils/createMockServices';
-
-it('shows landlord list', async () => {
-  const api = createMockApiService();
-  const { findByText } = renderPage(<MainPage />, { api });
-  expect(await findByText('Some Landlord')).toBeInTheDocument();
-});
-```
-
-## Building for Production
-
-```bash
-npm run build    # outputs to dist/
-npm run preview  # serve the built output locally
-```
-
-## Contribute:
-To contribute, create a new branch and create a pull request with the main branch 
+Read the Markdown files on GitHub, where headings, links, and tables are rendered. Use a pull request (a request to review changes before accepting them) for updates to your copy. The [review instructions](docs/replication_guide.md#12-review-and-update-your-copy) explain how to check the changed files and choose the correct destination repository. A local downloaded ZIP is separate from your GitHub copy: editing one does not update the other.
