@@ -62,7 +62,7 @@ export default function BrandLogo({ variant, className }: BrandLogoProps) {
       className={className}
       role="img"
       aria-labelledby={titleId}
-      fontFamily="'GT America Condensed', Impact, 'Arial Narrow', sans-serif"
+      fontFamily="'Barlow Condensed', Impact, 'Arial Narrow', sans-serif"
       fontWeight={700}
       focusable="false"
     >

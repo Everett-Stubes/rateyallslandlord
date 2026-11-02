@@ -46,14 +46,14 @@ describe('Flow 3: Login', () => {
     // Wait for login page to appear
     await findLoginHeading();
 
-    await user.type(getEmailField(), 'test@pitt.edu');
+    await user.type(getEmailField(), 'test@gatech.edu');
     await user.type(getPasswordField(), 'mypassword');
 
     await user.click(getLoginButton());
 
     // auth.signIn should be called with correct args
     await waitFor(() => {
-      expect(auth.signIn).toHaveBeenCalledWith('test@pitt.edu', 'mypassword');
+      expect(auth.signIn).toHaveBeenCalledWith('test@gatech.edu', 'mypassword');
     });
 
     // Should navigate to home page
@@ -80,7 +80,7 @@ describe('Flow 3: Login', () => {
 
     await findLoginHeading();
 
-    await user.type(getEmailField(), 'unverified@pitt.edu');
+    await user.type(getEmailField(), 'unverified@gatech.edu');
     await user.type(getPasswordField(), 'mypassword');
 
     await user.click(getLoginButton());

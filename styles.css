@@ -1,10 +1,9 @@
 /* ============================================================
-   RateYinzLandlord Pittsburgh — Main Stylesheet
+   Rate Y'all's Landlord Atlanta — Main Stylesheet
    ============================================================ */
 
 /* --- 1. Design Tokens --- */
 
-@import "./alegreya-webfont/style.css";
 
 :root {
   --blue-100: #D9F2FF;
@@ -12,31 +11,44 @@
   --blue-300: #2E57FA;
   --blue-400: #0000FF;
   --blue-500: #030061;
-  --neutral-100: #FFFFE8;
-  --neutral-200: #A6A6A3;
-  --neutral-300: #5C616B;
-  --neutral-400: #242945;
-  --neutral-500: #000826;
-  --secondary-100: #D4FCD4;
-  --secondary-200: #8FFFBA;
-  --secondary-300: #00FF82;
-  --secondary-400: #00BD66;
-  --secondary-500: #00302E;
+  --neutral-100: #FFFFFF;
+  --neutral-200: #E4E1EC;
+  --neutral-300: #5B5E70;
+  --neutral-400: #2B2D42;
+  --neutral-500: #101222;
+  --secondary-100: #E3F5EA;
+  --secondary-200: #B9E6C9;
+  --secondary-300: #8FD9A8;
+  --secondary-400: #1F7A4D;
+  --secondary-500: #0E3B25;
   --red-100: #FFDBE0;
   --red-200: #FA8FA3;
   --red-300: #F21242;
   --red-400: #B81238;
   --red-500: #631429;
-  --highlight-100: #FFFFB2;
-  --highlight-200: #F2FF78;
-  --highlight-300: #D4FC00;
-  --highlight-400: #99C200;
-  --highlight-500: #528200;
-  --primary-100: #F7EBFF;
-  --primary-200: #E5D4FF;
-  --primary-300: #9470FF;
-  --primary-400: #5933BF;
-  --primary-500: #29008A;
+  --highlight-100: #FFF4DE;
+  --highlight-200: #FFE3AD;
+  --highlight-300: #FFD27A;
+  --highlight-400: #E0A43A;
+  --highlight-500: #7A5410;
+  /* More Perfect University palette: navy lettering, lavender stroke. */
+  --primary-100: #F6F3FB;
+  --primary-200: #ECE6F5;
+  --primary-300: #50438F;
+  --primary-400: #3F3474;
+  --primary-500: #101222;
+  --lavender: #C6B4DB;
+  --surface: #FFFFFF;
+  --page: #F6F3FB;
+  --border: #E4E1EC;
+  --grade-a: #1F7A4D;
+  --grade-b: #5E9F3A;
+  --grade-c: #E0A43A;
+  --grade-d: #D9692F;
+  --grade-f: #B8323F;
+  --font-display: 'Barlow Condensed', 'Arial Narrow', sans-serif;
+  --font-body: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, monospace;
   --shadow-sm: 0 1px 2px 0 rgb(from var(--neutral-500) r g b / 0.05);
   --shadow: 0 1px 3px 0 rgb(from var(--neutral-500) r g b / 0.1), 0 1px 2px -1px rgb(from var(--neutral-500) r g b / 0.1);
   --shadow-md: 0 4px 6px -1px rgb(from var(--neutral-500) r g b / 0.1), 0 2px 4px -2px rgb(from var(--neutral-500) r g b / 0.1);
@@ -50,66 +62,6 @@
   --radius-2xl: 1.5rem;
   --radius-full: 9999px;
 }
-
-/* GT AMERICA */
-
-@font-face {
-  font-family: "GT America Condensed";
-  src: url('GT-America/GT-America-Condensed-Bold-Italic-Trial.otf');
-  font-weight: bold;
-  font-style: italic;
-}
-
-@font-face {
-  font-family: "GT America Condensed";
-  src: url('GT-America/GT-America-Condensed-Bold-Trial.otf');
-  font-weight: bold;
-  font-style: normal;
-}
-
-@font-face {
-  font-family: "GT America Mono";
-  src: url('GT-America/GT-America-Mono-Regular-Italic-Trial.otf');
-  font-weight: normal;
-  font-style: italic;
-}
-
-@font-face {
-  font-family: "GT America Mono";
-  src: url('GT-America/GT-America-Mono-Regular-Trial.otf');
-  font-weight: normal;
-  font-style: normal;
-}
-
-@font-face {
-  font-family: "GT America Standard";
-  src: url('GT-America/GT-America-Standard-Bold-Italic-Trial.otf');
-  font-weight: bold;
-  font-style: italic;
-}
-
-@font-face {
-  font-family: "GT America Standard";
-  src: url('GT-America/GT-America-Standard-Bold-Trial.otf');
-  font-weight: bold;
-  font-style: normal;
-}
-
-@font-face {
-  font-family: "GT America Standard";
-  src: url('GT-America/GT-America-Standard-Regular-Italic-Trial.otf');
-  font-weight: normal;
-  font-style: italic;
-}
-
-@font-face {
-  font-family: "GT America Standard";
-  src: url('GT-America/GT-America-Standard-Regular-Trial.otf');
-  font-weight: normal;
-  font-style: normal;
-}
-
-
 
 /* --- 2. Reset & Base --- */
 *,
@@ -125,8 +77,8 @@ html {
 }
 
 body {
-  font-family: 'GT America Standard', sans-serif;
-  background-color: var(--primary-200);
+  font-family: var(--font-body);
+  background-color: var(--page);
   color: var(--primary-500);
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
@@ -146,8 +98,8 @@ button {
 input,
 textarea,
 select {
-  font-family: 'Alegreya', serif;
-  font-weight: 200
+  font-family: var(--font-body);
+  font-weight: 400;
 }
 
 img {
@@ -619,7 +571,7 @@ ol {
 
 .site-nav__link:hover,
 .site-nav__link--active {
-  color: var(--secondary-300);
+  color: var(--lavender);
 }
 
 .site-header__auth {
@@ -705,7 +657,7 @@ ol {
 .header-login-link {
   font-size: 0.875rem;
   font-weight: 500;
-  color: var(--neutral-300);
+  color: var(--lavender);
   text-decoration: none;
   transition: color 0.15s;
 }
@@ -717,19 +669,17 @@ ol {
 .header-signup-btn {
   padding: 0.5rem 1rem;
   font-size: 0.875rem;
-  font-weight: 500;
-  color: var(--neutral-100);
-  background-color: var(--primary-300);
-  border-radius: var(--radius);
+  font-weight: 600;
+  color: var(--neutral-500);
+  background-color: var(--lavender);
+  border-radius: var(--radius-full);
   text-decoration: none;
-  transition: all 0.15s;
-  box-shadow: var(--shadow-sm);
+  transition: background-color 0.15s, transform 0.15s;
 }
 
 .header-signup-btn:hover {
-  background-color: var(--highlight-300);
+  background-color: var(--neutral-100);
   transform: translateY(-1px);
-  box-shadow: var(--shadow);
 }
 
 .header-mobile-controls {
@@ -741,7 +691,7 @@ ol {
 .mobile-menu-btn {
   padding: 0.5rem;
   border-radius: var(--radius);
-  color: var(--neutral-400);
+  color: var(--neutral-100);
   background: none;
   border: none;
   cursor: pointer;
@@ -833,7 +783,8 @@ ol {
    SITE FOOTER
    ============================================================ */
 .site-footer {
-  background-color: var(--neutral-100);
+  background-color: var(--neutral-500);
+  color: var(--neutral-200);
   margin-top: auto;
 }
 
@@ -842,32 +793,43 @@ ol {
   flex-direction: column;
   align-items: center;
   gap: 1rem;
-  padding: 2rem 1rem;
+  padding: 2.5rem 1rem;
   max-width: 1280px;
   margin: 0 auto;
+  text-align: center;
 }
 
 .site-footer__copy {
   font-size: 0.875rem;
-  color: var(--neutral-300);
+  color: var(--neutral-200);
+}
+
+.site-footer__copy strong {
+  font-family: var(--font-display);
+  font-size: 1.125rem;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--neutral-100);
 }
 
 .site-footer__links {
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
+  justify-content: center;
   gap: 1.5rem;
 }
 
 .site-footer__link {
   font-size: 0.875rem;
   font-weight: 500;
-  color: var(--neutral-400);
+  color: var(--lavender);
   text-decoration: none;
   transition: color 0.15s;
 }
 
 .site-footer__link:hover {
-  color: var(--primary-300);
+  color: var(--neutral-100);
 }
 
 /* ============================================================
@@ -882,7 +844,7 @@ ol {
 }
 
 .demo-banner code {
-  font-family: 'GT America Mono', monospace;
+  font-family: var(--font-mono);
   background-color: var(--highlight-300);
   padding: 0.125rem 0.25rem;
   border-radius: 0.25rem;
@@ -893,11 +855,10 @@ ol {
    MAIN PAGE HERO
    ============================================================ */
 .hero {
-  background: linear-gradient(rgb(from var(--neutral-100) r g b / 0.4), rgb(from var(--neutral-100) r g b / 0.4)), url(https://imgs.search.brave.com/LX5QcuBF7LmUK-lutaVwF1yug-nSr9tvHQFooGqSAmw/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly90aGVk/ZXNpZ25lc3QubmV0/L3dwLWNvbnRlbnQv/dXBsb2Fkcy8yMDIx/LzEyLzEyLTIuanBn);
-  background-size: cover;
-  background-position: center;
-  color: var(--neutral-100);
-  padding: 4rem 1rem;
+  background-color: var(--surface);
+  border-bottom: 1px solid var(--border);
+  color: var(--neutral-500);
+  padding: 4rem 1rem 3.5rem;
   position: relative;
   overflow: hidden;
 }
@@ -927,16 +888,26 @@ ol {
   animation: fadeIn 0.5s ease-out;
 }
 
+.hero__kicker {
+  display: inline-block;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--primary-300);
+  margin-bottom: 1.25rem;
+}
+
 .hero__subtitle {
   font-size: 1.25rem;
-  color: var(--neutral-500);
-  margin-bottom: 2.5rem;
+  color: var(--neutral-400);
+  margin-bottom: 2rem;
   max-width: 42rem;
   margin-left: auto;
   margin-right: auto;
   animation: slideUp 0.5s ease-out;
-  font-family: 'Alegreya', serif;
-  font-weight: bolder;
+  font-family: var(--font-body);
+  font-weight: 700;
   text-align: center;
 }
 
@@ -949,35 +920,119 @@ ol {
 .hero__search-box {
   display: flex;
   align-items: center;
-  background-color: var(--neutral-500);
-  box-shadow: var(--shadow-2xl);
-  padding: 0.5rem;
-  transition: transform 0.3s;
+  background-color: var(--surface);
+  border: 2px solid var(--neutral-500);
+  border-radius: var(--radius-full);
+  box-shadow: 0 6px 0 var(--lavender);
+  padding: 0.25rem 0.5rem;
+  transition: box-shadow 0.2s, transform 0.2s;
 }
 
 .hero__search-box:focus-within {
-  transform: scale(1.05);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 0 var(--primary-300);
 }
 
 .hero__search-icon {
-  padding-left: 1.5rem;
-  color: var(--neutral-100);
+  padding-left: 1rem;
+  color: var(--neutral-500);
   flex-shrink: 0;
   display: flex;
 }
 
 .hero__search-input {
   flex: 1;
-  padding: 1rem;
-  font-size: 1.125rem;
-  color: var(--neutral-100);
+  min-width: 0;
+  padding: 0.875rem 0.75rem;
+  font-size: 1.0625rem;
+  color: var(--neutral-500);
   background: transparent;
   border: none;
   outline: none;
 }
 
 .hero__search-input::placeholder {
-  color: var(--neutral-200);
+  color: var(--neutral-300);
+}
+
+.focus-areas {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.75rem 1.5rem;
+  max-width: 48rem;
+  margin: 2.5rem auto 0;
+  animation: fadeIn 0.5s ease-out 0.3s both;
+}
+
+.focus-areas__school {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.focus-areas__school-name {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--neutral-500);
+}
+
+.focus-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.3125rem 0.75rem;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--primary-400);
+  background-color: var(--primary-100);
+  border: 1px solid var(--lavender);
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  transition: background-color 0.15s, color 0.15s;
+}
+
+.focus-chip:hover,
+.focus-chip--active {
+  background-color: var(--primary-300);
+  border-color: var(--primary-300);
+  color: var(--neutral-100);
+}
+
+.section-heading {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 1.5rem;
+}
+
+.section-heading__title {
+  font-family: var(--font-display);
+  font-size: 1.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  color: var(--neutral-500);
+}
+
+.section-heading__meta {
+  font-size: 0.875rem;
+  color: var(--neutral-300);
+}
+
+.section-heading__clear {
+  margin-left: 0.5rem;
+  font-weight: 600;
+  color: var(--primary-300);
+  background: none;
+  border: none;
+  text-decoration: underline;
 }
 
 .hero__add-cta {
@@ -1007,7 +1062,7 @@ ol {
 }
 
 .hero__add-cta-btn:hover {
-  color: var(--highlight-300);
+  color: var(--primary-400);
 }
 
 .hero__add-cta-btn:hover svg {
@@ -1023,7 +1078,7 @@ ol {
    LANDLORD GRID
    ============================================================ */
 .content-section {
-  padding: 4rem 1rem;
+  padding: 3rem 1rem 4rem;
   max-width: 1280px;
   margin: 0 auto;
 }
@@ -1031,7 +1086,7 @@ ol {
 .landlord-grid {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 2rem;
+  gap: 1rem;
 }
 
 .landlord-grid__empty {
@@ -1089,12 +1144,12 @@ ol {
 }
 
 .landlord-card {
-  background-color: var(--neutral-100);
-  padding: 1.5rem;
-  /* border-radius: var(--radius-xl); */
-  /* box-shadow: var(--shadow-sm);  */
-  border: 1px solid var(--neutral-500);
-  transition: all 0.3s;
+  background-color: var(--surface);
+  padding: 1.25rem 1.5rem;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
+  transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s;
   height: 100%;
   display: flex;
   flex-direction: row;
@@ -1118,7 +1173,12 @@ ol {
   opacity: 0.6;
 }
 
-/* .landlord-card:hover { box-shadow: var(--shadow-lg); transform: translateY(-4px); } */
+.landlord-card-link:hover .landlord-card,
+.landlord-card-link:focus-visible .landlord-card {
+  border-color: var(--lavender);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+}
 
 .landlord-card__header {
   display: flex;
@@ -1131,14 +1191,15 @@ ol {
 .landlord-card__grade {
   width: 3.5rem;
   height: 3.5rem;
-  background-color: var(--neutral-100);
-  /* border-radius: 20%; */
+  background-color: var(--primary-100);
+  border-radius: var(--radius);
   display: flex;
   align-items: center;
   justify-content: center;
   color: var(--primary-500);
+  font-family: var(--font-display);
   font-weight: 700;
-  font-size: 1.25rem;
+  font-size: 1.75rem;
   flex-shrink: 0;
   transition: all 0.3s;
 }
@@ -1155,12 +1216,13 @@ ol {
 }
 
 .landlord-card__name {
-  font-size: 1.5rem;
+  font-size: 1.125rem;
   color: var(--neutral-500);
   margin-bottom: 0;
-  transition: color 0.3s;
-  font-family: 'Alegreya', serif;
-  font-weight: bolder
+  transition: color 0.2s;
+  font-family: var(--font-body);
+  font-weight: 600;
+  letter-spacing: -0.01em;
 }
 
 .landlord-card-link:hover .landlord-card__name {
@@ -1271,8 +1333,8 @@ ol {
   font-size: 2.25rem;
   color: var(--neutral-500);
   letter-spacing: -0.025em;
-  font-family: 'Alegreya', serif;
-  font-weight: bolder
+  font-family: var(--font-body);
+  font-weight: 700;
 }
 
 .landlord-location {
@@ -1642,7 +1704,7 @@ ol {
   font-size: 2rem;
   font-weight: bold;
   color: var(--neutral-500);
-  font-family: 'GT America Condensed', sans-serif;
+  font-family: var(--font-display);
   text-transform: uppercase
 }
 
@@ -1734,7 +1796,7 @@ ol {
   font-size: 1.25rem;
   color: var(--neutral-400);
   font-weight: 500;
-  font-family: 'Alegreya', serif;
+  font-family: var(--font-body);
 }
 
 .review-card__header {
@@ -2063,7 +2125,7 @@ ol {
   text-align: center;
   margin-bottom: 0.5rem;
   color: var(--neutral-500);
-  font-family: 'GT America Condensed', sans-serif;
+  font-family: var(--font-display);
   text-transform: uppercase
 }
 
@@ -2137,8 +2199,8 @@ ol {
   font-size: 1.875rem;
   text-align: center;
   margin-bottom: 0.5rem;
-  font-family: 'Alegreya', serif;
-  font-weight: bolder
+  font-family: var(--font-body);
+  font-weight: 700;
 }
 
 .form-page__subtitle {
@@ -2240,7 +2302,7 @@ ol {
   font-weight: bold;
   color: var(--neutral-500);
   margin-bottom: 2rem;
-  font-family: 'GT America Condensed', sans-serif;
+  font-family: var(--font-display);
   text-transform: uppercase;
   text-align: center;
 }
@@ -2401,7 +2463,7 @@ ol {
   font-weight: 700;
   color: var(--neutral-500);
   margin-bottom: 0.5rem;
-  font-family: 'Alegreya', serif;
+  font-family: var(--font-body);
 }
 
 .admin-item__detail {
@@ -2495,7 +2557,7 @@ ol {
   font-weight: bold;
   color: var(--neutral-500);
   margin-bottom: 2rem;
-  font-family: 'GT America Condensed', sans-serif;
+  font-family: var(--font-display);
   text-transform: uppercase;
   text-align: center;
 }
@@ -2522,7 +2584,7 @@ ol {
   font-weight: 600;
   color: var(--primary-300);
   margin-bottom: 0.5rem;
-  font-family: 'Alegreya', serif;
+  font-family: var(--font-body);
   font-style: italic;
   border-bottom: 1px solid var(--primary-300);
 }
@@ -2541,7 +2603,7 @@ ol {
   font-weight: bold;
   /* color: var(--neutral-100); */
   margin-bottom: 2rem;
-  font-family: 'GT America Condensed', sans-serif;
+  font-family: var(--font-display);
   text-transform: uppercase;
   text-align: center;
 }
@@ -2572,7 +2634,7 @@ ol {
   display: flex;
   flex-direction: column;
   font-size: 1.25rem;
-  font-family: 'Alegreya', serif;
+  font-family: var(--font-body);
   font-weight: 100;
   color: var(--neutral-500);
   margin-bottom: 1rem;
@@ -2592,7 +2654,7 @@ ol {
   font-weight: bold;
   color: var(--neutral-100);
   margin-bottom: 2rem;
-  font-family: 'GT America Condensed', sans-serif;
+  font-family: var(--font-display);
   text-transform: uppercase;
   text-align: center;
 }
@@ -2630,7 +2692,7 @@ ol {
   font-size: 1.25rem;
   font-weight: 700;
   color: var(--neutral-100);
-  font-family: 'Alegreya', serif
+  font-family: var(--font-body)
 }
 
 .resources-link {
@@ -2657,7 +2719,7 @@ ol {
   color: var(--neutral-500);
   margin-bottom: 0.25rem;
   transition: color 0.15s;
-  font-family: 'GT America Condensed', sans-serif;
+  font-family: var(--font-display);
   text-transform: uppercase;
 }
 
@@ -2872,6 +2934,7 @@ ol {
   .site-footer__inner {
     flex-direction: row;
     justify-content: space-between;
+    text-align: left;
   }
 
   .hero__title {

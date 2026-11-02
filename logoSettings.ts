@@ -10,9 +10,9 @@ export const logoSettings = {
   text: {
     headerInitials: "RYL",
     headerSubtitle: "More Perfect University",
-    homepageLineOne: "RATE YOUR",
+    homepageLineOne: "RATE Y'ALL'S",
     homepageLineTwo: "LANDLORD",
-    pennantLabel: "MPUNIVERSITY",
+    pennantLabel: "ATLANTA",
   },
   colors: {
     headerText: "#FFFFFF",

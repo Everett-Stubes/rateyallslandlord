@@ -1,7 +1,9 @@
+import { siteSettings } from '../siteSettings';
+
 /**
- * List of verified student email domains
+ * List of verified student email domains, taken from the schools in siteSettings.ts
  */
-const VERIFIED_STUDENT_DOMAINS = ['pitt.edu', 'cmu.edu'];
+const VERIFIED_STUDENT_DOMAINS = siteSettings.schools.flatMap((school) => school.emailDomains);
 
 /**
  * Checks if an email belongs to a verified student domain
@@ -10,9 +12,9 @@ const VERIFIED_STUDENT_DOMAINS = ['pitt.edu', 'cmu.edu'];
  */
 export const isStudentEmail = (email: string | undefined | null): boolean => {
   if (!email) return false;
-  
+
   const normalizedEmail = email.toLowerCase().trim();
-  
+
   const atIndex = normalizedEmail.lastIndexOf('@');
   if (atIndex === -1 || atIndex === normalizedEmail.length - 1) return false;
   const emailDomain = normalizedEmail.slice(atIndex + 1);

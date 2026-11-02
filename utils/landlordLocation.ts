@@ -1,4 +1,11 @@
-const DEFAULT_LANDLORD_CITY = 'college park';
+import { siteSettings } from '../siteSettings';
+
+const DEFAULT_LANDLORD_CITY = siteSettings.city.toLowerCase();
+// Matches ", Atlanta" (or the configured city) and everything after it, e.g. ", Atlanta, GA 30318".
+const DEFAULT_CITY_SUFFIX = new RegExp(
+  `,\\s*${siteSettings.city.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b.*$`,
+  'i'
+);
 
 export function getDisplayLandlordCity(city: string): string | undefined {
   const trimmedCity = city.trim();
@@ -8,5 +15,5 @@ export function getDisplayLandlordCity(city: string): string | undefined {
 }
 
 export function formatLandlordAddress(address: string): string {
-  return address.replace(/,\s*College Park\b.*$/i, '').trim();
+  return address.replace(DEFAULT_CITY_SUFFIX, '').trim();
 }

@@ -1,8 +1,12 @@
-# Make your own Rate Your Landlord website
+# Rate Y'all's Landlord — Atlanta
 
-**Want to personalize the logos?** Edit the wording and colors in [`logoSettings.ts`](logoSettings.ts). The [logo customization guide](docs/logo_customization.md) explains how; no image editor is needed.
+Landlord reviews for Atlanta renters, starting with **Georgia Tech** and **Georgia State** students. The planned address is [rateyallslandlord.com](https://rateyallslandlord.com). At Georgia Tech, the first focus areas are the **Midtown high-rises** and **Home Park**.
 
-This repository contains a website for finding landlords, reading reviews, and submitting ratings. It currently includes Pittsburgh-specific examples, branding, and text. A personal copy does not automatically become a working public service.
+This repository started from More Perfect University's [Rate Your Landlord template](https://github.com/moreperfectuniversity/rateyourlandlord-template), including the editable-logo work from its pull request #4.
+
+**Change the city, schools, and focus areas** in [`siteSettings.ts`](siteSettings.ts): student email domains, the address example on the forms, and the neighborhood buttons on the homepage all come from that file. **Change the logo wording and colors** in [`logoSettings.ts`](logoSettings.ts); the [logo customization guide](docs/logo_customization.md) explains how.
+
+A personal copy does not automatically become a working public service. Legal pages, the contact email, and some local assumptions still need review before launch.
 
 **Start here: [the step-by-step setup guide](docs/replication_guide.md).** It covers Windows and Mac, a local demonstration, Supabase, Cloudflare Pages, a domain name, email sign-in links, and checks before sharing.
 
@@ -30,7 +34,7 @@ Check each provider's current pricing, limits, and account requirements before e
 
 ## Important limits in the checked repository
 
-- The checked base version of `package-lock.json` contains private Replit download addresses. A personal copy needs the public-registry correction before installation outside Replit. The guide explains how to check this without editing dependency versions.
+- In this copy, `package-lock.json` already uses the public npm registry (the template's private Replit download addresses were replaced; versions and integrity hashes are unchanged).
 - `package.json` has `dev`, `build`, and `preview` commands. It does **not** have `test` or `test:run` commands. Test files are present, but there is no runnable test command configured.
 - The demonstration stores changes in memory, not in a real database.
 - Turnstile completion is checked in the browser, but its token is not sent for server verification. Do not treat the displayed challenge as complete spam protection.

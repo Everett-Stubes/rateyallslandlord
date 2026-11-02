@@ -7,6 +7,9 @@ import { useServices } from '../context/ServicesContext';
 import LandlordCard from '../components/LandlordCard';
 import type { Landlord, Review } from '../types';
 import BrandLogo from '../components/BrandLogo';
+import { siteSettings } from '../siteSettings';
+
+type FocusArea = (typeof siteSettings.schools)[number]['focusAreas'][number];
 
 const MainPage: React.FC = () => {
   const { landlords, loading, deleteLandlord } = useData();
@@ -14,6 +17,7 @@ const MainPage: React.FC = () => {
   const { api } = useServices();
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
+  const [activeFocus, setActiveFocus] = useState<FocusArea | null>(null);
   const [ratings, setRatings] = useState<{ [landlordId: number]: number | null }>({});
   const [reviewsByLandlord, setReviewsByLandlord] = useState<{ [landlordId: number]: Review[] }>({});
   const [deletingLandlordId, setDeletingLandlordId] = useState<number | null>(null);
@@ -47,16 +51,20 @@ const MainPage: React.FC = () => {
   }, [landlords, api]);
 
   const filteredLandlords = useMemo(() => {
-    if (!searchTerm.trim()) return landlords;
-    const term = searchTerm.toLowerCase();
+    const term = searchTerm.trim().toLowerCase();
+    const streets = activeFocus?.streets.map(s => s.toLowerCase()) ?? [];
     return landlords.filter(landlord => {
+      if (streets.length > 0 && !landlord.addresses?.some(a => streets.some(s => a.toLowerCase().includes(s)))) {
+        return false;
+      }
+      if (!term) return true;
       if (landlord.name.toLowerCase().includes(term)) return true;
       if (landlord.addresses?.some(a => a.toLowerCase().includes(term))) return true;
       const reviews = reviewsByLandlord[landlord.id] ?? [];
       if (reviews.some(r => r.comment?.toLowerCase().includes(term))) return true;
       return false;
     });
-  }, [searchTerm, landlords, reviewsByLandlord]);
+  }, [searchTerm, activeFocus, landlords, reviewsByLandlord]);
 
   const handleAddLandlordClick = () => {
     navigate(user ? '/add-landlord' : '/login');
@@ -81,6 +89,9 @@ const MainPage: React.FC = () => {
       {/* Hero Section */}
       <div className="hero">
         <div className="hero__content">
+          <span className="hero__kicker">
+            {siteSettings.schools.map(s => s.name).join(' · ')} · {siteSettings.city}
+          </span>
           <BrandLogo variant="homepage" className="hero__logo" />
           <p className="hero__subtitle">
             How would your landlord act if everyone was watching?
@@ -112,11 +123,48 @@ const MainPage: React.FC = () => {
               </button>
             </div>
           </div>
+
+          <div className="focus-areas" aria-label="Neighborhoods we're focusing on">
+            {siteSettings.schools.filter(school => school.focusAreas.length > 0).map(school => (
+              <div key={school.name} className="focus-areas__school">
+                <span className="focus-areas__school-name">{school.name}</span>
+                {school.focusAreas.map(area => {
+                  const isActive = activeFocus?.name === area.name;
+                  return (
+                    <button
+                      key={area.name}
+                      type="button"
+                      className={`focus-chip${isActive ? ' focus-chip--active' : ''}`}
+                      aria-pressed={isActive}
+                      onClick={() => setActiveFocus(isActive ? null : area)}
+                    >
+                      {area.name}
+                    </button>
+                  );
+                })}
+              </div>
+            ))}
+          </div>
         </div>
       </div>
 
       {/* Content Section */}
       <div className="content-section">
+        <div className="section-heading">
+          <h2 className="section-heading__title">
+            {activeFocus ? activeFocus.name : `${siteSettings.city} landlords`}
+          </h2>
+          {!loading && (
+            <span className="section-heading__meta">
+              {filteredLandlords.length} {filteredLandlords.length === 1 ? 'landlord' : 'landlords'}
+              {activeFocus && (
+                <button type="button" className="section-heading__clear" onClick={() => setActiveFocus(null)}>
+                  Show all
+                </button>
+              )}
+            </span>
+          )}
+        </div>
         {loading ? (
           <div className="spinner-center">
             <div className="spinner"></div>
@@ -148,13 +196,14 @@ const MainPage: React.FC = () => {
               ))
             ) : (
               <div className="landlord-grid__empty">
-                <div className="l
-                  andlord-grid__empty-emoji">🏚️</div>
+                <div className="landlord-grid__empty-emoji">🏚️</div>
                 <h3 className="landlord-grid__empty-title">No landlords found</h3>
                 <p className="landlord-grid__empty-desc">
                   {searchTerm
-                    ? `We couldn't find any landlords matching "${searchTerm}"`
-                    : 'No landlords have been added yet.'}
+                    ? `We couldn't find any landlords matching "${searchTerm}"${activeFocus ? ` in ${activeFocus.name}` : ''}`
+                    : activeFocus
+                      ? `No landlords have been added in ${activeFocus.name} yet.`
+                      : 'No landlords have been added yet.'}
                 </p>
                 <button onClick={handleAddLandlordClick} className="btn btn-primary">
                   Add a New Landlord

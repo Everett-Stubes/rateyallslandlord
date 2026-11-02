@@ -11,6 +11,7 @@ import { toLetterGrade } from '../utils/grading';
 import { formatLandlordAddress, getDisplayLandlordCity } from '../utils/landlordLocation';
 import { AddressAutofill } from '@mapbox/search-js-react';
 import type { AddressAutofillRetrieveResponse } from '@mapbox/search-js-core';
+import { siteSettings } from '../siteSettings';
 
 const MAPBOX_TOKEN = import.meta.env.VITE_MAPBOX_TOKEN as string;
 
@@ -160,7 +161,7 @@ const LandlordPage: React.FC = () => {
                           id="newAddress"
                           value={newAddress}
                           onChange={e => setNewAddress(e.target.value)}
-                          placeholder="e.g., 123 Main St, Pittsburgh, PA"
+                          placeholder={siteSettings.addressExample}
                           className="form-input"
                           autoComplete="street-address"
                           required

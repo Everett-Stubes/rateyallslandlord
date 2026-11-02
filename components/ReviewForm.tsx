@@ -1,6 +1,7 @@
 import React from 'react';
 import { AddressAutofill } from '@mapbox/search-js-react';
 import type { AddressAutofillRetrieveResponse } from '@mapbox/search-js-core';
+import { siteSettings } from '../siteSettings';
 
 const MAPBOX_TOKEN = import.meta.env.VITE_MAPBOX_TOKEN as string;
 
@@ -180,7 +181,7 @@ const ReviewForm: React.FC<ReviewFormProps> = ({
             id="propertyAddress"
             value={propertyAddress}
             onChange={e => setPropertyAddress(e.target.value)}
-            placeholder="e.g., 123 Main St, Pittsburgh, PA"
+            placeholder={siteSettings.addressExample}
             className="form-input"
             autoComplete="street-address"
             required

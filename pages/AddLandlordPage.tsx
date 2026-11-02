@@ -8,6 +8,7 @@ import { useApiService } from '../context/ServicesContext';
 import { TurnstileInstance } from '@marsidev/react-turnstile';
 import { AddressAutofill } from '@mapbox/search-js-react';
 import type { AddressAutofillRetrieveResponse } from '@mapbox/search-js-core';
+import { siteSettings } from '../siteSettings';
 
 const MAPBOX_TOKEN = import.meta.env.VITE_MAPBOX_TOKEN as string;
 
@@ -212,7 +213,7 @@ const AddLandlordPage: React.FC = () => {
                 onChange={e => setAddress(e.target.value)}
                 className="form-input"
                 autoComplete="street-address"
-                placeholder="e.g., 123 Main St, Pittsburgh, PA"
+                placeholder={siteSettings.addressExample}
               />
             </AddressAutofill>
           </div>

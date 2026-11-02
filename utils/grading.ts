@@ -4,23 +4,27 @@ export function gradeColors(grade: string): {
 } {
   if (grade.startsWith("A"))
     return {
-      color: "var(--neutral-500)",
-      backgroundColor: "var(--neutral-200)",
+      color: "var(--neutral-100)",
+      backgroundColor: "var(--grade-a)",
     };
   if (grade.startsWith("B"))
     return {
-      color: "var(--neutral-500)",
-      backgroundColor: "var(--secondary-300)",
+      color: "var(--neutral-100)",
+      backgroundColor: "var(--grade-b)",
     };
-  if (grade === "F")
+  if (grade.startsWith("C"))
+    return {
+      color: "var(--neutral-500)",
+      backgroundColor: "var(--grade-c)",
+    };
+  if (grade.startsWith("D"))
     return {
       color: "var(--neutral-100)",
-      backgroundColor: "var(--primary-300)",
+      backgroundColor: "var(--grade-d)",
     };
-  // C or D range
   return {
     color: "var(--neutral-100)",
-    backgroundColor: "var(--highlight-300)",
+    backgroundColor: "var(--grade-f)",
   };
 }
 

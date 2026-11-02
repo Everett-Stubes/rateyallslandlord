@@ -2,14 +2,14 @@ import { vi } from 'vitest';
 import type { IApiService, IAuthService } from '../../services/interfaces';
 import type { Landlord, Review } from '../../types';
 
-export const TEST_USER = { id: 'user-123', email: 'test@pitt.edu' };
+export const TEST_USER = { id: 'user-123', email: 'test@gatech.edu' };
 export const TEST_ADMIN = { id: 'admin-456', email: 'admin@example.com' };
 
 export const TEST_LANDLORD: Landlord = {
   id: 1,
   name: 'Test Landlord',
   addresses: ['123 Test St'],
-  city: 'Pittsburgh',
+  city: 'Atlanta',
   status: 'approved',
   is_deleted: false,
   created_at: '2024-01-01T00:00:00Z',
