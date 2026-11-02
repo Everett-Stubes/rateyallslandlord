@@ -28,8 +28,7 @@ CREATE TABLE IF NOT EXISTS public.reviews (
   user_id uuid,
   landlord_rating integer NOT NULL CHECK (landlord_rating >= 1 AND landlord_rating <= 5),
   building_rating integer NOT NULL CHECK (building_rating >= 1 AND building_rating <= 5),
-  beds integer CHECK (beds >= 0),
-  votes
+  bedrooms integer CHECK (bedrooms >= 0),
   comment text NOT NULL,
   tags text[] DEFAULT '{}'::text[], 
   rent_amount numeric,
@@ -76,6 +75,35 @@ BEGIN
   );
 END;
 $$ LANGUAGE plpgsql;
+
+-- 6b. Keep moderation fields under admin control.
+-- New reviews from non-admins always start as 'pending', and non-admins cannot
+-- change a review's verification status, student flag, landlord, or author.
+-- Applies only to website requests (the anon and authenticated roles); the SQL
+-- Editor and Table Editor run as the project owner and are not restricted.
+CREATE OR REPLACE FUNCTION public.protect_review_moderation_fields()
+RETURNS trigger AS $$
+BEGIN
+  IF current_user NOT IN ('anon', 'authenticated') OR public.is_admin() THEN
+    RETURN NEW;
+  END IF;
+  IF TG_OP = 'INSERT' THEN
+    NEW.verification_status := 'pending';
+    NEW.is_deleted := false;
+  ELSE
+    NEW.verification_status := OLD.verification_status;
+    NEW.created_by_student := OLD.created_by_student;
+    NEW.landlord_id := OLD.landlord_id;
+    NEW.user_id := OLD.user_id;
+  END IF;
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE TRIGGER trigger_reviews_protect_moderation
+  BEFORE INSERT OR UPDATE ON public.reviews
+  FOR EACH ROW
+  EXECUTE FUNCTION public.protect_review_moderation_fields();
 
 -- 7. Enable Row Level Security (RLS)
 ALTER TABLE public.admins ENABLE ROW LEVEL SECURITY;
@@ -124,6 +152,10 @@ CREATE POLICY "Everyone can view all reviews" ON public.reviews
 CREATE POLICY "Users can update own reviews" ON public.reviews
   FOR UPDATE TO public USING (auth.uid() = user_id);
 
+-- Lets the admin page verify, delete, and restore any review.
+CREATE POLICY "Admins can update reviews" ON public.reviews
+  FOR UPDATE TO public USING (public.is_admin());
+
 
 -- 10. Seed Initial Data (Landlords and Reviews)
 INSERT INTO public.landlords (id, name, addresses, city, status) OVERRIDING SYSTEM VALUE VALUES
@@ -133,7 +165,7 @@ ON CONFLICT (id) DO NOTHING;
 -- Set sequence value to avoid collision with manual inserts
 SELECT setval('landlords_id_seq', COALESCE((SELECT MAX(id)+1 FROM public.landlords), 1), false);
 
-INSERT INTO public.reviews (id, landlord_id, landlord_rating, building_rating, beds, comment, tags, would_rent_again, rent_amount, property_address, verification_status, created_at, updated_at) OVERRIDING SYSTEM VALUE VALUES
+INSERT INTO public.reviews (id, landlord_id, landlord_rating, building_rating, bedrooms, comment, tags, would_rent_again, rent_amount, property_address, verification_status, created_at, updated_at) OVERRIDING SYSTEM VALUE VALUES
   (1, 1, 2, 2, 1, 'Fake review', ARRAY['So Many Bugs', 'Mold'], false, 1200, '123 Hemphill Ave NW', 'unverified', '2023-07-10 12:00:00+00', '2023-07-10 12:00:00+00'),
   (2, 1, 3, 3, 5, 'Fake review', ARRAY['Peeling Paint', 'Pet Friendly'], true, 1350, '123 Hemphill Ave NW', 'verified', '2023-09-22 12:00:00+00', '2023-09-22 12:00:00+00'),
   (3, 1, 1, 1, 0, 'Fake review', ARRAY['Peeling Paint', 'Pet Friendly'], false, NULL, '22 Edgewood Ave SE', 'pending', '2023-06-05 12:00:00+00', '2023-06-05 12:00:00+00')

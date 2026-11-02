@@ -41,7 +41,7 @@ Check each provider's current pricing, limits, and account requirements before e
 - The demonstration stores changes in memory, not in a real database.
 - Turnstile completion is checked in the browser, but its token is not sent for server verification. Do not treat the displayed challenge as complete spam protection.
 - The real data service does not implement verification-document uploads. Do not collect real verification documents.
-- The review form and database setup use different rating fields. See the [setup checks and limitations](docs/architecture.md#setup-checks-and-limitations) before trying real submissions.
+- The review form and `init.sql` now use the same review fields, and `npm run check:schema` runs `init.sql` in a real Postgres to check review submission, editing, and moderation. It does not replace a test against your own Supabase project.
 - Existing branding, legal placeholders, contact information, and local assumptions need review for your own site.
 
 This documentation does **not** certify the project as production-ready, select a license, or grant rights to reuse branding, fonts, or other assets.

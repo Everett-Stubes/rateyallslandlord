@@ -9,6 +9,7 @@ import { TurnstileInstance } from '@marsidev/react-turnstile';
 import { AddressAutofill } from '@mapbox/search-js-react';
 import type { AddressAutofillRetrieveResponse } from '@mapbox/search-js-core';
 import { siteSettings } from '../siteSettings';
+import { isStudentEmail } from '../utils/studentVerification';
 
 const MAPBOX_TOKEN = import.meta.env.VITE_MAPBOX_TOKEN as string;
 
@@ -117,7 +118,7 @@ const AddLandlordPage: React.FC = () => {
     }
 
     setUploading(true);
-    const landlordData = { name, addresses: address ? [address] : undefined, city: 'College Park' };
+    const landlordData = { name, addresses: address ? [address] : undefined, city: siteSettings.city };
     let reviewData;
     if (addReview) {
       reviewData = {
@@ -128,6 +129,7 @@ const AddLandlordPage: React.FC = () => {
         bedrooms: bedrooms ? parseInt(bedrooms, 10) : undefined,
         property_address: propertyAddress || undefined,
         verification_status: 'pending' as const,
+        created_by_student: isStudentEmail(user?.email),
         tags,
       };
     }

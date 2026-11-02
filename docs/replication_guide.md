@@ -89,7 +89,7 @@ The website uses **Vite**, a tool that runs a local development website and buil
 4. Type `npm run dev` and press Enter.
 5. Look for Vite's **Local** address. This repository requests port **5000**, so the usual address is `http://localhost:5000/`, not 3000 or 5173. If the port is busy, Vite may print a different port; use the printed address for browsing.
 6. Open that address in your browser. **You should see the landlord page and a “Demo mode — showing fake data” banner.**
-7. Search for a landlord and open a landlord card. The names and reviews are fictional demonstration data. Some review displays may be incomplete because the demo and current review form use different rating fields.
+7. Search for a landlord and open a landlord card. The names and reviews are fictional demonstration data.
 8. Do not expect registration, sign-in, or password reset to work in the demo. `MockAuthService` deliberately returns “not available in demo mode.” Some submission forms also need a configured security challenge.
 9. Changes made to the demonstration data are held in memory. They are not shared with other computers and are reset when the application reloads.
 10. To stop the local server, click inside the terminal and press **Ctrl+C** on either Windows or Mac. **The terminal prompt should return.**
@@ -122,7 +122,7 @@ SQL is the language used to set up database tables, which are lists of records s
 5. Inspect the sample data. It is not your community's real review history. Keep the project clearly marked as a trial until you have planned which sample records to remove.
 6. Confirm the project's **Data API** is enabled for the intended public tables. Supabase's current documentation places those settings under **Integrations → Data API**. **TO CONFIRM:** this location and defaults can vary with project creation settings. Ask for help if the expected tables are unavailable; do not expose additional tables indiscriminately.
 
-**Stopping point — current review fields:** the form sends `landlord_rating`, `building_rating`, and `tags`, while the supplied review-table definition uses a different rating model. A maintainer must reconcile that model before you can rely on real review submissions. This guide does not supply a database migration or promise that filling in keys completes that work.
+**Review fields:** the review form and this `init.sql` use the same fields (`landlord_rating`, `building_rating`, `bedrooms`, `tags`). New reviews start as **pending** until an admin verifies them. If you ran an older copy of `init.sql` that created a `beds` column, ask a maintainer to rename it to `bedrooms` before testing submissions.
 
 ### Get the public connection values
 
@@ -325,7 +325,7 @@ Use fictional data, a test mailbox you control, and a normal browser plus a priv
 4. **Account creation:** register, receive the confirmation email, verify it, and log in. Sign out and repeat login. Demo-mode accounts cannot pass this check.
 5. **Password reset:** use a new reset link and sign in with the new password.
 6. **Address suggestions and security widget:** check them on each hostname you plan to use. Record the unresolved server-verification limitation; a widget alone does not pass an anti-abuse review.
-7. **Real data:** after the review-model stopping point in part 4 is resolved, submit a clearly labeled test landlord and review. Check the result in Supabase and again after a browser refresh. The real-data service must retain it; the demo does not.
+7. **Real data:** submit a clearly labeled test landlord and review. Check the result in Supabase and again after a browser refresh. The real-data service must retain it; the demo does not.
 8. **Moderation:** with the trial admin account, test approval, editing, deletion/rejection, and any restore action you intend to use. Verify the visible result and stored record, not just a success message.
 9. **Access:** sign out and use the private window as an ordinary visitor. Confirm `/admin` does not show the admin tools. Have a qualified reviewer check database access rules as well; hiding a button is not sufficient protection.
 10. **Documents:** do not invite document uploads until a developer implements and tests private storage access in the real service. The current application does not pass this feature check.
@@ -373,7 +373,7 @@ Use the table to find the next safe check. Record the exact error text, which st
 | The demo banner remains after adding Supabase values | Check the exact setting names, `.env.local` spelling/location, and restart the server. On Pages, check Production build variables and rebuild. |
 | The banner disappeared but data is empty or errors appear | Both values being present only turns off demo mode. Check the project URL/key pair, project status, tables, Data API settings, and access permissions. Do not substitute an elevated secret key. |
 | Supabase SQL Editor reports an error | Stop, save the error text privately, and ask the maintainer to inspect your trial setup. Do not disable security rules to make an error disappear. |
-| Reviews fail to save or ratings look wrong | Check the review-model stopping point in part 4 with a maintainer. A successful Vite build does not check database compatibility. |
+| Reviews fail to save or ratings look wrong | Confirm the project's `reviews` table was created from this repository's `init.sql` (it has a `bedrooms` column, not `beds`). Read the exact error in the browser's developer console. `npm run check:schema` checks `init.sql` itself, not your Supabase project's settings. |
 | “Security verification is not configured” / form button stays disabled | Add the public Turnstile sitekey, restart/rebuild, and check that the current hostname is allowed. Also check for browser extensions blocking the challenge. This does not address the server-verification implementation gap. |
 | Auth fails after enabling Supabase CAPTCHA | The current auth service does not send `captchaToken`. Return the trial setting to its previous state and arrange the required implementation before relying on CAPTCHA protection. |
 | Address suggestions are missing or Mapbox returns an authorization error | Check `VITE_MAPBOX_TOKEN`, account access, billing restrictions, and permitted website URLs. Restart/rebuild after changing the public token. |

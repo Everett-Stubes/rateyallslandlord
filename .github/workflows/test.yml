@@ -24,3 +24,6 @@ jobs:
       # The same build Cloudflare Pages runs. The files in tests/ are not run here:
       # their test packages are not installed and they need updating first.
       - run: npm run build
+
+      # Runs init.sql in a real Postgres and checks review submit, edit, and moderation.
+      - run: npm run check:schema
