@@ -1,5 +1,7 @@
 # Make your own Rate Your Landlord website
 
+**Want to personalize the logos?** Edit the wording and colors in [`logoSettings.ts`](logoSettings.ts). The [logo customization guide](docs/logo_customization.md) explains how; no image editor is needed.
+
 This repository contains a website for finding landlords, reading reviews, and submitting ratings. It currently includes Pittsburgh-specific examples, branding, and text. A personal copy does not automatically become a working public service.
 
 **Start here: [the step-by-step setup guide](docs/replication_guide.md).** It covers Windows and Mac, a local demonstration, Supabase, Cloudflare Pages, a domain name, email sign-in links, and checks before sharing.

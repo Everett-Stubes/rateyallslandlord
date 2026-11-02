@@ -6,7 +6,7 @@ import { useAuth } from '../context/AuthContext';
 import { useServices } from '../context/ServicesContext';
 import LandlordCard from '../components/LandlordCard';
 import type { Landlord, Review } from '../types';
-import homeLogo from '../home-logo.png';
+import BrandLogo from '../components/BrandLogo';
 
 const MainPage: React.FC = () => {
   const { landlords, loading, deleteLandlord } = useData();
@@ -81,7 +81,7 @@ const MainPage: React.FC = () => {
       {/* Hero Section */}
       <div className="hero">
         <div className="hero__content">
-          <img src={homeLogo} alt="Find Your Landlord" className="hero__logo" />
+          <BrandLogo variant="homepage" className="hero__logo" />
           <p className="hero__subtitle">
             How would your landlord act if everyone was watching?
           </p>
