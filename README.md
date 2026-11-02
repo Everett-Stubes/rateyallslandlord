@@ -1,6 +1,6 @@
 # Rate Y'all's Landlord — Atlanta
 
-Landlord reviews for Atlanta renters, starting with **Georgia Tech** and **Georgia State** students. The planned address is [rateyallslandlord.com](https://rateyallslandlord.com). At Georgia Tech, the homepage sorts landlords into **Home Park**, **Midtown**, and **Other**. Landlords with several properties are supported: each building gets its own grades on the landlord's page.
+Landlord reviews for Atlanta renters, starting with **Georgia Tech** and **Georgia State** students. The planned address is [rateyallslandlord.com](https://rateyallslandlord.com). The homepage sorts landlords by neighborhood: **Home Park**, **Midtown**, **Downtown**, and **Other**. Landlords with several properties are supported: each building gets its own grades on the landlord's page.
 
 This repository started from More Perfect University's [Rate Your Landlord template](https://github.com/moreperfectuniversity/rateyourlandlord-template), including the editable-logo work from its pull request #4.
 
@@ -50,9 +50,9 @@ npm run dev
 
 Sign-up, login, and posting reviews don't work in demo mode. To connect a real database, follow [the setup guide from part 4](docs/replication_guide.md#4-create-a-supabase-project).
 
-**Change the city, schools, and focus areas** in [`siteSettings.ts`](siteSettings.ts): student email domains, the address example on the forms, and the neighborhood buttons on the homepage all come from that file. **Change the logo wording and colors** in [`logoSettings.ts`](logoSettings.ts); the [logo customization guide](docs/logo_customization.md) explains how.
+**Change the city, schools, and neighborhoods** in [`siteSettings.ts`](siteSettings.ts): student email domains, the address example on the forms, and the neighborhood buttons on the homepage all come from that file. **Change the logo wording and colors** in [`logoSettings.ts`](logoSettings.ts); the [logo customization guide](docs/logo_customization.md) explains how.
 
-The [Atlanta website building doc](docs/website_customization.md) tracks the playbook's customization choices (domain, focus areas, colors, landlord list, About/FAQ/Resources) and what the team still needs to fill in.
+The [Atlanta website building doc](docs/website_customization.md) tracks the playbook's customization choices (domain, neighborhoods, colors, landlord list, About/FAQ/Resources) and what the team still needs to fill in.
 
 A personal copy does not automatically become a working public service. Legal pages, the contact email, and some local assumptions still need review before launch.
 

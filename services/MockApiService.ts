@@ -1,7 +1,7 @@
 import type { IApiService, ReviewUpdate } from './interfaces';
 import type { Landlord, Review } from '../types';
 
-// Clearly fake Atlanta landlord data (Home Park, Midtown, Downtown near GSU) for demo/development mode
+// Clearly fake Atlanta landlord data (Home Park, Midtown, Downtown, and the Westside) for demo/development mode
 const MOCK_LANDLORDS: Landlord[] = [
   {
     id: 1,
@@ -47,6 +47,15 @@ const MOCK_LANDLORDS: Landlord[] = [
     status: 'approved',
     is_deleted: false,
     created_at: '2024-05-01T08:00:00Z',
+  },
+  {
+    id: 6,
+    name: 'Demo: Westside Lofts LLC',
+    addresses: ['1050 Joseph E Lowery Blvd NW'],
+    city: 'Atlanta',
+    status: 'approved',
+    is_deleted: false,
+    created_at: '2024-06-12T13:00:00Z',
   },
 ];
 
@@ -189,6 +198,24 @@ const MOCK_REVIEWS: Record<number, Review[]> = {
       is_deleted: false,
       created_at: '2024-11-15T16:30:00Z',
       updated_at: '2024-11-15T16:30:00Z',
+    },
+  ],
+  6: [
+    {
+      id: 601,
+      landlord_id: 6,
+      landlord_rating: 4,
+      building_rating: 4,
+      comment:
+        '[DEMO REVIEW] Responsive about repairs and the deposit came back in full. A bit of a walk to campus, but the shuttle stop is close.',
+      would_rent_again: true,
+      rent_amount: 1350,
+      property_address: '1050 Joseph E Lowery Blvd NW, Unit 12',
+      verification_status: 'verified',
+      created_by_student: true,
+      is_deleted: false,
+      created_at: '2024-12-02T10:00:00Z',
+      updated_at: '2024-12-02T10:00:00Z',
     },
   ],
 };

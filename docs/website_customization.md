@@ -12,16 +12,22 @@ This is the "Website Customization" form from More Perfect University's Rate You
 
 The playbook says More Perfect University will pay for a domain for at least two years. Ask them before buying one.
 
-## Schools and focus areas
+## Schools
 
-| School | Student email domains | Focus areas | Where it's set |
-| --- | --- | --- | --- |
-| Georgia Tech | gatech.edu | Home Park, Midtown, Other | `siteSettings.ts` (`schools`) |
-| Georgia State | gsu.edu, student.gsu.edu | To be decided | `siteSettings.ts` (`schools`) |
+| School | Student email domains | Where it's set |
+| --- | --- | --- |
+| Georgia Tech | gatech.edu | `siteSettings.ts` (`schools`) |
+| Georgia State | gsu.edu, student.gsu.edu | `siteSettings.ts` (`schools`) |
 
-Each focus area has a list of streets. The homepage button for that area shows landlords with a property on one of those streets, counting both the landlord's saved addresses and the addresses tenants give in reviews. Add streets to widen an area. An area with an empty street list (Georgia Tech's **Other**) shows every landlord outside the school's named areas.
+Reviews from these exact email domains get a "Verified Student" badge.
 
-Street matching is approximate: Peachtree Street, for example, runs through both Midtown and Downtown.
+## Neighborhoods
+
+The homepage buttons, in order: **Home Park**, **Midtown**, **Downtown**, **Other**. They apply to every landlord on the site, not to one school. Set them in `siteSettings.ts` (`neighborhoods`).
+
+Each neighborhood has a list of streets. Its button shows landlords with a property on one of those streets, counting both the landlord's saved addresses and the addresses tenants give in reviews. Add streets to widen a neighborhood. A neighborhood with an empty street list (**Other**) shows every landlord outside the named ones.
+
+Street matching is approximate. A landlord whose buildings are in two neighborhoods appears under both, and long streets cross neighborhood lines: Piedmont Ave is listed under Downtown for the Georgia State dorms, so Midtown addresses on Piedmont also show up there.
 
 ## Landlords with several properties
 

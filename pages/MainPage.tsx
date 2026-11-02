@@ -10,19 +10,17 @@ import BrandLogo from '../components/BrandLogo';
 import { siteSettings } from '../siteSettings';
 import { getAllLandlordAddresses, getLandlordProperties } from '../utils/properties';
 
-type School = (typeof siteSettings.schools)[number];
-type FocusArea = School['focusAreas'][number];
-type ActiveFocus = { school: School; area: FocusArea };
+type Neighborhood = (typeof siteSettings.neighborhoods)[number];
 
 const isOnStreets = (addresses: string[], streets: string[]) =>
   streets.some(street => addresses.some(a => a.toLowerCase().includes(street.toLowerCase())));
 
-// An area with streets matches landlords with a property on one of them. An area with no
-// streets ("Other") matches landlords outside all of the school's other areas.
-const isInFocusArea = (addresses: string[], { school, area }: ActiveFocus) =>
-  area.streets.length > 0
-    ? isOnStreets(addresses, area.streets)
-    : !school.focusAreas.some(other => other.streets.length > 0 && isOnStreets(addresses, other.streets));
+// A neighborhood with streets matches landlords with a property on one of them. One with no
+// streets ("Other") matches landlords outside all of the named neighborhoods.
+const isInNeighborhood = (addresses: string[], neighborhood: Neighborhood) =>
+  neighborhood.streets.length > 0
+    ? isOnStreets(addresses, neighborhood.streets)
+    : !siteSettings.neighborhoods.some(n => n.streets.length > 0 && isOnStreets(addresses, n.streets));
 
 const MainPage: React.FC = () => {
   const { landlords, loading, deleteLandlord } = useData();
@@ -30,7 +28,7 @@ const MainPage: React.FC = () => {
   const { api } = useServices();
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
-  const [activeFocus, setActiveFocus] = useState<ActiveFocus | null>(null);
+  const [activeFocus, setActiveFocus] = useState<Neighborhood | null>(null);
   const [ratings, setRatings] = useState<{ [landlordId: number]: number | null }>({});
   const [reviewsByLandlord, setReviewsByLandlord] = useState<{ [landlordId: number]: Review[] }>({});
   const [deletingLandlordId, setDeletingLandlordId] = useState<number | null>(null);
@@ -68,7 +66,7 @@ const MainPage: React.FC = () => {
     return landlords.filter(landlord => {
       const reviews = reviewsByLandlord[landlord.id] ?? [];
       const addresses = getAllLandlordAddresses(landlord, reviews);
-      if (activeFocus && !isInFocusArea(addresses, activeFocus)) return false;
+      if (activeFocus && !isInNeighborhood(addresses, activeFocus)) return false;
       if (!term) return true;
       if (landlord.name.toLowerCase().includes(term)) return true;
       if (addresses.some(a => a.toLowerCase().includes(term))) return true;
@@ -78,9 +76,9 @@ const MainPage: React.FC = () => {
   }, [searchTerm, activeFocus, landlords, reviewsByLandlord]);
 
   const focusTitle = activeFocus
-    ? activeFocus.area.streets.length > 0
-      ? activeFocus.area.name
-      : `${activeFocus.school.name}: ${activeFocus.area.name}`
+    ? activeFocus.streets.length > 0
+      ? activeFocus.name
+      : `${activeFocus.name} neighborhoods`
     : null;
 
   const handleAddLandlordClick = () => {
@@ -141,26 +139,24 @@ const MainPage: React.FC = () => {
             </div>
           </div>
 
-          <div className="focus-areas" aria-label="Neighborhoods we're focusing on">
-            {siteSettings.schools.filter(school => school.focusAreas.length > 0).map(school => (
-              <div key={school.name} className="focus-areas__school">
-                <span className="focus-areas__school-name">{school.name}</span>
-                {school.focusAreas.map(area => {
-                  const isActive = activeFocus?.school.name === school.name && activeFocus.area.name === area.name;
-                  return (
-                    <button
-                      key={area.name}
-                      type="button"
-                      className={`focus-chip${isActive ? ' focus-chip--active' : ''}`}
-                      aria-pressed={isActive}
-                      onClick={() => setActiveFocus(isActive ? null : { school, area })}
-                    >
-                      {area.name}
-                    </button>
-                  );
-                })}
-              </div>
-            ))}
+          <div className="focus-areas" role="group" aria-label="Filter by neighborhood">
+            <div className="focus-areas__school">
+              <span className="focus-areas__school-name">Neighborhoods</span>
+              {siteSettings.neighborhoods.map(neighborhood => {
+                const isActive = activeFocus?.name === neighborhood.name;
+                return (
+                  <button
+                    key={neighborhood.name}
+                    type="button"
+                    className={`focus-chip${isActive ? ' focus-chip--active' : ''}`}
+                    aria-pressed={isActive}
+                    onClick={() => setActiveFocus(isActive ? null : neighborhood)}
+                  >
+                    {neighborhood.name}
+                  </button>
+                );
+              })}
+            </div>
           </div>
         </div>
       </div>

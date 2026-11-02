@@ -21,18 +21,19 @@ const AboutPage: React.FC = () => {
 
         <section>
           <h2>Where We're Starting</h2>
-          {siteSettings.schools.map(school => {
-            // Named neighborhoods only; the catch-all "Other" area has no streets.
-            const named = school.focusAreas.filter(a => a.streets.length > 0).map(a => a.name);
+          {(() => {
+            // Named neighborhoods only; the catch-all "Other" has no streets.
+            const named = siteSettings.neighborhoods.filter(n => n.streets.length > 0).map(n => n.name);
+            const list = (items: string[]) =>
+              items.length > 1 ? `${items.slice(0, -1).join(', ')} and ${items[items.length - 1]}` : items.join('');
             return (
-              <p key={school.name}>
-                <strong>{school.name}:</strong>{' '}
-                {named.length > 0
-                  ? `we're focusing first on ${named.join(' and ')}, and reviews from anywhere else students rent are welcome.`
-                  : `reviews from anywhere students rent are welcome.`}
+              <p>
+                We're starting with students at {list(siteSettings.schools.map(s => s.name))}
+                {named.length > 0 && <>, focusing first on {list(named)}</>}. Reviews from anywhere else
+                in {siteSettings.city} are welcome too.
               </p>
             );
-          })}
+          })()}
         </section>
 
         <section>
