@@ -2,13 +2,11 @@ import React from 'react';
 import { siteSettings } from '../siteSettings';
 
 const AboutPage: React.FC = () => {
-  const schoolNames = siteSettings.schools.map(s => s.name).join(' and ');
-
   return (
     <div className="about-page">
       <div className="hero">
         <h1>About {siteSettings.siteName}</h1>
-        <p className="hero__subtitle">A student-run platform for {schoolNames} students and {siteSettings.city} renters</p>
+        <p className="hero__subtitle">A student-run platform for students in ATL</p>
       </div>
 
       <div className="about-sections">
