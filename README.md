@@ -4,6 +4,52 @@ Landlord reviews for Atlanta renters, starting with **Georgia Tech** and **Georg
 
 This repository started from More Perfect University's [Rate Your Landlord template](https://github.com/moreperfectuniversity/rateyourlandlord-template), including the editable-logo work from its pull request #4.
 
+## Run it on your computer (about 10 minutes)
+
+You don't need any accounts or keys for this. The site runs with fake demo landlords so you can click around.
+
+**1. Install Node.js.** Download the **22 LTS** installer from [nodejs.org](https://nodejs.org/en/download) and run it with the default options. Close and reopen any terminal windows afterward.
+
+**2. Get the code.** Pick one:
+
+- **No Git:** on this page, click the green **Code** button → **Download ZIP**, then unzip it (Windows: right-click → **Extract All**; Mac: double-click).
+- **With Git:**
+
+  ```bash
+  git clone https://github.com/Everett-Stubes/rateyallslandlord.git
+  ```
+
+**3. Open a terminal in that folder.** The right folder is the one that contains `package.json`.
+
+- **Easiest:** open the folder in [VS Code](https://code.visualstudio.com/) (**File → Open Folder**), then **Terminal → New Terminal**.
+- **Windows:** in File Explorer, open the folder, click the address bar, type `cmd`, and press Enter.
+- **Mac:** right-click the folder in Finder → **New Terminal at Folder**.
+
+**4. Install the website's packages** (first time only, takes a minute):
+
+```bash
+npm ci
+```
+
+**5. Start the website:**
+
+```bash
+npm run dev
+```
+
+**6. Open [http://localhost:5000](http://localhost:5000)** in your browser. You should see the homepage with a yellow "Demo mode — showing fake data" banner. Changes you save to the code show up in the browser right away.
+
+**7. To stop it,** click in the terminal and press **Ctrl+C**. Next time, skip step 4 and just run `npm run dev`.
+
+| If you see… | Do this |
+| --- | --- |
+| `node` or `npm` is "not recognized" / "command not found" | Finish the Node.js install, then close and reopen the terminal. |
+| PowerShell says `npm.ps1` cannot be loaded | Use Command Prompt (`cmd`) instead of PowerShell, as in step 3. |
+| `npm ci` says it needs a `package-lock.json`, or `npm run dev` says `Could not read package.json` | Your terminal is in the wrong folder. Open the folder that contains `package.json` (after unzipping, it may be one folder deeper). |
+| The page won't load at port 5000 | Another program is using that port. Use the `Local:` address that `npm run dev` prints instead. |
+
+Sign-up, login, and posting reviews don't work in demo mode. To connect a real database, follow [the setup guide from part 4](docs/replication_guide.md#4-create-a-supabase-project).
+
 **Change the city, schools, and focus areas** in [`siteSettings.ts`](siteSettings.ts): student email domains, the address example on the forms, and the neighborhood buttons on the homepage all come from that file. **Change the logo wording and colors** in [`logoSettings.ts`](logoSettings.ts); the [logo customization guide](docs/logo_customization.md) explains how.
 
 The [Atlanta website building doc](docs/website_customization.md) tracks the playbook's customization choices (domain, focus areas, colors, landlord list, About/FAQ/Resources) and what the team still needs to fill in.
@@ -37,7 +83,7 @@ Check each provider's current pricing, limits, and account requirements before e
 ## Important limits in the checked repository
 
 - In this copy, `package-lock.json` already uses the public npm registry (the template's private Replit download addresses were replaced; versions and integrity hashes are unchanged).
-- `package.json` has `dev`, `build`, and `preview` commands. It does **not** have `test` or `test:run` commands. Test files are present, but there is no runnable test command configured.
+- `package.json` has `dev`, `build`, `preview`, and `check:schema` commands. The files in `tests/` are not runnable yet: their test packages are not installed.
 - The demonstration stores changes in memory, not in a real database.
 - Turnstile completion is checked in the browser, but its token is not sent for server verification. Do not treat the displayed challenge as complete spam protection.
 - The real data service does not implement verification-document uploads. Do not collect real verification documents.
@@ -52,10 +98,11 @@ Only type the command itself into the terminal. Do **not** type Markdown fences,
 
 | When | Command | What you should see |
 | --- | --- | --- |
-| Install packages, after the lockfile check | `npm ci --registry=https://registry.npmjs.org/` | Installation finishes without an `npm error`. |
+| Install packages (first time, or after `package.json` changes) | `npm ci` | Installation finishes without an `npm error`. |
 | Start the local website | `npm run dev` | Vite prints a local URL, normally `http://localhost:5000/`. |
 | Check that the website can be built | `npm run build` | A successful Vite build and a `dist` folder. |
 | Look at the built website locally | `npm run preview` | A local preview URL, normally port 4173. |
+| Check the database setup file after editing `init.sql` | `npm run check:schema` | `ALL CHECKS PASSED`. |
 
 The full guide explains how to open the correct folder and terminal first. Do not use commands from an unrelated Vite or Supabase tutorial in place of this repository's commands.
 
