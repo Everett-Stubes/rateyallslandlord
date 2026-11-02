@@ -1,0 +1,105 @@
+import React from 'react';
+import { Link } from 'react-router-dom';
+import { siteSettings } from '../siteSettings';
+
+// Adapted from the FAQ in More Perfect University's Rate Your Landlord Playbook.
+const FaqPage: React.FC = () => {
+  const { siteName, city } = siteSettings;
+  const schoolNames = siteSettings.schools.map(s => s.name).join(' and ');
+  const studentDomains = siteSettings.schools.flatMap(s => s.emailDomains).map(d => `@${d}`).join(', ');
+
+  const faqs: { q: string; a: React.ReactNode }[] = [
+    {
+      q: `What is ${siteName}?`,
+      a: <>A website where {city} renters review their landlords and read what other tenants have said. It's run by students, starting with {schoolNames}.</>,
+    },
+    {
+      q: 'Why does this exist?',
+      a: (
+        <>
+          Most renters, especially students signing a lease for the first time, go in blind: no idea what to expect or
+          who to avoid. When a landlord ignores repairs or keeps a deposit, that story usually stays in a group chat.
+          This site puts that information in one place, before you sign, and gives tenants a way to tell their stories.
+          Landlords who treat tenants well get recognized for it too.
+        </>
+      ),
+    },
+    {
+      q: 'How does it work?',
+      a: (
+        <>
+          It's Rate My Professor, for landlords. Just as you'd look up a professor before signing up for a class, look up
+          a landlord before signing a lease. Search by landlord name, address, or anything mentioned in a review, then
+          read their letter grade and what tenants wrote. If a landlord isn't listed yet, you can add them.
+        </>
+      ),
+    },
+    {
+      q: 'Who can leave a review?',
+      a: (
+        <>
+          Anyone who has rented from the landlord. If you sign up with a student email ({studentDomains}), your review is
+          marked "Verified Student." Your name and email are never shown with your review.
+        </>
+      ),
+    },
+    {
+      q: 'What gets removed?',
+      a: (
+        <>
+          Moderators remove spam, hate speech, threats, and personal information such as phone numbers or a person's home
+          address. Write about your experience as a tenant: repairs, communication, deposits, rent, and living conditions.
+          See the <Link to="/terms-and-conditions">Terms &amp; Conditions</Link> for the full rules.
+        </>
+      ),
+    },
+    {
+      q: 'Is this affiliated with More Perfect University?',
+      a: (
+        <>
+          More Perfect University, the campus program of More Perfect Union, provides the open-source software, templates,
+          and guidance. This {city} site is run by students here.
+        </>
+      ),
+    },
+    {
+      q: 'Does this fix the housing crisis?',
+      a: (
+        <>
+          No. It's one tool among many for renters and housing organizers. If you're dealing with a problem right now,
+          the <Link to="/resources">Renter Resources</Link> page lists free legal help and where to report unsafe conditions.
+        </>
+      ),
+    },
+    {
+      q: 'Any advice for finding a place?',
+      a: (
+        <>
+          Look up the landlord here before you tour. Read the whole lease before signing and ask questions about anything
+          unclear. When you move in, photograph every room and note existing damage in writing, so you have a record when
+          it's time to get your deposit back.
+        </>
+      ),
+    },
+  ];
+
+  return (
+    <div className="faq-page">
+      <div className="hero">
+        <h1>Frequently Asked Questions</h1>
+        <p className="hero__subtitle">Everything you need to know about {siteName}</p>
+      </div>
+
+      <div className="faq-list">
+        {faqs.map(({ q, a }, i) => (
+          <details key={q} className="faq-item" open={i === 0}>
+            <summary className="faq-item__q">{q}</summary>
+            <div className="faq-item__a">{a}</div>
+          </details>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+export default FaqPage;

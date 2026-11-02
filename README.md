@@ -6,6 +6,8 @@ This repository started from More Perfect University's [Rate Your Landlord templ
 
 **Change the city, schools, and focus areas** in [`siteSettings.ts`](siteSettings.ts): student email domains, the address example on the forms, and the neighborhood buttons on the homepage all come from that file. **Change the logo wording and colors** in [`logoSettings.ts`](logoSettings.ts); the [logo customization guide](docs/logo_customization.md) explains how.
 
+The [Atlanta website building doc](docs/website_customization.md) tracks the playbook's customization choices (domain, focus areas, colors, landlord list, About/FAQ/Resources) and what the team still needs to fill in.
+
 A personal copy does not automatically become a working public service. Legal pages, the contact email, and some local assumptions still need review before launch.
 
 **Start here: [the step-by-step setup guide](docs/replication_guide.md).** It covers Windows and Mac, a local demonstration, Supabase, Cloudflare Pages, a domain name, email sign-in links, and checks before sharing.

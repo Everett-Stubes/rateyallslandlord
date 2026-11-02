@@ -7,6 +7,7 @@ import BrandLogo from './BrandLogo';
 const NAV_LINKS = [
   { label: 'Resources', to: '/resources' },
   { label: 'Contact Support', to: '/contact' },
+  { label: 'FAQ', to: '/faq' },
   { label: 'About', to: '/about' },
 ];
 

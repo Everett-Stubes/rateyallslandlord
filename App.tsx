@@ -22,6 +22,7 @@ import NotFoundPage from './pages/NotFoundPage';
 import ResetPasswordPage from './pages/ResetPasswordPage';
 import VerifyEmailPage from './pages/VerifyEmailPage';
 import AboutPage from './pages/AboutPage';
+import FaqPage from './pages/FaqPage';
 import LoadingSpinner from './components/LoadingSpinner';
 import { isMockMode, supabase } from './services/supabase';
 import { SupabaseApiService } from './services/SupabaseApiService';
@@ -74,6 +75,7 @@ function AppContent() {
           <Route path="/reset-password" element={<ResetPasswordPage />} />
           <Route path="/verify-email" element={<VerifyEmailPage />} />
           <Route path="/about" element={<AboutPage />} />
+          <Route path="/faq" element={<FaqPage />} />
           <Route path="*" element={<NotFoundPage />} />
         </Routes>
       </main>

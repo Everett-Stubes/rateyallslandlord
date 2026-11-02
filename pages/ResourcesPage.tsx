@@ -1,30 +1,52 @@
 import React from 'react';
+import { siteSettings } from '../siteSettings';
 
+// Links checked November 2026. Recheck them each semester; programs and eligibility change.
 const ResourcesPage: React.FC = () => {
   const resources = [
     {
-      category: "Tenant Rights and Awareness",
+      category: "Know Your Rights",
       links: [
-        { title: "Resources", url: "resource.com", description: "Resource description" },
-         { title: "Resources", url: "resource.com", description: "Resource description" },
-         { title: "Resources", url: "resource.com", description: "Resource description" },
+        {
+          title: "Georgia Landlord-Tenant Handbook",
+          url: "https://dca.georgia.gov/housing-choice-voucher/landlords/georgia-landlord-tenant-handbook",
+          description: "The state's plain-language guide to Georgia rental law: leases, deposits, repairs, and evictions. Maintained by the Department of Community Affairs with Georgia State and UGA.",
+        },
       ]
     },
     {
-      category: "Legal Aid",
+      category: "Free Legal Help",
       links: [
-         { title: "Resources", url: "resource.com", description: "Resource description" },
-         { title: "Resources", url: "resource.com", description: "Resource description" },
-         { title: "Resources", url: "resource.com", description: "Resource description" },
+        {
+          title: "Atlanta Volunteer Lawyers Foundation: Landlord/Tenant Problems",
+          url: "https://avlf.org/get-help/landlord-tenant-problems/",
+          description: "Free legal help with poor living conditions, security deposits that weren't returned, and illegal evictions.",
+        },
+        {
+          title: "Atlanta Volunteer Lawyers Foundation: Evictions",
+          url: "https://avlf.org/get-help/evictions/",
+          description: "Help if you've received an eviction notice in Fulton County.",
+        },
+        {
+          title: "Atlanta Legal Aid Society",
+          url: "https://atlantalegalaid.org/get-help/",
+          description: "Free civil legal services for people who can't afford a lawyer in Fulton, DeKalb, Cobb, Clayton, and Gwinnett counties. Fulton office: 404-524-5811.",
+        },
+        {
+          title: "Georgia Tech SGA Legal Advising",
+          url: "https://www.sga.gatech.edu/legal-advising-scheduler",
+          description: "Georgia Tech students can schedule legal advising through the Student Government Association.",
+        },
       ]
     },
     {
-      category: "Hotlines",
+      category: "Report a Problem",
       links: [
-         { title: "Resources", url: "resource.com", description: "Resource description" },
-         { title: "Resources", url: "resource.com", description: "Resource description" },
-         { title: "Resources", url: "resource.com", description: "Resource description" },
-
+        {
+          title: "ATL311: Housing Code Violations",
+          url: "https://www.atl311.com",
+          description: "Report unsafe or unrepaired conditions in the City of Atlanta to Code Enforcement. Call 311 or search \"Code Enforcement\" on ATL311.",
+        },
       ]
     }
   ];
@@ -33,7 +55,7 @@ const ResourcesPage: React.FC = () => {
     <div className="resources-page">
       <div className="hero">
         <h1>Renter Resources</h1>
-        <p className="hero__subtitle">Helpful information, legal aid, and support for tenants in [insert location here].</p>
+        <p className="hero__subtitle">Know your rights, find free legal help, and report problems in {siteSettings.city}.</p>
       </div>
       <div className="resources-content">
         <div className="resources-categories">
