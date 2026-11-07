@@ -97,45 +97,123 @@ export const siteSettings = {
       campus: { lat: 33.7934, lng: -84.3899 },
     },
   ],
-  // The neighborhood buttons on the homepage. Clicking one shows landlords with a property on one
-  // of its streets (from the landlord's addresses or the addresses in their reviews). Matching is by
-  // street name, so it's approximate: a long street can cross several neighborhoods.
-  // `center` is the neighborhood's middle (latitude, longitude). After a visitor picks their school,
-  // the buttons are sorted closest-to-campus first. Without a pick, they stay in this order.
+  // The neighborhood buttons on the homepage. Each neighborhood is listed once, even when students
+  // from several schools live there.
+  //   schools: ids of the schools whose students commonly live there (see the school list above).
+  //            After a visitor picks their school, these show first, closest-to-campus first;
+  //            every other neighborhood is behind a "more" button. Without a pick, all show in this order.
+  //   center:  the neighborhood's middle (latitude, longitude), used for the distance sorting.
+  //   streets: clicking the button shows landlords with a property on one of these streets (from
+  //            the landlord's addresses or the addresses in their reviews). Matching looks for the
+  //            text anywhere in the address, so it's approximate: a long street can cross several
+  //            neighborhoods, and a landlord can show up under more than one.
   neighborhoods: [
+    // --- Around Georgia Tech and SCAD ---
     {
       name: "Home Park",
+      schools: ["gt"],
       center: { lat: 33.7845, lng: -84.4030 },
       streets: ["Hemphill Ave", "State St", "Atlantic Dr", "Lynch Ave", "Francis St", "Holly St", "Mecaslin St", "Ethel St"],
     },
     {
       name: "Midtown",
+      schools: ["gt", "scad"],
       center: { lat: 33.7810, lng: -84.3830 },
       streets: ["Peachtree St NE", "W Peachtree St", "Spring St", "Juniper St", "Crescent Ave", "Peachtree Pl", "Techwood Dr", "10th St NE", "14th St NE"],
     },
     {
+      name: "Atlantic Station",
+      schools: ["gt", "scad"],
+      center: { lat: 33.7920, lng: -84.3970 },
+      streets: ["Atlantic Station", "17th St NW", "18th St NW", "19th St NW", "District Ave", "Market St NW", "Bishop St"],
+    },
+    {
+      name: "West Midtown",
+      schools: ["gt"],
+      center: { lat: 33.7860, lng: -84.4120 },
+      streets: ["Howell Mill Rd", "Huff Rd", "Brady Ave", "Ellsworth Industrial Blvd", "Chattahoochee Ave", "Marietta Blvd"],
+    },
+    {
+      name: "Ansley Park",
+      schools: ["scad"],
+      center: { lat: 33.7940, lng: -84.3780 },
+      streets: ["The Prado", "Peachtree Cir", "Westminster Dr", "Lafayette Dr", "Montgomery Ferry Dr", "Inman Cir", "Beverly Rd", "Maddox Dr"],
+    },
+    // --- Around Georgia State ---
+    {
       name: "Downtown",
+      schools: ["gsu"],
       center: { lat: 33.7550, lng: -84.3900 },
       streets: ["Edgewood Ave", "Decatur St", "Auburn Ave", "Courtland St", "Piedmont Ave", "Peachtree Center Ave", "Peachtree St SW", "John Wesley Dobbs Ave", "Ellis St", "Marietta St", "Luckie St", "Forsyth St", "Broad St", "Mitchell St", "Centennial Olympic Park Dr", "Ted Turner Dr"],
     },
     {
+      name: "Old Fourth Ward",
+      schools: ["gsu"],
+      center: { lat: 33.7650, lng: -84.3700 },
+      streets: ["Boulevard NE", "Highland Ave NE", "Ralph McGill Blvd", "North Ave NE", "Glen Iris Dr", "Freedom Pkwy", "Jackson St NE", "Irwin St", "Angier Ave"],
+    },
+    {
+      name: "Inman Park / Cabbagetown",
+      schools: ["gsu"],
+      center: { lat: 33.7540, lng: -84.3570 },
+      streets: ["Euclid Ave", "Elizabeth St", "Krog St", "Carroll St", "Wylie St", "Hurt St", "Waddell St"],
+    },
+    {
+      name: "Grant Park",
+      schools: ["gsu"],
+      center: { lat: 33.7370, lng: -84.3700 },
+      streets: ["Cherokee Ave", "Boulevard SE", "Park Ave SE", "Grant St SE", "Sydney St", "Augusta Ave", "Atlanta Ave"],
+    },
+    {
+      // Between Downtown and the AUC, so it's near both.
+      name: "Castleberry Hill",
+      schools: ["gsu", "morehouse", "spelman", "cau", "msm"],
+      center: { lat: 33.7480, lng: -84.4000 },
+      streets: ["Walker St", "Peters St", "Nelson St", "Haynes St", "Markham St", "Elliott St", "Mangum St"],
+    },
+    // --- Around the Atlanta University Center (Morehouse, Spelman, Clark Atlanta, MSM) ---
+    {
       name: "AUC / Vine City",
+      schools: ["morehouse", "spelman", "cau", "msm"],
       center: { lat: 33.7520, lng: -84.4120 },
-      streets: ["James P Brawley Dr", "Joseph E Lowery Blvd", "Atlanta Student Movement Blvd", "Fair St", "Chestnut St", "Beckwith St", "Walnut St", "Greensferry Ave", "Parsons St", "Westview Dr", "Northside Dr"],
+      streets: ["James P Brawley Dr", "Joseph E Lowery Blvd", "Atlanta Student Movement Blvd", "Fair St", "Chestnut St", "Beckwith St", "Walnut St", "Greensferry Ave", "Parsons St", "Westview Dr"],
     },
     {
       name: "West End",
+      schools: ["morehouse", "spelman", "cau", "msm"],
       center: { lat: 33.7360, lng: -84.4130 },
       streets: ["Ralph David Abernathy Blvd", "Lee St", "Oak St", "Lawton St", "Peeples St", "Cascade Ave", "Lucile Ave", "Gordon St"],
     },
     {
+      name: "Westview / Ashview Heights",
+      schools: ["morehouse", "spelman", "cau", "msm"],
+      center: { lat: 33.7460, lng: -84.4260 },
+      streets: ["Ashby Grove", "Lawshe St", "Sells Ave", "Westwood Ave", "Langhorn St", "Holderness St"],
+    },
+    // --- Around Emory ---
+    {
       name: "Druid Hills / Emory",
+      schools: ["emory"],
       center: { lat: 33.7890, lng: -84.3270 },
       streets: ["Clifton Rd", "N Decatur Rd", "Oxford Rd", "Briarcliff Rd", "Clairmont Rd", "Lullwater Rd", "Haygood Dr", "Durand Dr"],
     },
     {
+      name: "Virginia-Highland / Morningside",
+      schools: ["emory"],
+      center: { lat: 33.7810, lng: -84.3530 },
+      streets: ["N Highland Ave", "Virginia Ave", "Rosedale Rd", "St Charles Ave", "Amsterdam Ave", "Morningside Dr", "Monroe Dr"],
+    },
+    {
+      // Its own city just east of Atlanta. ", Decatur" matches any address written "..., Decatur, GA".
+      name: "Decatur",
+      schools: ["emory"],
+      center: { lat: 33.7748, lng: -84.2963 },
+      streets: [", Decatur", "W Ponce de Leon Ave", "E Ponce de Leon Ave", "Commerce Dr", "Clairemont Ave"],
+    },
+    {
       name: "Other",
       // An empty street list means "every landlord not in the neighborhoods above". Always shown last.
+      schools: [],
       streets: [],
     },
   ],

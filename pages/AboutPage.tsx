@@ -22,14 +22,12 @@ const AboutPage: React.FC = () => {
         <section>
           <h2>Where We're Starting</h2>
           {(() => {
-            // Named neighborhoods only; the catch-all "Other" has no streets.
-            const named = siteSettings.neighborhoods.filter(n => n.streets.length > 0).map(n => n.name);
             const list = (items: string[]) =>
-              items.length > 1 ? `${items.slice(0, -1).join(', ')} and ${items[items.length - 1]}` : items.join('');
+              items.length > 1 ? `${items.slice(0, -1).join(', ')}, and ${items[items.length - 1]}` : items.join('');
             return (
               <p>
-                We're starting with students at {list(siteSettings.schools.map(s => s.name))}
-                {named.length > 0 && <>, focusing first on {list(named)}</>}. Reviews from anywhere else
+                We're starting with students at {list(siteSettings.schools.map(s => s.name))}, with neighborhood
+                filters for the areas where each school's students live. Reviews from anywhere else
                 in {siteSettings.city} are welcome too.
               </p>
             );

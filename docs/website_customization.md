@@ -33,7 +33,29 @@ All of this is set in `siteSettings.ts` (`schools`), including each campus's map
 
 ## Neighborhoods
 
-The homepage buttons: **Home Park**, **Midtown**, **Downtown**, **AUC / Vine City**, **West End**, **Druid Hills / Emory**, and **Other**. They apply to every landlord on the site. Set them in `siteSettings.ts` (`neighborhoods`). After a visitor picks a school, the buttons are sorted by distance from that campus (for Georgia Tech: Home Park, then Midtown); **Other** always stays last. Each neighborhood's `center` sets where it is for that sorting.
+Each neighborhood is listed once in `siteSettings.ts` (`neighborhoods`) and tagged with the schools whose students commonly live there, so shared areas like Midtown (GT, SCAD) or Castleberry Hill (GSU and the AUC) aren't duplicated. After a visitor picks a school, its neighborhoods show first, closest to campus first, and the rest sit behind a "+ N more" button. Without a pick, every neighborhood shows.
+
+| Neighborhood | Schools | Why it's there |
+| --- | --- | --- |
+| Home Park | GT | Closest neighborhood north of campus; cheap, walkable, on the Stinger bus routes. |
+| Midtown | GT, SCAD | Popular with Tech students; SCAD's student high-rises are here. |
+| Atlantic Station | GT, SCAD | Apartments and townhomes a 20–25 minute walk from Tech; pricier than Home Park. |
+| West Midtown | GT | West of campus around Howell Mill Rd. |
+| Ansley Park | SCAD | Residential Midtown neighborhood next to SCAD. |
+| Downtown | GSU | Around campus and the GSU dorms. |
+| Old Fourth Ward | GSU | The most-named GSU off-campus area. |
+| Inman Park / Cabbagetown | GSU | Quieter, historic houses and duplexes east of Downtown. |
+| Grant Park | GSU | Quieter, residential, south-east of Downtown. |
+| Castleberry Hill | GSU, AUC | Lofts between Downtown and the AUC. |
+| AUC / Vine City | AUC | The streets around the four campuses and just north of them. |
+| West End | AUC | South of the AUC. |
+| Westview / Ashview Heights | AUC | West of the AUC; houses often shared by groups of AUC students. |
+| Druid Hills / Emory | Emory | Emory's own neighborhood: apartment complexes and duplexes. |
+| Virginia-Highland / Morningside | Emory | Large apartment complexes; popular with Emory grad students. |
+| Decatur | Emory | 10–15 minutes from Emory; mostly duplexes and houses. Its own city, so it matches any address with ", Decatur". |
+| Other | — | Every landlord outside the named neighborhoods. Always last. |
+
+"AUC" means Morehouse, Spelman, Clark Atlanta, and Morehouse School of Medicine. The list came from school housing guides, student newspapers, and rental sites, which are uneven sources. Ask students at each school whether it matches where they actually live, and edit the `schools` tags to match.
 
 Each neighborhood has a list of streets. Its button shows landlords with a property on one of those streets, counting both the landlord's saved addresses and the addresses tenants give in reviews. Add streets to widen a neighborhood. A neighborhood with an empty street list (**Other**) shows every landlord outside the named ones.
 

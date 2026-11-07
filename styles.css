@@ -1279,6 +1279,12 @@ ol {
   transition: background-color 0.15s, color 0.15s;
 }
 
+.focus-chip--more {
+  font-weight: 600;
+  background-color: transparent;
+  border-style: dashed;
+}
+
 .focus-chip:hover,
 .focus-chip--active {
   background-color: var(--primary-300);
