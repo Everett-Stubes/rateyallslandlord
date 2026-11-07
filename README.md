@@ -1,6 +1,6 @@
 # Rate Y'all's Landlord — Atlanta
 
-Landlord reviews for Atlanta renters, starting with **Georgia Tech** and **Georgia State** students. The planned address is [rateyallslandlord.com](https://rateyallslandlord.com). The homepage sorts landlords by neighborhood: **Home Park**, **Midtown**, **Downtown**, and **Other**. Landlords with several properties are supported: each building gets its own grades on the landlord's page.
+Landlord reviews for Atlanta college students: Georgia Tech, Georgia State, Emory, the four AUC schools (Morehouse, Spelman, Clark Atlanta, Morehouse School of Medicine), and SCAD Atlanta. The planned address is [rateyallslandlord.com](https://rateyallslandlord.com). On first visit a pop-up asks for the visitor's school, recolors the site in that school's colors, and sorts the neighborhood buttons closest-to-campus first. Anyone can read; posting needs an account made with a school email. Landlords with several properties are supported: each building gets its own grades on the landlord's page.
 
 This repository started from More Perfect University's [Rate Your Landlord template](https://github.com/moreperfectuniversity/rateyourlandlord-template), including the editable-logo work from its pull request #4.
 
@@ -50,7 +50,7 @@ npm run dev
 
 Sign-up, login, and posting reviews don't work in demo mode. To connect a real database, follow [the setup guide from part 4](docs/replication_guide.md#4-create-a-supabase-project).
 
-**Change the city, schools, and neighborhoods** in [`siteSettings.ts`](siteSettings.ts): student email domains, the address example on the forms, and the neighborhood buttons on the homepage all come from that file. **Change the logo wording and colors** in [`logoSettings.ts`](logoSettings.ts); the [logo customization guide](docs/logo_customization.md) explains how.
+**Change the city, schools, and neighborhoods** in [`siteSettings.ts`](siteSettings.ts): the slogan, the schools in the pop-up (colors, campus location, and the email domains allowed to post), the address example on the forms, and the neighborhood buttons on the homepage all come from that file. If you change email domains, also update `is_school_email` in [`init.sql`](init.sql). **Change the logo wording and colors** in [`logoSettings.ts`](logoSettings.ts); the [logo customization guide](docs/logo_customization.md) explains how.
 
 The [Atlanta website building doc](docs/website_customization.md) tracks the playbook's customization choices (domain, neighborhoods, colors, landlord list, About/FAQ/Resources) and what the team still needs to fill in.
 
@@ -88,6 +88,7 @@ Check each provider's current pricing, limits, and account requirements before e
 - Turnstile completion is checked in the browser, but its token is not sent for server verification. Do not treat the displayed challenge as complete spam protection.
 - The real data service does not implement verification-document uploads. Do not collect real verification documents.
 - The review form and `init.sql` now use the same review fields, and `npm run check:schema` runs `init.sql` in a real Postgres to check review submission, editing, and moderation. It does not replace a test against your own Supabase project.
+- Posting needs a school email: the sign-up form rejects other emails, and `init.sql` makes the database refuse landlords and reviews from accounts without one (admins excepted). Supabase itself can still create an account for any email through its API; that account just can't post. An existing database needs [`migrations/2026-11-07-school-email-posting.sql`](migrations/2026-11-07-school-email-posting.sql) run once to get this rule.
 - Existing branding, legal placeholders, contact information, and local assumptions need review for your own site.
 
 This documentation does **not** certify the project as production-ready, select a license, or grant rights to reuse branding, fonts, or other assets.

@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import TurnstileWidget from '../components/TurnstileWidget';
 import { TurnstileInstance } from '@marsidev/react-turnstile';
@@ -18,6 +18,9 @@ const LoginPage: React.FC = () => {
   const turnstileRef = useRef<TurnstileInstance>(null);
   const { login, resetPassword, loading } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+  // Set when a logged-out visitor tried to post; we send them back there after login.
+  const from = (location.state as { from?: string } | null)?.from;
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -26,7 +29,7 @@ const LoginPage: React.FC = () => {
     setResendMessage('');
     const result = await login(email, password);
     if (result.success) {
-      navigate('/');
+      navigate(from ?? '/', { replace: true });
     } else {
       setError(result.error || 'Invalid email or password.');
       if (result.emailNotVerified) setEmailNotVerified(true);
@@ -76,13 +79,19 @@ const LoginPage: React.FC = () => {
     <div className="auth-page">
       <div className="auth-card">
         <h1 className="auth-title">Login</h1>
+        {from && (
+          <div className="alert alert-info auth-post-notice">
+            Log in with your school email to post. No account yet?{' '}
+            <Link to="/register">Make one in a minute</Link>.
+          </div>
+        )}
         <form onSubmit={handleLogin} className="auth-form">
           <div>
             <label htmlFor="email" className="form-label">Email</label>
             <input
               type="email" id="email" value={email}
               onChange={(e) => { setEmail(e.target.value); setError(''); }}
-              className="form-input" required
+              className="form-input" placeholder="you@school.edu" autoComplete="email" required
             />
           </div>
           <div>
@@ -118,7 +127,7 @@ const LoginPage: React.FC = () => {
         </form>
 
         <div className="auth-link-row">
-          Don't have an account? <Link to="/register">Sign up</Link>
+          Don't have an account? <Link to="/register">Sign up with your school email</Link>
         </div>
         <div className="auth-link-row">
           <button onClick={() => setShowResetModal(true)} className="auth-link-btn">

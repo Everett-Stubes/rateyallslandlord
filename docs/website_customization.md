@@ -14,16 +14,26 @@ The playbook says More Perfect University will pay for a domain for at least two
 
 ## Schools
 
-| School | Student email domains | Where it's set |
-| --- | --- | --- |
-| Georgia Tech | gatech.edu | `siteSettings.ts` (`schools`) |
-| Georgia State | gsu.edu, student.gsu.edu | `siteSettings.ts` (`schools`) |
+When someone first opens the site, a pop-up asks which school they go to. Each button uses the school's colors, and picking one recolors the whole site (header, footer, buttons, links, logo flag) and sorts the neighborhood buttons closest-to-campus first. The choice is saved in that browser; the school button at the top of the page changes it. "I'm not a student" keeps the default colors.
 
-Reviews from these exact email domains get a "Verified Student" badge.
+| School | Header label | Email domains | Colors (background / text / accent) |
+| --- | --- | --- | --- |
+| Georgia Tech | GT | gatech.edu | #003057 / #B3A369 / #B3A369 |
+| Georgia State | GSU | gsu.edu | #0039A6 / #FFFFFF / #8FB3F0 |
+| Emory | Emory | emory.edu | #012169 / #F2A900 / #F2A900 |
+| Morehouse College | Morehouse | morehouse.edu | #8B2433 / #FFFFFF / #E3AEB6 (approximate) |
+| Spelman College | Spelman | spelman.edu | #114488 / #FFFFFF / #55BBEE (approximate) |
+| Clark Atlanta University | CAU | cau.edu | #C8102E / #FFFFFF / #BABABC (approximate) |
+| Morehouse School of Medicine | MSM | msm.edu | #003A70 / #F5F0E1 / #D8CFAF (approximate) |
+| SCAD Atlanta | SCAD | scad.edu | #000000 / #FFFFFF / #F9C80E (approximate) |
+
+All of this is set in `siteSettings.ts` (`schools`), including each campus's map location. "Approximate" colors came from team-color sites, not the school's brand guide; check them before launch.
+
+**Posting needs a school email.** Anyone can read reviews, but adding a landlord or posting a review requires an account made with one of these email domains (subdomains count, so `student.gsu.edu` works). Sign-up rejects other emails, and the database refuses posts from accounts without a school email (admins excepted). When you add or remove a school, change the domain list in **both** `siteSettings.ts` and the `is_school_email` function in `init.sql`. A database set up before this rule existed needs `migrations/2026-11-07-school-email-posting.sql` run once in the Supabase SQL Editor.
 
 ## Neighborhoods
 
-The homepage buttons, in order: **Home Park**, **Midtown**, **Downtown**, **Other**. They apply to every landlord on the site, not to one school. Set them in `siteSettings.ts` (`neighborhoods`).
+The homepage buttons: **Home Park**, **Midtown**, **Downtown**, **AUC / Vine City**, **West End**, **Druid Hills / Emory**, and **Other**. They apply to every landlord on the site. Set them in `siteSettings.ts` (`neighborhoods`). After a visitor picks a school, the buttons are sorted by distance from that campus (for Georgia Tech: Home Park, then Midtown); **Other** always stays last. Each neighborhood's `center` sets where it is for that sorting.
 
 Each neighborhood has a list of streets. Its button shows landlords with a property on one of those streets, counting both the landlord's saved addresses and the addresses tenants give in reviews. Add streets to widen a neighborhood. A neighborhood with an empty street list (**Other**) shows every landlord outside the named ones.
 

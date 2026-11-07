@@ -5,13 +5,14 @@ import { siteSettings } from '../siteSettings';
 // Adapted from the FAQ in More Perfect University's Rate Your Landlord Playbook.
 const FaqPage: React.FC = () => {
   const { siteName, city } = siteSettings;
-  const schoolNames = siteSettings.schools.map(s => s.name).join(' and ');
+  const names = siteSettings.schools.map(s => s.name);
+  const schoolNames = names.length > 1 ? `${names.slice(0, -1).join(', ')}, and ${names[names.length - 1]}` : names.join('');
   const studentDomains = siteSettings.schools.flatMap(s => s.emailDomains).map(d => `@${d}`).join(', ');
 
   const faqs: { q: string; a: React.ReactNode }[] = [
     {
       q: `What is ${siteName}?`,
-      a: <>A website where {city} renters review their landlords and read what other tenants have said. It's run by students, starting with {schoolNames}.</>,
+      a: <>A website where {city} renters review their landlords and read what other tenants have said. It's run by students, for students at {schoolNames}.</>,
     },
     {
       q: 'Why does this exist?',
@@ -38,8 +39,9 @@ const FaqPage: React.FC = () => {
       q: 'Who can leave a review?',
       a: (
         <>
-          Anyone who has rented from the landlord. If you sign up with a student email ({studentDomains}), your review is
-          marked "Verified Student." Your name and email are never shown with your review.
+          Any student who has rented from the landlord. Reading is open to everyone, but to post a review or add a
+          landlord you need a free account made with your school email ({studentDomains}); we send a link to confirm it's
+          yours. Reviews are marked "Verified Student." Your name and email are never shown with your review.
         </>
       ),
     },

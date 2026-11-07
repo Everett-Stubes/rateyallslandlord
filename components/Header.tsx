@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import BrandLogo from './BrandLogo';
+import { useSchool } from '../context/SchoolContext';
 
 const NAV_LINKS = [
   { label: 'Resources', to: '/resources' },
@@ -16,6 +17,22 @@ const Header: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [menuOpen, setMenuOpen] = useState(false);
+  const { school, openPicker } = useSchool();
+
+  const schoolButton = (className: string) => (
+    <button
+      type="button"
+      className={className}
+      onClick={() => { setMenuOpen(false); openPicker(); }}
+      aria-label={school ? `School: ${school.name}. Change school` : 'Choose your school'}
+      title="Change school"
+    >
+      {school ? school.shortName : 'Pick your school'}
+      <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" style={{ width: '0.875rem', height: '0.875rem' }} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+      </svg>
+    </button>
+  );
 
   const handleLogout = () => {
     logout();
@@ -48,6 +65,7 @@ const Header: React.FC = () => {
 
         {/* Desktop auth */}
         <div className="site-header__auth">
+          {schoolButton('header-school-btn')}
           {user ? (
             <>
               {isAdmin && (
@@ -101,6 +119,7 @@ const Header: React.FC = () => {
       {/* Mobile dropdown */}
       {menuOpen && (
         <div className="mobile-menu">
+          {schoolButton('mobile-menu__school')}
           {NAV_LINKS.map(({ label, to }) => (
             <Link
               key={to}

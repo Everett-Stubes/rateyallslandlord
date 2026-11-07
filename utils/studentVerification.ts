@@ -1,24 +1,40 @@
 import { siteSettings } from '../siteSettings';
 
 /**
- * List of verified student email domains, taken from the schools in siteSettings.ts
+ * List of school email domains, taken from the schools in siteSettings.ts.
+ * Subdomains count too: "student.gsu.edu" matches "gsu.edu".
  */
-const VERIFIED_STUDENT_DOMAINS = siteSettings.schools.flatMap((school) => school.emailDomains);
+const VERIFIED_STUDENT_DOMAINS = siteSettings.schools.flatMap((school) =>
+  school.emailDomains.map((domain) => domain.toLowerCase())
+);
+
+const getEmailDomain = (email: string | undefined | null): string | null => {
+  if (!email) return null;
+  const normalizedEmail = email.toLowerCase().trim();
+  const atIndex = normalizedEmail.lastIndexOf('@');
+  if (atIndex <= 0 || atIndex === normalizedEmail.length - 1) return null;
+  return normalizedEmail.slice(atIndex + 1);
+};
+
+const matchesDomain = (emailDomain: string, domain: string) =>
+  emailDomain === domain || emailDomain.endsWith(`.${domain}`);
 
 /**
- * Checks if an email belongs to a verified student domain
- * @param email - The email address to check
- * @returns true if the email ends with a verified student domain, false otherwise
+ * Checks if an email belongs to one of the schools in siteSettings.ts.
+ * Only these emails can create an account and post.
  */
 export const isStudentEmail = (email: string | undefined | null): boolean => {
-  if (!email) return false;
+  const emailDomain = getEmailDomain(email);
+  return Boolean(emailDomain) && VERIFIED_STUDENT_DOMAINS.some((d) => matchesDomain(emailDomain!, d));
+};
 
-  const normalizedEmail = email.toLowerCase().trim();
-
-  const atIndex = normalizedEmail.lastIndexOf('@');
-  if (atIndex === -1 || atIndex === normalizedEmail.length - 1) return false;
-  const emailDomain = normalizedEmail.slice(atIndex + 1);
-  return VERIFIED_STUDENT_DOMAINS.includes(emailDomain);
+/** The school an email belongs to, if any. */
+export const getSchoolForEmail = (email: string | undefined | null) => {
+  const emailDomain = getEmailDomain(email);
+  if (!emailDomain) return undefined;
+  return siteSettings.schools.find((school) =>
+    school.emailDomains.some((d) => matchesDomain(emailDomain, d.toLowerCase()))
+  );
 };
 
 /**

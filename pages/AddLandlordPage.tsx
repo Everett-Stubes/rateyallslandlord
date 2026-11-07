@@ -152,12 +152,6 @@ const AddLandlordPage: React.FC = () => {
     <div className="form-page">
       <h1 className="form-page__title">Add a New Landlord</h1>
 
-      {!user && (
-        <div className="alert alert-warning" style={{ marginBottom: '1rem' }}>
-          Please <a href="/login" style={{ textDecoration: 'underline', marginLeft: '0.25rem', fontWeight: 600 }}>Log in</a> to add a landlord.
-        </div>
-      )}
-
       <form onSubmit={handleSubmit} className="form-page__form">
         <div>
           <label htmlFor="name" className="form-label">Landlord/Company Name</label>

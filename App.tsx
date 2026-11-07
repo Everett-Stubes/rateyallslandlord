@@ -1,9 +1,12 @@
 
 import React from 'react';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate, Link, useLocation } from 'react-router-dom';
 import { ServicesProvider } from './context/ServicesContext';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { DataProvider } from './context/DataContext';
+import { SchoolProvider } from './context/SchoolContext';
+import SchoolPicker from './components/SchoolPicker';
+import { isStudentEmail, getVerifiedStudentDomains } from './utils/studentVerification';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import ContactPage from './pages/ContactPage';
@@ -33,11 +36,37 @@ import { MockAuthService } from './services/MockAuthService';
 const apiService = isMockMode ? new MockApiService() : new SupabaseApiService(supabase!);
 const authService = isMockMode ? new MockAuthService() : new SupabaseAuthService(supabase!);
 
-function RequireAuth({ children }: { children: React.ReactNode }) {
-  const { user, loading } = useAuth();
+/**
+ * Posting (reviews and new landlords) needs an account with a school email from siteSettings.ts.
+ * Logged-out visitors go to the login page and come back here afterwards.
+ */
+function RequireSchoolAccount({ children }: { children: React.ReactNode }) {
+  const { user, isAdmin, loading, logout } = useAuth();
+  const location = useLocation();
 
   if (loading) return <LoadingSpinner />;
-  if (!user) return <Navigate to="/login" replace />;
+  if (!user) {
+    return <Navigate to="/login" replace state={{ from: `${location.pathname}${location.search}` }} />;
+  }
+  if (!isAdmin && !isStudentEmail(user.email)) {
+    return (
+      <div className="auth-page">
+        <div className="auth-card" style={{ textAlign: 'center' }}>
+          <h1 className="auth-title">School email needed</h1>
+          <p className="auth-subtitle">
+            You're signed in as <strong>{user.email}</strong>. To post, use an account with a school email
+            ({getVerifiedStudentDomains().map(d => `@${d}`).join(', ')}).
+          </p>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+            <Link to="/register" onClick={() => logout()} className="btn btn-primary btn-full btn-lg">
+              Log out and sign up with a school email
+            </Link>
+            <Link to="/" className="auth-link-row">Back to landlords</Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return <>{children}</>;
 }
@@ -58,13 +87,20 @@ function AppContent() {
           <Route
             path="/landlord/:id/add-review"
             element={
-              <RequireAuth>
+              <RequireSchoolAccount>
                 <AddReviewPage />
-              </RequireAuth>
+              </RequireSchoolAccount>
             }
           />
           <Route path="/landlord/:id/review/:reviewId/edit" element={<EditReviewPage />} />
-          <Route path="/add-landlord" element={<AddLandlordPage />} />
+          <Route
+            path="/add-landlord"
+            element={
+              <RequireSchoolAccount>
+                <AddLandlordPage />
+              </RequireSchoolAccount>
+            }
+          />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/contact" element={<ContactPage />} />
@@ -80,6 +116,7 @@ function AppContent() {
         </Routes>
       </main>
       <Footer />
+      <SchoolPicker />
     </div>
   );
 }
@@ -89,9 +126,11 @@ function App() {
     <ServicesProvider api={apiService} auth={authService}>
       <AuthProvider>
         <DataProvider>
-          <BrowserRouter>
-            <AppContent />
-          </BrowserRouter>
+          <SchoolProvider>
+            <BrowserRouter>
+              <AppContent />
+            </BrowserRouter>
+          </SchoolProvider>
         </DataProvider>
       </AuthProvider>
     </ServicesProvider>

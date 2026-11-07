@@ -76,6 +76,22 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+-- 6a. Helper function: is the signed-in user's email at one of the site's schools?
+-- Keep this list the same as the emailDomains in siteSettings.ts. Subdomains count,
+-- so 'gsu.edu' also accepts 'student.gsu.edu'.
+CREATE OR REPLACE FUNCTION public.is_school_email()
+RETURNS boolean STABLE AS $$
+  SELECT EXISTS (
+    SELECT 1
+    FROM unnest(ARRAY[
+      'gatech.edu', 'gsu.edu', 'emory.edu', 'morehouse.edu',
+      'spelman.edu', 'cau.edu', 'msm.edu', 'scad.edu'
+    ]) AS school(domain),
+    LATERAL (SELECT lower(substring(auth.jwt() ->> 'email' FROM '@([^@]+)$')) AS email_domain) AS e
+    WHERE e.email_domain = school.domain OR e.email_domain LIKE '%.' || school.domain
+  );
+$$ LANGUAGE sql;
+
 -- 6b. Keep moderation fields under admin control.
 -- New reviews from non-admins always start as 'pending', and non-admins cannot
 -- change a review's verification status, student flag, landlord, or author.
@@ -120,8 +136,9 @@ CREATE POLICY "Anyone can view admins" ON public.admins
 CREATE POLICY "Admins can update landlords" ON public.landlords
   FOR UPDATE TO public USING (public.is_admin());
 
-CREATE POLICY "Authenticated users can insert landlords" ON public.landlords
-  FOR INSERT TO public WITH CHECK (auth.role() = 'authenticated');
+-- Posting needs a signed-in account with a school email (admins can always post).
+CREATE POLICY "Students can insert landlords" ON public.landlords
+  FOR INSERT TO authenticated WITH CHECK (public.is_school_email() OR public.is_admin());
 
 CREATE POLICY "Everyone can view all landlords" ON public.landlords
   FOR SELECT TO public USING (NOT is_deleted);
@@ -143,8 +160,10 @@ CREATE POLICY "Users can view their pending landlords" ON public.landlords
 CREATE POLICY "Admins can view all reviews" ON public.reviews
   FOR SELECT TO public USING (public.is_admin());
 
-CREATE POLICY "Anyone can insert reviews" ON public.reviews
-  FOR INSERT TO public WITH CHECK (user_id IS NULL OR auth.uid() = user_id);
+CREATE POLICY "Students can insert reviews" ON public.reviews
+  FOR INSERT TO authenticated WITH CHECK (
+    auth.uid() = user_id AND (public.is_school_email() OR public.is_admin())
+  );
 
 CREATE POLICY "Everyone can view all reviews" ON public.reviews
   FOR SELECT TO public USING (NOT is_deleted);

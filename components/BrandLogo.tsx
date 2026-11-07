@@ -1,5 +1,6 @@
 import React, { useId, useLayoutEffect, useRef, useState } from 'react';
 import { logoSettings } from '../logoSettings';
+import { useSchool } from '../context/SchoolContext';
 
 interface FittedTextProps {
   text: string;
@@ -47,7 +48,19 @@ interface BrandLogoProps {
 /** Both existing logo layouts, drawn from the same beginner-editable settings. */
 export default function BrandLogo({ variant, className }: BrandLogoProps) {
   const titleId = useId();
-  const { text, colors } = logoSettings;
+  const { text } = logoSettings;
+  const { school } = useSchool();
+  // After a visitor picks their school, the flags take the school's colors.
+  const colors = school
+    ? {
+        ...logoSettings.colors,
+        headerText: '#FFFFFF',
+        headerPennant: school.colors.accent,
+        homepagePennant: school.colors.background,
+        pennantStripe: school.colors.accent,
+        pennantText: school.colors.text,
+      }
+    : logoSettings.colors;
   const isHeader = variant === 'header';
   const label = isHeader
     ? `${text.headerInitials} — ${text.headerSubtitle}`

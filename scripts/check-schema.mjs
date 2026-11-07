@@ -113,6 +113,31 @@ try {
 } catch { anonLandlordBlocked = true; }
 check('logged-out visitors cannot add landlords', anonLandlordBlocked);
 
+// Posting needs a school email (or an admin account).
+const blocked = async (name, user, sql, params = []) => {
+  let wasBlocked = false;
+  try { await as(user, () => db.query(sql, params)); } catch { wasBlocked = true; }
+  check(name, wasBlocked);
+};
+const reviewInsert = `INSERT INTO public.reviews (landlord_id, user_id, landlord_rating, building_rating, comment)
+  VALUES (1, $1, 3, 3, 'Okay place.')`;
+await blocked('logged-out visitors cannot post reviews', null,
+  `INSERT INTO public.reviews (landlord_id, landlord_rating, building_rating, comment) VALUES (1, 3, 3, 'Anon review.')`);
+await blocked('non-school emails cannot post reviews', OTHER, reviewInsert, [OTHER.id]);
+await blocked('non-school emails cannot add landlords', OTHER,
+  `INSERT INTO public.landlords (name, city) VALUES ('Other Landlord', 'Atlanta')`);
+await blocked('students cannot post a review as someone else', STUDENT, reviewInsert, [OTHER.id]);
+
+const SUBDOMAIN = { id: '44444444-4444-4444-4444-444444444444', email: 'panther@student.gsu.edu' };
+const LOOKALIKE = { id: '55555555-5555-5555-5555-555555555555', email: 'fake@notgatech.edu' };
+await db.exec(`INSERT INTO auth.users VALUES ('${SUBDOMAIN.id}', '${SUBDOMAIN.email}'), ('${LOOKALIKE.id}', '${LOOKALIKE.email}')`);
+const subdomainPost = await as(SUBDOMAIN, () => db.query(`${reviewInsert} RETURNING id`, [SUBDOMAIN.id]));
+check('school subdomain emails (student.gsu.edu) can post', subdomainPost.rows.length === 1);
+await blocked('look-alike domains (notgatech.edu) cannot post', LOOKALIKE, reviewInsert, [LOOKALIKE.id]);
+
+const adminPost = await as(ADMIN, () => db.query(`${reviewInsert} RETURNING id`, [ADMIN.id]));
+check('admins can post without a school email', adminPost.rows.length === 1);
+
 console.log(failures === 0 ? '\nALL CHECKS PASSED' : `\n${failures} CHECK(S) FAILED`);
 await db.close();
 process.exitCode = failures === 0 ? 0 : 1;

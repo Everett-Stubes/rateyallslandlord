@@ -3,6 +3,9 @@ import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import TurnstileWidget from '../components/TurnstileWidget';
 import { TurnstileInstance } from '@marsidev/react-turnstile';
+import { siteSettings } from '../siteSettings';
+import { isStudentEmail } from '../utils/studentVerification';
+import { useSchool } from '../context/SchoolContext';
 
 const RegisterPage: React.FC = () => {
   const [email, setEmail] = useState('');
@@ -14,10 +17,16 @@ const RegisterPage: React.FC = () => {
   const turnstileRef = useRef<TurnstileInstance>(null);
   const { register, loading } = useAuth();
   const navigate = useNavigate();
+  const { school } = useSchool();
+  const exampleEmail = `you@${(school ?? siteSettings.schools[0]).emailDomains[0]}`;
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+    if (!isStudentEmail(email)) {
+      setError(`Please use your school email (for example, ${exampleEmail}). Accounts are only for students at the schools listed above.`);
+      return;
+    }
     if (!turnstileToken) { setError('Please complete the security verification.'); return; }
     if (password !== confirmPassword) { setError('Passwords do not match.'); return; }
     if (password.length < 6) { setError('Password must be at least 6 characters long.'); return; }
@@ -67,16 +76,20 @@ const RegisterPage: React.FC = () => {
     <div className="auth-page">
       <div className="auth-card">
         <h1 className="auth-title">Create Account</h1>
-        <p className="auth-subtitle">Join the community to rate and review</p>
+        <p className="auth-subtitle">Sign up with your school email to rate and review landlords</p>
 
         <form onSubmit={handleRegister} className="auth-form">
           <div>
-            <label htmlFor="email" className="form-label">Email Address</label>
+            <label htmlFor="email" className="form-label">School Email</label>
             <input
               type="email" id="email" value={email}
               onChange={(e) => { setEmail(e.target.value); setError(''); }}
-              className="form-input" placeholder="you@example.com" required
+              className="form-input" placeholder={exampleEmail} autoComplete="email"
+              aria-describedby="email-hint" required
             />
+            <p id="email-hint" className="form-hint">
+              Accepted: {siteSettings.schools.map(s => s.shortName).join(', ')} emails. We'll send a link to confirm it's yours.
+            </p>
           </div>
           <div>
             <label htmlFor="password" className="form-label">Password</label>
