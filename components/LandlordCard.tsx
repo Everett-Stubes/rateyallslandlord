@@ -58,7 +58,7 @@ const LandlordCard: React.FC<LandlordCardProps> = ({
           <div className="landlord-card__stats-row">
             <span className="landlord-card__stat">
               <span className="landlord-card__stat-value">
-                {wouldRentAgainPct != null ? `${Math.round(wouldRentAgainPct)}%` : '—'}
+                {wouldRentAgainPct != null ? `${Math.round(wouldRentAgainPct)}%` : 'N/A'}
               </span>
               <span className="landlord-card__stat-label">would rent again</span>
             </span>
@@ -66,7 +66,7 @@ const LandlordCard: React.FC<LandlordCardProps> = ({
 
             <span className="landlord-card__stat">
               <span className="landlord-card__stat-value">
-                {avgMaintenance != null ? toLetterGrade(avgMaintenance) : '—'}
+                {avgMaintenance != null ? toLetterGrade(avgMaintenance) : 'N/A'}
               </span>
               <span className="landlord-card__stat-label">building</span>
             </span>

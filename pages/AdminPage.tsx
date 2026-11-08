@@ -93,7 +93,7 @@ const AdminPage: React.FC = () => {
         ].map(({ label, value }) => (
           <div key={label} className="admin-stat-card">
             <span className="admin-stat-card__value">
-              {value == null ? '—' : value.toLocaleString()}
+              {value == null ? 'N/A' : value.toLocaleString()}
             </span>
             <span className="admin-stat-card__label">{label}</span>
           </div>

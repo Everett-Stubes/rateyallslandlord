@@ -37,7 +37,7 @@ npm ci
 npm run dev
 ```
 
-**6. Open [http://localhost:5000](http://localhost:5000)** in your browser. You should see the homepage with a yellow "Demo mode — showing fake data" banner. Changes you save to the code show up in the browser right away.
+**6. Open [http://localhost:5000](http://localhost:5000)** in your browser. You should see the homepage with a yellow "Demo mode: showing fake data" banner. Changes you save to the code show up in the browser right away.
 
 **7. To stop it,** click in the terminal and press **Ctrl+C**. Next time, skip step 4 and just run `npm run dev`.
 

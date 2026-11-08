@@ -63,7 +63,7 @@ export default function BrandLogo({ variant, className }: BrandLogoProps) {
     : logoSettings.colors;
   const isHeader = variant === 'header';
   const label = isHeader
-    ? `${text.headerInitials} — ${text.headerSubtitle}`
+    ? `${text.headerInitials}, ${text.headerSubtitle}`
     : [text.homepageLineOne, text.homepageLineTwo, text.pennantLabel].filter(Boolean).join(' ');
 
   return (

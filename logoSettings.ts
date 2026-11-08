@@ -1,5 +1,5 @@
 /**
- * EDIT YOUR LOGOS HERE — no image editor needed.
+ * EDIT YOUR LOGOS HERE. No image editor needed.
  *
  * Change only the values inside quotes. Keep the quotes and commas.
  * Colors use six-digit hex codes, such as "#2563EB".

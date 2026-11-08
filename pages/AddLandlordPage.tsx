@@ -186,7 +186,7 @@ const AddLandlordPage: React.FC = () => {
           </div>
         </div>
 
-        {/* Address field — hidden once the review checkbox is checked */}
+        {/* Address field: hidden once the review checkbox is checked */}
         {!addReview && (
           <div>
             <label htmlFor="address" className="form-label">Property Address (Optional)</label>

@@ -77,7 +77,7 @@ function AppContent() {
       <Header />
       {isMockMode && (
         <div className="demo-banner">
-          Demo mode — showing fake data. Set <code>VITE_SUPABASE_URL</code> and <code>VITE_SUPABASE_ANON_KEY</code> in your <code>.env.local</code> to connect to a real database.
+          Demo mode: showing fake data. Set <code>VITE_SUPABASE_URL</code> and <code>VITE_SUPABASE_ANON_KEY</code> in your <code>.env.local</code> to connect to a real database.
         </div>
       )}
       <main className="app-main">
