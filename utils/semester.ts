@@ -1,4 +1,4 @@
-// Reviews are limited to one per person, per landlord, per semester. The database decides
+// Reviews are limited to one per person per semester (across all landlords). The database decides
 // the semester (public.semester_of in init.sql); this file mirrors it for the website.
 // Semesters use Atlanta time: spring = Jan-Apr, summer = May-Jul, fall = Aug-Dec.
 
@@ -22,4 +22,4 @@ export function semesterLabel(semester: string): string {
 }
 
 export const SEMESTER_RULE_EXPLANATION =
-  'We allow one review per landlord each semester (spring, summer, and fall) so no single person can swing a landlord\'s grade. You can edit your review any time.';
+  'We allow one review per person each semester (spring, summer, and fall) so no single person can swing a landlord\'s grade. You can edit your review any time.';

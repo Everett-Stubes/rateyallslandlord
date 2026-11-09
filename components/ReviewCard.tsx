@@ -55,6 +55,7 @@ const ReviewCard: React.FC<ReviewCardProps> = ({ review, onApprove, onReject, vo
       <div className="review-card__topbar">
         <span className="review-card__address">
           {review.property_address ? toBuildingAddress(review.property_address) : 'Address not given'}
+          {review.neighborhood && <span className="review-card__neighborhood"> · {review.neighborhood}</span>}
         </span>
         <div className="review-card__date-row">
           <span className="review-card__date">{new Date(review.created_at).toLocaleDateString(undefined, { year: 'numeric', month: 'numeric', day: 'numeric' })}</span>

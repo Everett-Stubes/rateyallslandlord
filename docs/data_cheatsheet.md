@@ -45,6 +45,8 @@ insert into public.landlords (name, addresses, city, status, neighborhoods) valu
   ('Example Property Management', array['123 Hemphill Ave NW'], 'Atlanta', 'approved', array['Home Park']);
 ```
 
+A landlord also shows up under any neighborhood that a reviewer picked on one of its reviews (reviewers choose the neighborhood when they write a review).
+
 To fix an existing landlord that doesn't show up under its neighborhood (or use **Edit neighborhoods** on its page when logged in as an admin):
 
 ```sql
@@ -83,7 +85,7 @@ The free Supabase plan makes no automatic backups. Every few months, and before 
 
 ## 6. Reviews: one per semester, and votes
 
-- Each person gets **one review per landlord per semester** (spring = Jan-Apr, summer = May-Jul, fall = Aug-Dec, Atlanta time). The database enforces it, and the site explains why when someone tries a second one. A person can edit their review any time.
+- Each person gets **one review per semester** (across all landlords) (spring = Jan-Apr, summer = May-Jul, fall = Aug-Dec, Atlanta time). The database enforces it, and the site explains why when someone tries a second one. A person can edit their review any time.
 - If an admin removes a review at `/admin`, that person can post again that semester. Restoring the removed review is then refused while the newer one exists.
 - Up/down votes never change a landlord's grade. Only confirmed school-email accounts can vote, never on their own review. To see raw totals:
 

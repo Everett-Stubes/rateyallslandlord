@@ -3,11 +3,11 @@ import type { IApiService, ReviewUpdate } from './interfaces';
 import type { Landlord, Review, ReviewVotes } from '../types';
 import { getSemester, semesterLabel, SEMESTER_RULE_EXPLANATION } from '../utils/semester';
 
-// Postgres code for "unique constraint broken": here, a second review of the same landlord in one semester.
+// Postgres code for "unique constraint broken": here, a second review by the same person in one semester.
 const UNIQUE_VIOLATION = '23505';
 
 function oneReviewPerSemesterError(): Error {
-  return new Error(`You already reviewed this landlord in ${semesterLabel(getSemester())}. ${SEMESTER_RULE_EXPLANATION}`);
+  return new Error(`You already posted a review in ${semesterLabel(getSemester())}. ${SEMESTER_RULE_EXPLANATION}`);
 }
 
 export class SupabaseApiService implements IApiService {
@@ -93,6 +93,18 @@ export class SupabaseApiService implements IApiService {
       .order('created_at', { ascending: false })
       .limit(1);
 
+    if (error) throw error;
+    return data?.[0];
+  }
+
+  async getCurrentSemesterReviewByUser(userId: string): Promise<Review | undefined> {
+    const { data, error } = await this.client
+      .from('reviews')
+      .select('*')
+      .eq('user_id', userId)
+      .eq('is_deleted', false)
+      .eq('semester', getSemester())
+      .limit(1);
     if (error) throw error;
     return data?.[0];
   }

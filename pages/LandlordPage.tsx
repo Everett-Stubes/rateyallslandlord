@@ -209,7 +209,7 @@ const LandlordPage: React.FC = () => {
                   </>
                 ) : (
                   <>
-                    {[...getLandlordNeighborhoodNames(landlord.neighborhoods, getAllLandlordAddresses(landlord, activeReviews))].map(name => (
+                    {[...getLandlordNeighborhoodNames(landlord.neighborhoods, getAllLandlordAddresses(landlord, activeReviews), activeReviews.map(r => r.neighborhood))].map(name => (
                       <span key={name} className="landlord-tag">{name}</span>
                     ))}
                     {isAdmin && (

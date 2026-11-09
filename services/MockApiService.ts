@@ -261,6 +261,10 @@ export class MockApiService implements IApiService {
     return undefined;
   }
 
+  async getCurrentSemesterReviewByUser(_userId: string): Promise<Review | undefined> {
+    return undefined;
+  }
+
   async uploadVerificationFile(_file: File, _userId: string, _reviewId: number): Promise<string> {
     return 'demo/mock-verification-file.pdf';
   }

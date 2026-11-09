@@ -36,12 +36,12 @@ const FaqPage: React.FC = () => {
       ),
     },
     {
-      q: 'Can I review the same landlord more than once?',
+      q: 'How many reviews can I post?',
       a: (
         <>
-          You can post one review per landlord each semester (spring, summer, and fall). That keeps any one person from
-          swinging a landlord's grade. If something changes, edit your review any time with the Edit button on it, and
-          when a new semester starts you can post a fresh one.
+          You can post one review per semester (spring, summer, and fall). That keeps any one person from swinging a
+          landlord's grade. If something changes, edit your review any time with the Edit button on it, and when a new
+          semester starts you can post a fresh one.
         </>
       ),
     },

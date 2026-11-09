@@ -25,13 +25,22 @@ export function inferNeighborhoodNames(addresses: string[]): string[] {
 }
 
 /**
- * Every neighborhood a landlord belongs to: the ones picked when it was added, plus any
- * whose streets match its addresses. A landlord in none of the named neighborhoods falls
+ * Every neighborhood a landlord belongs to: the ones picked when it was added, the ones
+ * reviewers picked on their reviews, plus any whose streets match its addresses. A landlord in none of the named neighborhoods falls
  * under the catch-all "Other".
  */
-export function getLandlordNeighborhoodNames(tagged: string[] | null | undefined, addresses: string[]): Set<string> {
+export function getLandlordNeighborhoodNames(
+  tagged: string[] | null | undefined,
+  addresses: string[],
+  reviewNeighborhoods: (string | null | undefined)[] = []
+): Set<string> {
   const known = new Set(neighborhoods.map((n) => n.name));
-  const names = new Set<string>([...(tagged ?? []).filter((name) => known.has(name)), ...inferNeighborhoodNames(addresses)]);
+  const fromReviews = reviewNeighborhoods.filter((name): name is string => Boolean(name));
+  const names = new Set<string>([
+    ...(tagged ?? []).filter((name) => known.has(name)),
+    ...fromReviews.filter((name) => known.has(name)),
+    ...inferNeighborhoodNames(addresses),
+  ]);
   const hasNamedOne = [...names].some((name) => name !== OTHER_NEIGHBORHOOD);
   if (!hasNamedOne) names.add(OTHER_NEIGHBORHOOD);
   return names;

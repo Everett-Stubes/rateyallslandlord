@@ -12,6 +12,7 @@ import type { AddressAutofillRetrieveResponse } from '@mapbox/search-js-core';
 import { siteSettings } from '../siteSettings';
 import { isStudentEmail } from '../utils/studentVerification';
 import { neighborhoods as allNeighborhoods, inferNeighborhoodNames } from '../utils/schools';
+import { getSemester, semesterLabel, SEMESTER_RULE_EXPLANATION } from '../utils/semester';
 
 const MAPBOX_TOKEN = import.meta.env.VITE_MAPBOX_TOKEN as string;
 
@@ -26,11 +27,13 @@ const AddLandlordPage: React.FC = () => {
   const [rentAmount, setRentAmount] = useState('');
   const [bedrooms, setBedrooms] = useState('');
   const [propertyAddress, setPropertyAddress] = useState('');
+  const [reviewNeighborhood, setReviewNeighborhood] = useState('');
   const [tags, setTags] = useState<string[]>([]);
   const [selectedNeighborhoods, setSelectedNeighborhoods] = useState<string[]>([]);
   // Once the person picks a neighborhood themselves, typing an address no longer changes the picks.
   const [neighborhoodsTouched, setNeighborhoodsTouched] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [alreadyReviewedThisSemester, setAlreadyReviewedThisSemester] = useState(false);
   const [turnstileToken, setTurnstileToken] = useState<string>('');
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [highlightedIndex, setHighlightedIndex] = useState(-1);
@@ -49,6 +52,14 @@ const AddLandlordPage: React.FC = () => {
     }
     setAddReview(checked);
   };
+
+  // One review per person per semester: if they've used it, they can still add the landlord.
+  useEffect(() => {
+    if (!user?.id) return;
+    api.getCurrentSemesterReviewByUser(user.id)
+      .then(existing => setAlreadyReviewedThisSemester(Boolean(existing)))
+      .catch(error => console.error('Could not check for an earlier review:', error));
+  }, [api, user?.id]);
 
   // Suggest neighborhoods from the address (streets in siteSettings.ts) until the person chooses.
   useEffect(() => {
@@ -121,6 +132,8 @@ const AddLandlordPage: React.FC = () => {
     }
   };
 
+  const includeReview = addReview && !alreadyReviewedThisSemester;
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!user) { navigate('/login'); return; }
@@ -136,7 +149,7 @@ const AddLandlordPage: React.FC = () => {
     }
 
     setUploading(true);
-    const landlordAddress = removeUnitNumber(address || (addReview ? propertyAddress : ''));
+    const landlordAddress = removeUnitNumber(address || (includeReview ? propertyAddress : ''));
     const landlordData = {
       name,
       addresses: landlordAddress ? [landlordAddress] : undefined,
@@ -144,7 +157,7 @@ const AddLandlordPage: React.FC = () => {
       city: siteSettings.city,
     };
     let reviewData;
-    if (addReview) {
+    if (includeReview) {
       reviewData = {
         user_id: user?.id || undefined,
         landlord_rating, building_rating, comment,
@@ -152,6 +165,7 @@ const AddLandlordPage: React.FC = () => {
         rent_amount: rentAmount ? parseFloat(rentAmount) : undefined,
         bedrooms: bedrooms ? parseInt(bedrooms, 10) : undefined,
         property_address: propertyAddress ? removeUnitNumber(propertyAddress) : undefined,
+        neighborhood: reviewNeighborhood || undefined,
         verification_status: 'pending' as const,
         created_by_student: isStudentEmail(user?.email),
         tags,
@@ -211,7 +225,7 @@ const AddLandlordPage: React.FC = () => {
         </div>
 
         {/* Address field: hidden once the review checkbox is checked */}
-        {!addReview && (
+        {!includeReview && (
           <div>
             <label htmlFor="address" className="form-label">Property Address (Optional)</label>
             <AddressAutofill
@@ -266,15 +280,21 @@ const AddLandlordPage: React.FC = () => {
           <label className="form-checkbox-row">
             <input
               type="checkbox"
-              checked={addReview}
+              checked={includeReview}
+              disabled={alreadyReviewedThisSemester}
               onChange={e => handleAddReviewChange(e.target.checked)}
               className="form-checkbox"
             />
             <span style={{ fontWeight: 600, color: 'var(--neutral-400)' }}>Add your review now?</span>
           </label>
+          {alreadyReviewedThisSemester && (
+            <p className="neighborhood-hint">
+              You already posted a review in {semesterLabel(getSemester())}. {SEMESTER_RULE_EXPLANATION} You can still add the landlord without a review.
+            </p>
+          )}
         </div>
 
-        {addReview && (
+        {includeReview && (
           <div>
             <h2 style={{ fontSize: '1.25rem', fontWeight: 600, textAlign: 'center', marginBottom: '1rem' }}>Your Review</h2>
             <ReviewForm
@@ -285,6 +305,7 @@ const AddLandlordPage: React.FC = () => {
               rentAmount={rentAmount} setRentAmount={setRentAmount}
               bedrooms={bedrooms} setBedrooms={setBedrooms}
               propertyAddress={propertyAddress} setPropertyAddress={setPropertyAddress}
+              neighborhood={reviewNeighborhood} setNeighborhood={setReviewNeighborhood}
               tags={tags} setTags={setTags}
             />
           </div>

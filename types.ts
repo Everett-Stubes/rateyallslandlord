@@ -13,6 +13,7 @@ export interface Review {
   verification_status: 'unverified' | 'pending' | 'verified';
   created_by_student: boolean; // True if user email matches a school domain in siteSettings.ts
   semester?: string; // e.g. '2026-fall'; set by the database when the review is posted
+  neighborhood?: string | null; // Name from siteSettings.ts, picked by the reviewer
   tags?: string[];
   is_deleted: boolean;
   created_at: string;

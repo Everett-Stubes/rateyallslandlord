@@ -41,6 +41,7 @@ CREATE TABLE IF NOT EXISTS public.reviews (
   updated_at timestamp with time zone DEFAULT now(),
   created_by_student boolean DEFAULT false,
   semester text NOT NULL, -- e.g. '2026-fall'; filled in by a trigger from created_at
+  neighborhood text CHECK (neighborhood IS NULL OR length(neighborhood) <= 100), -- name from siteSettings.ts, picked by the reviewer
   CONSTRAINT reviews_pkey PRIMARY KEY (id),
   CONSTRAINT reviews_landlord_id_fkey FOREIGN KEY (landlord_id) REFERENCES public.landlords(id) ON DELETE CASCADE,
   CONSTRAINT reviews_user_id_fkey FOREIGN KEY (user_id) REFERENCES auth.users(id) ON DELETE SET NULL
@@ -124,7 +125,7 @@ RETURNS boolean SECURITY DEFINER SET search_path = public AS $$
   ), false);
 $$ LANGUAGE sql STABLE;
 
--- 6b. One review per person, per landlord, per semester.
+-- 6b. One review per person per semester (across all landlords).
 -- Semesters (Atlanta time): spring = Jan-Apr, summer = May-Jul, fall = Aug-Dec.
 -- Keep this in step with utils/semester.ts.
 CREATE OR REPLACE FUNCTION public.semester_of(ts timestamptz)
@@ -152,7 +153,7 @@ CREATE OR REPLACE TRIGGER trigger_reviews_set_semester
 
 -- Deleted reviews don't count, so an admin removing one lets the author post again.
 CREATE UNIQUE INDEX IF NOT EXISTS idx_reviews_one_per_semester
-  ON public.reviews (user_id, landlord_id, semester)
+  ON public.reviews (user_id, semester)
   WHERE NOT is_deleted AND user_id IS NOT NULL;
 
 -- 6c. Keep moderation fields under admin control.

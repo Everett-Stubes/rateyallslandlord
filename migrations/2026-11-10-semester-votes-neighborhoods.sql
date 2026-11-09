@@ -1,15 +1,16 @@
 -- Upgrade for a database that already ran an earlier init.sql.
--- Adds: (1) one review per person per landlord per semester, with the date, semester and
+-- Adds: (1) one review per person per semester, with the date, semester and
 -- deleted flag locked against edits from the website, (2) up/down votes on reviews, and
--- (3) a neighborhoods list on each landlord, so a landlord shows up under the neighborhood
--- it was added to even when its street isn't one we recognise.
+-- (3) a neighborhoods list on each landlord and a neighborhood on each review, so a landlord shows
+-- up under the neighborhoods it was added to or reviewed in, even when its street isn't one we recognise.
 -- Paste into Supabase -> SQL Editor -> New query -> Run. Safe to run more than once.
 -- New databases don't need this: init.sql already includes it.
 
 ALTER TABLE public.reviews ADD COLUMN IF NOT EXISTS semester text;
+ALTER TABLE public.reviews ADD COLUMN IF NOT EXISTS neighborhood text CHECK (neighborhood IS NULL OR length(neighborhood) <= 100);
 ALTER TABLE public.landlords ADD COLUMN IF NOT EXISTS neighborhoods text[] DEFAULT '{}'::text[];
 
--- 6b. One review per person, per landlord, per semester.
+-- 6b. One review per person per semester (across all landlords).
 -- Semesters (Atlanta time): spring = Jan-Apr, summer = May-Jul, fall = Aug-Dec.
 -- Keep this in step with utils/semester.ts.
 CREATE OR REPLACE FUNCTION public.semester_of(ts timestamptz)
@@ -39,9 +40,12 @@ CREATE OR REPLACE TRIGGER trigger_reviews_set_semester
   FOR EACH ROW
   EXECUTE FUNCTION public.set_review_semester();
 
+-- An earlier draft of this script limited reviews per landlord; the limit is now one per person.
+DROP INDEX IF EXISTS public.idx_reviews_one_per_semester;
+
 -- Deleted reviews don't count, so an admin removing one lets the author post again.
 CREATE UNIQUE INDEX IF NOT EXISTS idx_reviews_one_per_semester
-  ON public.reviews (user_id, landlord_id, semester)
+  ON public.reviews (user_id, semester)
   WHERE NOT is_deleted AND user_id IS NOT NULL;
 
 -- 6c. Keep moderation fields under admin control.

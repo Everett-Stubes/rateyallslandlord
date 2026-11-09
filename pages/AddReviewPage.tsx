@@ -28,11 +28,13 @@ const AddReviewPage: React.FC = () => {
   const [rentAmount, setRentAmount] = useState('');
   const [bedrooms, setBedrooms] = useState('');
   const [propertyAddress, setPropertyAddress] = useState('');
+  const [neighborhood, setNeighborhood] = useState('');
   const [tags, setTags] = useState<string[]>([]);
   const [uploading, setUploading] = useState(false);
   const [turnstileToken, setTurnstileToken] = useState<string>('');
-  // The person's review of this landlord from the current semester, if they already wrote one.
+  // The person's review from the current semester (of any landlord), if they already wrote one.
   const [reviewThisSemester, setReviewThisSemester] = useState<Review | null>(null);
+  const [reviewedLandlordName, setReviewedLandlordName] = useState('');
   const turnstileRef = useRef<TurnstileInstance>(null);
 
   const landlordId = Number(id);
@@ -43,11 +45,13 @@ const AddReviewPage: React.FC = () => {
 
   useEffect(() => {
     if (!user?.id || !landlordId) return;
-    api.getLatestReviewForLandlordByUser(landlordId, user.id)
-      .then(latest => {
-        const current = getSemester();
-        const sameSemester = latest && !latest.is_deleted && (latest.semester ?? getSemester(latest.created_at)) === current;
-        setReviewThisSemester(sameSemester ? latest : null);
+    api.getCurrentSemesterReviewByUser(user.id)
+      .then(async existing => {
+        setReviewThisSemester(existing ?? null);
+        if (existing) {
+          const reviewed = existing.landlord_id === landlordId ? undefined : await api.getLandlordById(existing.landlord_id);
+          setReviewedLandlordName(reviewed?.name ?? '');
+        }
       })
       .catch(error => console.error('Could not check for an earlier review:', error));
   }, [api, user?.id, landlordId]);
@@ -68,6 +72,7 @@ const AddReviewPage: React.FC = () => {
         rent_amount: rentAmount ? parseFloat(rentAmount) : undefined,
         bedrooms: bedrooms ? parseInt(bedrooms, 10) : undefined,
         property_address: propertyAddress ? removeUnitNumber(propertyAddress) : undefined,
+        neighborhood: neighborhood || undefined,
         verification_status: 'pending' as const,
         created_by_student: createdByStudent,
         tags,
@@ -91,13 +96,13 @@ const AddReviewPage: React.FC = () => {
     return (
       <div className="form-page">
         <div className="semester-notice">
-          <h2>You already reviewed {landlord.name} this semester</h2>
+          <h2>You already posted a review this semester</h2>
           <p>
-            You posted a review of this landlord in {semesterLabel(getSemester())}. {SEMESTER_RULE_EXPLANATION} If
-            your situation changed, edit your review below. You can post a new one when the next semester starts.
+            You reviewed {reviewedLandlordName || landlord.name} in {semesterLabel(getSemester())}. {SEMESTER_RULE_EXPLANATION} If
+            your situation changed, edit that review. You can post a new one when the next semester starts.
           </p>
           <div className="semester-notice__actions">
-            <Link to={`/landlord/${landlordId}/review/${reviewThisSemester.id}/edit`} className="btn btn-primary">
+            <Link to={`/landlord/${reviewThisSemester.landlord_id}/review/${reviewThisSemester.id}/edit`} className="btn btn-primary">
               Edit my review
             </Link>
             <Link to={`/landlord/${landlordId}`} className="btn btn-gray-mid">
@@ -123,6 +128,7 @@ const AddReviewPage: React.FC = () => {
           rentAmount={rentAmount} setRentAmount={setRentAmount}
           bedrooms={bedrooms} setBedrooms={setBedrooms}
           propertyAddress={propertyAddress} setPropertyAddress={setPropertyAddress}
+          neighborhood={neighborhood} setNeighborhood={setNeighborhood}
           tags={tags} setTags={setTags}
         />
 

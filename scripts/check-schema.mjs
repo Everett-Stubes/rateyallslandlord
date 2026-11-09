@@ -44,12 +44,18 @@ const SPELMAN_ALUMNA = { id: 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', email: 'gra
 const AGNES_SCOTT = { id: 'bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb', email: 'scottie@agnesscott.edu' };
 const MERCER_STUDENT = { id: 'cccccccc-cccc-cccc-cccc-cccccccccccc', email: 'bear@live.mercer.edu' };
 const SPELMAN = { id: 'dddddddd-dddd-dddd-dddd-dddddddddddd', email: 'jag@spelman.edu' };
+const NEWCOMER = { id: 'eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee', email: 'newcomer@gatech.edu' };
+const SECOND_GT = { id: 'ffffffff-ffff-ffff-ffff-ffffffffffff', email: 'second@gatech.edu' };
+const PEER = { id: 'cdcdcdcd-cdcd-cdcd-cdcd-cdcdcdcdcdcd', email: 'peer@gatech.edu' };
+const HOODIE = { id: 'abababab-abab-abab-abab-abababababab', email: 'hood@gatech.edu' };
+const BACKDATER = { id: '12121212-1212-1212-1212-121212121212', email: 'old@gatech.edu' };
 const ADMIN = { id: '33333333-3333-3333-3333-333333333333', email: 'mod@example.com' };
 await db.exec(`
   INSERT INTO auth.users (id, email) VALUES ('${STUDENT.id}', '${STUDENT.email}'), ('${OTHER.id}', '${OTHER.email}'), ('${ADMIN.id}', '${ADMIN.email}'),
     ('${GSU_STUDENT.id}', '${GSU_STUDENT.email}'), ('${LOOKALIKE.id}', '${LOOKALIKE.email}'), ('${FAKE_PREFIX.id}', '${FAKE_PREFIX.email}'),
     ('${NOT_GT.id}', '${NOT_GT.email}'), ('${EMORY_ALUMNUS.id}', '${EMORY_ALUMNUS.email}'), ('${SPELMAN_ALUMNA.id}', '${SPELMAN_ALUMNA.email}'),
-    ('${AGNES_SCOTT.id}', '${AGNES_SCOTT.email}'), ('${MERCER_STUDENT.id}', '${MERCER_STUDENT.email}'), ('${SPELMAN.id}', '${SPELMAN.email}');
+    ('${AGNES_SCOTT.id}', '${AGNES_SCOTT.email}'), ('${MERCER_STUDENT.id}', '${MERCER_STUDENT.email}'), ('${SPELMAN.id}', '${SPELMAN.email}'),
+    ('${NEWCOMER.id}', '${NEWCOMER.email}'), ('${SECOND_GT.id}', '${SECOND_GT.email}'), ('${BACKDATER.id}', '${BACKDATER.email}'), ('${PEER.id}', '${PEER.email}'), ('${HOODIE.id}', '${HOODIE.email}');
   INSERT INTO auth.users (id, email, email_confirmed_at) VALUES ('${UNCONFIRMED.id}', '${UNCONFIRMED.email}', NULL);
   INSERT INTO public.admins (email) VALUES ('${ADMIN.email}');
 `);
@@ -119,13 +125,13 @@ const restored = await as(ADMIN, () => db.query(
 check('admin can restore a review', restored.rows.length === 1);
 
 // What AddLandlordPage does: new pending landlord, then an attached review.
-const landlord = await as(STUDENT, () => db.query(
+const landlord = await as(NEWCOMER, () => db.query(
   `INSERT INTO public.landlords (name, addresses, city, status) VALUES ('Test Landlord', ARRAY['10 State St NW'], 'Atlanta', 'pending')
    RETURNING id, status`));
 check('signed-in user can add a landlord', landlord.rows[0]?.status === 'pending');
-const attached = await as(STUDENT, () => db.query(
+const attached = await as(NEWCOMER, () => db.query(
   `INSERT INTO public.reviews (landlord_id, user_id, landlord_rating, building_rating, comment, bedrooms, verification_status, created_by_student)
-   VALUES ($1, $2, 2, 2, 'Slow repairs.', 1, 'pending', true) RETURNING id`, [landlord.rows[0]?.id, STUDENT.id]));
+   VALUES ($1, $2, 2, 2, 'Slow repairs.', 1, 'pending', true) RETURNING id`, [landlord.rows[0]?.id, NEWCOMER.id]));
 check('review attached to a new landlord saves', attached.rows.length === 1);
 
 let anonLandlordBlocked = false;
@@ -177,7 +183,7 @@ const adminLandlord = await as(ADMIN, () => db.query(
   `INSERT INTO public.landlords (name, city, status) VALUES ('Launch Landlord', 'Atlanta', 'approved') RETURNING id`));
 check('admins can add landlords without a school email', adminLandlord.rows.length === 1);
 check('a subdomain address (student.gsu.edu, any capitalization) can post', !(await blocked(GSU_STUDENT)));
-check('a confirmed Georgia Tech address works', !(await blocked(STUDENT)));
+check('a confirmed Georgia Tech address works', !(await blocked(SECOND_GT)));
 
 const flagged = await db.query(
   `SELECT created_by_student FROM public.reviews WHERE comment = 'school check' ORDER BY id DESC LIMIT 1`);
@@ -230,7 +236,7 @@ await db.exec(`UPDATE public.reviews SET is_deleted = true WHERE id = 3`);
 check('nobody can vote on a deleted review', await throws(() => castVote(AGNES_SCOTT, 3, 1)));
 await db.exec(`UPDATE public.reviews SET is_deleted = false WHERE id = 3`);
 
-// ---- One review per person, per landlord, per semester ----
+// ---- One review per person per semester (across all landlords) ----
 const semesterOf = async (ts) => (await db.query(`SELECT public.semester_of($1::timestamptz) AS s`, [ts])).rows[0].s;
 check('Jan-Apr is spring', (await semesterOf('2026-01-01 00:00:00-05')) === '2026-spring' && (await semesterOf('2026-04-30 12:00:00-04')) === '2026-spring');
 check('May-Jul is summer', (await semesterOf('2026-05-01 12:00:00-04')) === '2026-summer' && (await semesterOf('2026-07-31 12:00:00-04')) === '2026-summer');
@@ -245,13 +251,14 @@ const newReview = (user, landlordId, extra = '') => as(user, () => db.query(
   `INSERT INTO public.reviews (landlord_id, user_id, landlord_rating, building_rating, comment${extra ? ', created_at' : ''})
    VALUES ($1, $2, 3, 3, 'Another review'${extra ? `, '${extra}'` : ''}) RETURNING id, semester, created_at`, [landlordId, user.id]));
 const dup = await (async () => { try { await newReview(STUDENT, 1); return null; } catch (e) { return e.message; } })();
-check('a second review of the same landlord this semester is blocked', Boolean(dup) && dup.includes('idx_reviews_one_per_semester'), dup ?? 'was allowed');
+check('a second review this semester is blocked', Boolean(dup) && dup.includes('idx_reviews_one_per_semester'), dup ?? 'was allowed');
 const otherLandlordId = adminLandlord.rows[0].id;
-check('the same person can still review a different landlord this semester', (await newReview(STUDENT, otherLandlordId)).rows.length === 1);
+check('the limit is per person, not per landlord: a different landlord is blocked too', await throws(() => newReview(STUDENT, otherLandlordId)));
+check('a different person can still review the same landlord', (await newReview(PEER, 1)).rows.length === 1);
 
-const backdated = await newReview(GSU_STUDENT, 1, '2020-01-01 12:00:00+00');
+const backdated = await newReview(BACKDATER, 1, '2020-01-01 12:00:00+00');
 check('a made-up past date is ignored (review is dated now)', backdated.rows[0]?.semester === currentSemester && new Date(backdated.rows[0].created_at).getFullYear() >= 2026, backdated.rows[0]?.semester);
-check('backdating cannot dodge the limit', await throws(() => newReview(GSU_STUDENT, 1, '2020-01-01 12:00:00+00')));
+check('backdating cannot dodge the limit', await throws(() => newReview(BACKDATER, otherLandlordId, '2020-01-01 12:00:00+00')));
 
 const sneaky = await as(STUDENT, () => db.query(
   `UPDATE public.reviews SET semester = '2020-fall', created_at = '2020-01-01', is_deleted = true WHERE id = $1 RETURNING semester, created_at, is_deleted`, [reviewId]));
@@ -264,8 +271,17 @@ const priorSemester = (await db.query(`SELECT semester FROM public.reviews WHERE
 check('an earlier semester does not block a new review (2025-spring)', priorSemester?.semester === '2025-spring');
 
 await as(ADMIN, () => db.query(`UPDATE public.reviews SET is_deleted = true WHERE id = $1`, [reviewId]));
-check('after an admin removes a review, the author can post again that semester', (await newReview(STUDENT, 1)).rows.length === 1);
+check('after an admin removes a review, the author can post again that semester', (await newReview(STUDENT, otherLandlordId)).rows.length === 1);
 check('an admin cannot restore a review that would break the one-per-semester rule', await throws(() => as(ADMIN, () => db.query(`UPDATE public.reviews SET is_deleted = false WHERE id = $1`, [reviewId]))));
+
+// ---- Neighborhoods on reviews ----
+const hoodReview = await as(HOODIE, () => db.query(
+  `INSERT INTO public.reviews (landlord_id, user_id, landlord_rating, building_rating, comment, neighborhood)
+   VALUES (1, $1, 4, 4, 'Great spot', 'Home Park') RETURNING id, neighborhood`, [HOODIE.id]));
+check('a review keeps the neighborhood the reviewer picked', hoodReview.rows[0]?.neighborhood === 'Home Park');
+const hoodEdit = await as(HOODIE, () => db.query(`UPDATE public.reviews SET neighborhood = 'Midtown' WHERE id = $1 RETURNING neighborhood`, [hoodReview.rows[0].id]));
+check('the reviewer can change their review\'s neighborhood', hoodEdit.rows[0]?.neighborhood === 'Midtown');
+check('an absurdly long neighborhood is rejected', await throws(() => as(HOODIE, () => db.query(`UPDATE public.reviews SET neighborhood = $1 WHERE id = $2`, ['x'.repeat(101), hoodReview.rows[0].id]))));
 
 // ---- Neighborhoods on landlords ----
 const tagged = await as(STUDENT, () => db.query(

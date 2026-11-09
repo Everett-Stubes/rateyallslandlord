@@ -59,7 +59,7 @@ const MainPage: React.FC = () => {
     return landlords.filter(landlord => {
       const reviews = reviewsByLandlord[landlord.id] ?? [];
       const addresses = getAllLandlordAddresses(landlord, reviews);
-      if (activeFocus && !getLandlordNeighborhoodNames(landlord.neighborhoods, addresses).has(activeFocus.name)) return false;
+      if (activeFocus && !getLandlordNeighborhoodNames(landlord.neighborhoods, addresses, reviews.map(r => r.neighborhood)).has(activeFocus.name)) return false;
       if (!term) return true;
       if (landlord.name.toLowerCase().includes(term)) return true;
       if (addresses.some(a => a.toLowerCase().includes(term))) return true;

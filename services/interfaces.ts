@@ -10,6 +10,8 @@ export interface IApiService {
   getReviewsByLandlordId(landlordId: number, includeDeleted?: boolean): Promise<Review[]>;
   getReviewById(reviewId: number): Promise<Review | undefined>;
   getLatestReviewForLandlordByUser(landlordId: number, userId: string): Promise<Review | undefined>;
+  /** The person's review from the current semester (any landlord), if they already posted one. */
+  getCurrentSemesterReviewByUser(userId: string): Promise<Review | undefined>;
   addLandlord(
     landlordData: Omit<Landlord, 'id' | 'is_deleted' | 'created_at' | 'status'>,
     reviewData?: Omit<Review, 'id' | 'landlord_id' | 'is_deleted' | 'created_at' | 'updated_at'>

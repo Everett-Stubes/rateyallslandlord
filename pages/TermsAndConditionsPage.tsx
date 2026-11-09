@@ -78,7 +78,7 @@ const TermsAndConditionsPage: React.FC<TermsAndConditionsPageProps> = ({ title =
                 harassment, or hate speech. Do not post a review of a landlord you have not dealt with.
               </li>
               <li>
-                <strong>One review per landlord each semester.</strong> You may edit your own review at any time. Votes
+                <strong>One review per person each semester.</strong> You may edit your own review at any time. Votes
                 (up or down) are only a signal of how helpful others found a review; they do not change a landlord's
                 grade.
               </li>
