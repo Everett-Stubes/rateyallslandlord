@@ -100,4 +100,4 @@ For every row: the **where** column says where to find or create it. Write the v
 
 ## More detail
 
-[Launch checklist](launch_checklist.md) · [Setup guide](replication_guide.md) · [Site customization](website_customization.md) · [Architecture](architecture.md)
+[Data cheat-sheet](data_cheatsheet.md) · [Launch checklist](launch_checklist.md) · [Setup guide](replication_guide.md) · [Site customization](website_customization.md) · [Architecture](architecture.md)

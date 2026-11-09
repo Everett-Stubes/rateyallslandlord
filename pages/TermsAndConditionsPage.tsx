@@ -13,7 +13,7 @@ const TermsAndConditionsPage: React.FC<TermsAndConditionsPageProps> = ({ title =
       <div className="content-section-block terms">
         <>
           <p>
-            <strong>[insert website name here]</strong>
+            <strong>Rate Y'all's Landlord</strong>
           </p>
           <p>
             <strong>Terms of Use</strong>
@@ -127,7 +127,7 @@ const TermsAndConditionsPage: React.FC<TermsAndConditionsPageProps> = ({ title =
           <p>
             <br />
             with a copy by email to{" "}
-            [insert contact email here], with
+            rateyallslandlord@gmail.com, with
             the subject heading: "Notice of Dispute."
             <br />
             <br />
@@ -351,7 +351,7 @@ const TermsAndConditionsPage: React.FC<TermsAndConditionsPageProps> = ({ title =
             assistance with your Records or if you wish to receive Records in paper
             format or to withdraw your consent to receiving electronic Records from us,
             please contact us at{" "}
-            [insert contact email here].
+            rateyallslandlord@gmail.com.
             Agreements and transactions executed prior to this request will remain valid
             and enforceable.
           </p>
@@ -683,7 +683,7 @@ const TermsAndConditionsPage: React.FC<TermsAndConditionsPageProps> = ({ title =
           <p>
             [insert company name here]'s agent for notice of claims of copyright or trademark
             infringement can be reached at{" "}
-            [insert contact email here].
+            rateyallslandlord@gmail.com.
           </p>
           <p>
             Please also note that for copyright infringements under Section 512(f) of
@@ -986,7 +986,7 @@ const TermsAndConditionsPage: React.FC<TermsAndConditionsPageProps> = ({ title =
           <p>
             If you need to contact us regarding this Site, the Services or these Terms
             of Use you can contact [insert company name here] at{" "}
-            [insert contact email here].
+            rateyallslandlord@gmail.com.
           </p>
         </>
 
