@@ -11,7 +11,10 @@ CREATE TABLE IF NOT EXISTS public.school_email_domains (
 INSERT INTO public.school_email_domains (domain, school) VALUES
   ('gatech.edu', 'Georgia Tech'),
   ('gsu.edu', 'Georgia State'),
-  ('student.gsu.edu', 'Georgia State')
+  ('student.gsu.edu', 'Georgia State'),
+  ('agnesscott.edu', 'Agnes Scott'),
+  ('live.mercer.edu', 'Mercer'),
+  ('mercer.edu', 'Mercer')
 ON CONFLICT (domain) DO NOTHING;
 
 CREATE OR REPLACE FUNCTION public.is_school_email()

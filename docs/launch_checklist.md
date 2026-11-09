@@ -40,7 +40,7 @@ The site's contact address is the team's Gmail account. There is no separate mai
 ## 5. Before inviting real users
 
 - [x] **Code:** Login, sign-up, resend-confirmation, and password-reset requests send the Turnstile token to Supabase for server-side checking.
-- [x] **Code:** Database rules allow only confirmed school-email accounts (`gatech.edu`, `gsu.edu`, `student.gsu.edu`) to post reviews or add landlords, as themselves.
+- [x] **Code:** Database rules allow only confirmed school-email accounts (`gatech.edu`, `gsu.edu`, `student.gsu.edu`, `agnesscott.edu`, `live.mercer.edu`, `mercer.edu`) to post reviews or add landlords, as themselves.
 - [ ] **You:** The live Supabase database needs the update in `migrations/2026-11-09-school-email-only-posting.sql`: paste it into Supabase → SQL Editor → New query → Run.
 - [ ] **Decide:** Keep `gsu.edu` (Georgia State faculty and staff)? Remove it from `siteSettings.ts` and the Supabase `school_email_domains` table for students only.
 - [ ] **Code + you:** Review the Privacy Policy and Terms. They came from the template.

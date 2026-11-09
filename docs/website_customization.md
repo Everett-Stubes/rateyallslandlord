@@ -17,7 +17,9 @@ The team is paying for the domain directly (the playbook mentions More Perfect U
 | School | Student email domains | Where it's set |
 | --- | --- | --- |
 | Georgia Tech | gatech.edu | `siteSettings.ts` (`schools`) |
-| Georgia State | gsu.edu, student.gsu.edu | `siteSettings.ts` (`schools`) |
+| Georgia State | gsu.edu (faculty/staff), student.gsu.edu (students) | `siteSettings.ts` (`schools`) |
+| Agnes Scott | agnesscott.edu (everyone) | `siteSettings.ts` (`schools`) |
+| Mercer | live.mercer.edu (students), mercer.edu (faculty/staff). Shared with Mercer's Macon campus. | `siteSettings.ts` (`schools`) |
 
 **Only people who sign up with one of these exact email domains (and confirm the email) can post reviews or add landlords.** Everyone else can read the site. This is enforced in two places that must stay the same:
 
@@ -30,9 +32,9 @@ The team is paying for the domain directly (the playbook mentions More Perfect U
 
 ## Neighborhoods
 
-The homepage buttons, in order: **Home Park**, **Midtown**, **Downtown**, **Other**. They apply to every landlord on the site, not to one school. Set them in `siteSettings.ts` (`neighborhoods`).
+The homepage buttons, in order: **Home Park**, **Midtown**, **Downtown**, **Decatur**, **Chamblee & Doraville**, **Other**. They apply to every landlord on the site, not to one school. Set them in `siteSettings.ts` (`neighborhoods`). Decatur is where Agnes Scott is; Chamblee & Doraville is the area around Mercer's Atlanta campus (3001 Mercer University Dr, ZIP 30341).
 
-Each neighborhood has a list of streets. Its button shows landlords with a property on one of those streets, counting both the landlord's saved addresses and the addresses tenants give in reviews. Add streets to widen a neighborhood. A neighborhood with an empty street list (**Other**) shows every landlord outside the named ones.
+Each neighborhood has a list of matches. Its button shows landlords with a property that matches one of them, counting both the landlord's saved addresses and the addresses tenants give in reviews. An entry can be a street (`E College Ave`), a city (`, Decatur,` with the commas), or a ZIP code (`30341`). Cities and ZIP codes are there because the address box sometimes writes Mercer-area addresses as "Atlanta". Add entries to widen a neighborhood. A neighborhood with an empty list (**Other**) shows every landlord outside the named ones.
 
 Street matching is approximate. A landlord whose buildings are in two neighborhoods appears under both, and long streets cross neighborhood lines: Piedmont Ave is listed under Downtown for the Georgia State dorms, so Midtown addresses on Piedmont also show up there.
 
