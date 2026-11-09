@@ -76,6 +76,34 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+-- 6a. School email domains. Only accounts whose CONFIRMED email ends in one of these
+-- domains can post reviews or add landlords; everyone else can still browse.
+-- Keep this list in step with `schools` in siteSettings.ts (npm run check:schema checks that).
+-- To add a school later: Table Editor -> school_email_domains -> Insert row, then add it to siteSettings.ts.
+CREATE TABLE IF NOT EXISTS public.school_email_domains (
+  domain text PRIMARY KEY CHECK (domain = lower(domain) AND domain <> '' AND domain NOT LIKE '%@%'),
+  school text NOT NULL
+);
+
+INSERT INTO public.school_email_domains (domain, school) VALUES
+  ('gatech.edu', 'Georgia Tech'),
+  ('gsu.edu', 'Georgia State'),
+  ('student.gsu.edu', 'Georgia State')
+ON CONFLICT (domain) DO NOTHING;
+
+CREATE OR REPLACE FUNCTION public.is_school_email()
+RETURNS boolean SECURITY DEFINER SET search_path = public AS $$
+  SELECT EXISTS (
+    SELECT 1
+    FROM auth.users u
+    JOIN public.school_email_domains d ON d.domain = lower(split_part(u.email, '@', 2))
+    WHERE u.id = auth.uid()
+      AND u.email_confirmed_at IS NOT NULL
+      AND u.email ~ '^[^@[:space:]]+@[^@[:space:]]+$'
+      AND lower(u.email) = lower(auth.jwt() ->> 'email')
+  );
+$$ LANGUAGE sql STABLE;
+
 -- 6b. Keep moderation fields under admin control.
 -- New reviews from non-admins always start as 'pending', and non-admins cannot
 -- change a review's verification status, student flag, landlord, or author.
@@ -90,6 +118,8 @@ BEGIN
   IF TG_OP = 'INSERT' THEN
     NEW.verification_status := 'pending';
     NEW.is_deleted := false;
+    -- Only school-email accounts can post, so every review is a student review.
+    NEW.created_by_student := true;
   ELSE
     NEW.verification_status := OLD.verification_status;
     NEW.created_by_student := OLD.created_by_student;
@@ -109,8 +139,14 @@ CREATE OR REPLACE TRIGGER trigger_reviews_protect_moderation
 ALTER TABLE public.admins ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.landlords ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.reviews ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.school_email_domains ENABLE ROW LEVEL SECURITY;
 
 -- 8. Row Level Security policies
+
+-- School email domains are not secret (the website lists them); no one can change
+-- them through the website, only the project owner in the dashboard.
+CREATE POLICY "Anyone can view school email domains" ON public.school_email_domains
+  FOR SELECT TO public USING (true);
 
 -- Admins Table Policies
 CREATE POLICY "Anyone can view admins" ON public.admins
@@ -120,8 +156,9 @@ CREATE POLICY "Anyone can view admins" ON public.admins
 CREATE POLICY "Admins can update landlords" ON public.landlords
   FOR UPDATE TO public USING (public.is_admin());
 
-CREATE POLICY "Authenticated users can insert landlords" ON public.landlords
-  FOR INSERT TO public WITH CHECK (auth.role() = 'authenticated');
+-- Only confirmed school-email accounts can add landlords.
+CREATE POLICY "School-email users can insert landlords" ON public.landlords
+  FOR INSERT TO authenticated WITH CHECK (public.is_school_email());
 
 CREATE POLICY "Everyone can view all landlords" ON public.landlords
   FOR SELECT TO public USING (NOT is_deleted);
@@ -143,12 +180,11 @@ CREATE POLICY "Users can view their pending landlords" ON public.landlords
 CREATE POLICY "Admins can view all reviews" ON public.reviews
   FOR SELECT TO public USING (public.is_admin());
 
--- Only signed-in accounts can post, and only as themselves. The website already
--- requires login to review; this stops scripts from posting through the public
--- database address without an account (accounts need the security check and a
--- confirmed email).
-CREATE POLICY "Signed-in users can insert their own reviews" ON public.reviews
-  FOR INSERT TO authenticated WITH CHECK (auth.uid() IS NOT NULL AND auth.uid() = user_id);
+-- Only confirmed school-email accounts can post, and only as themselves. This is
+-- enforced here, not just on the website, so scripts using the public database
+-- address can't post without a verified school account.
+CREATE POLICY "School-email users can insert their own reviews" ON public.reviews
+  FOR INSERT TO authenticated WITH CHECK (auth.uid() = user_id AND public.is_school_email());
 
 CREATE POLICY "Everyone can view all reviews" ON public.reviews
   FOR SELECT TO public USING (NOT is_deleted);

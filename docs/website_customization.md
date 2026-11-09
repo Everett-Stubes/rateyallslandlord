@@ -19,7 +19,14 @@ The team is paying for the domain directly (the playbook mentions More Perfect U
 | Georgia Tech | gatech.edu | `siteSettings.ts` (`schools`) |
 | Georgia State | gsu.edu, student.gsu.edu | `siteSettings.ts` (`schools`) |
 
-Reviews from these exact email domains get a "Verified Student" badge.
+**Only people who sign up with one of these exact email domains (and confirm the email) can post reviews or add landlords.** Everyone else can read the site. This is enforced in two places that must stay the same:
+
+1. `siteSettings.ts` (`schools` → `emailDomains`): the sign-up form and the messages on the site.
+2. The `school_email_domains` table in Supabase (Table Editor): the real lock, which the database checks on every post. `init.sql` fills it in for new databases. `npm run check:schema` fails if the two lists differ.
+
+**To add a school:** add its domain to both places (Supabase: Table Editor → `school_email_domains` → Insert row). Confirm the exact address format with that school first: Georgia State, for example, gives students `@student.gsu.edu` and staff `@gsu.edu`. An exact match is required; `mail.school.edu` is not the same as `school.edu`.
+
+`gsu.edu` is on the list because the site started with it, but it is the faculty and staff domain at Georgia State. Remove it from both lists if you want students only.
 
 ## Neighborhoods
 

@@ -3,6 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import TurnstileWidget from '../components/TurnstileWidget';
 import { TurnstileInstance } from '@marsidev/react-turnstile';
+import { isStudentEmail, formatSchoolDomains } from '../utils/studentVerification';
 
 const RegisterPage: React.FC = () => {
   const [email, setEmail] = useState('');
@@ -18,6 +19,10 @@ const RegisterPage: React.FC = () => {
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+    if (!isStudentEmail(email)) {
+      setError(`Please sign up with your school email (${formatSchoolDomains()}). Only students at participating schools can post.`);
+      return;
+    }
     if (!turnstileToken) { setError('Please complete the security verification.'); return; }
     if (password !== confirmPassword) { setError('Passwords do not match.'); return; }
     if (password.length < 6) { setError('Password must be at least 6 characters long.'); return; }
@@ -67,7 +72,7 @@ const RegisterPage: React.FC = () => {
     <div className="auth-page">
       <div className="auth-card">
         <h1 className="auth-title">Create Account</h1>
-        <p className="auth-subtitle">Join the community to rate and review</p>
+        <p className="auth-subtitle">Use your school email ({formatSchoolDomains()}) to rate and review</p>
 
         <form onSubmit={handleRegister} className="auth-form">
           <div>
@@ -75,7 +80,7 @@ const RegisterPage: React.FC = () => {
             <input
               type="email" id="email" value={email}
               onChange={(e) => { setEmail(e.target.value); setError(''); }}
-              className="form-input" placeholder="you@example.com" required
+              className="form-input" placeholder="you@gatech.edu" required
             />
           </div>
           <div>

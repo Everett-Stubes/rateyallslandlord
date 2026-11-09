@@ -38,8 +38,9 @@ const FaqPage: React.FC = () => {
       q: 'Who can leave a review?',
       a: (
         <>
-          Anyone who has rented from the landlord. If you sign up with a student email ({studentDomains}), your review is
-          marked "Verified Student." Your name and email are never shown with your review.
+          Students at participating schools. You sign up with your school email ({studentDomains}) and confirm it by
+          clicking the link we send you; reviews and new landlords can only be posted from a confirmed school account.
+          Anyone can read reviews without an account. Your name and email are never shown with your review.
         </>
       ),
     },

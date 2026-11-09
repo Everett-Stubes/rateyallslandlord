@@ -22,6 +22,15 @@ export const isStudentEmail = (email: string | undefined | null): boolean => {
 };
 
 /**
+ * The accepted domains as readable text, e.g. "@gatech.edu, @gsu.edu, or @student.gsu.edu".
+ */
+export const formatSchoolDomains = (): string => {
+  const list = VERIFIED_STUDENT_DOMAINS.map((d) => `@${d}`);
+  if (list.length <= 1) return list.join('');
+  return `${list.slice(0, -1).join(', ')}, or ${list[list.length - 1]}`;
+};
+
+/**
  * Gets the list of verified student domains
  * @returns Array of verified student email domains
  */

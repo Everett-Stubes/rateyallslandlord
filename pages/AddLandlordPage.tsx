@@ -9,7 +9,7 @@ import { TurnstileInstance } from '@marsidev/react-turnstile';
 import { AddressAutofill } from '@mapbox/search-js-react';
 import type { AddressAutofillRetrieveResponse } from '@mapbox/search-js-core';
 import { siteSettings } from '../siteSettings';
-import { isStudentEmail } from '../utils/studentVerification';
+import { isStudentEmail, formatSchoolDomains } from '../utils/studentVerification';
 
 const MAPBOX_TOKEN = import.meta.env.VITE_MAPBOX_TOKEN as string;
 
@@ -107,6 +107,10 @@ const AddLandlordPage: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!user) { navigate('/login'); return; }
+    if (!isStudentEmail(user.email)) {
+      alert(`Only students with a school email (${formatSchoolDomains()}) can add landlords.`);
+      return;
+    }
     if (!turnstileToken) { alert('Please complete the security verification.'); return; }
     if (!name) { alert('Please fill in landlord name.'); return; }
 
@@ -154,7 +158,12 @@ const AddLandlordPage: React.FC = () => {
 
       {!user && (
         <div className="alert alert-warning" style={{ marginBottom: '1rem' }}>
-          Please <a href="/login" style={{ textDecoration: 'underline', marginLeft: '0.25rem', fontWeight: 600 }}>Log in</a> to add a landlord.
+          Please <a href="/login" style={{ textDecoration: 'underline', marginLeft: '0.25rem', fontWeight: 600 }}>Log in</a> with your school email to add a landlord.
+        </div>
+      )}
+      {user && !isStudentEmail(user.email) && (
+        <div className="alert alert-warning" style={{ marginBottom: '1rem' }}>
+          Only students with a school email ({formatSchoolDomains()}) can add landlords. You're signed in as {user.email}.
         </div>
       )}
 

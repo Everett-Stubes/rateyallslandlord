@@ -8,7 +8,7 @@ import ReviewForm from '../components/ReviewForm';
 import TurnstileWidget from '../components/TurnstileWidget';
 import { useApiService } from '../context/ServicesContext';
 import { TurnstileInstance } from '@marsidev/react-turnstile';
-import { isStudentEmail } from '../utils/studentVerification';
+import { isStudentEmail, formatSchoolDomains } from '../utils/studentVerification';
 
 
 const AddReviewPage: React.FC = () => {
@@ -71,6 +71,18 @@ const AddReviewPage: React.FC = () => {
   };
 
   if (loading || !landlord) return <LoadingSpinner />;
+
+  if (!isStudentEmail(user?.email)) {
+    return (
+      <div className="form-page">
+        <h1 className="form-page__title">{landlord?.name}</h1>
+        <div className="alert alert-warning">
+          Only students with a school email ({formatSchoolDomains()}) can post reviews. You're signed in as {user?.email}.
+          To post, sign up with your school email.
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="form-page">
