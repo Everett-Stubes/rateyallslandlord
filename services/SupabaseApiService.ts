@@ -40,14 +40,13 @@ export class SupabaseApiService implements IApiService {
   }
 
   async deleteLandlord(landlordId: number): Promise<boolean> {
-    const { error } = await this.client
+    const { error, count } = await this.client
       .from('landlords')
-      .update({ is_deleted: true })
+      .update({ is_deleted: true }, { count: 'exact' })
       .eq('id', landlordId)
-      .eq('is_deleted', false)
-      .select('id')
-      .single();
+      .eq('is_deleted', false);
     if (error) throw error;
+    if (!count) throw new Error('Landlord not found, or you do not have permission to delete it.');
     return true;
   }
 
@@ -152,14 +151,14 @@ export class SupabaseApiService implements IApiService {
   }
 
   async deleteReview(reviewId: number): Promise<boolean> {
-    const { error } = await this.client
+    // No .select(): once deleted, a reviewer can't read the row back, which would fail the update.
+    const { error, count } = await this.client
       .from('reviews')
-      .update({ is_deleted: true, updated_at: new Date().toISOString() })
+      .update({ is_deleted: true, updated_at: new Date().toISOString() }, { count: 'exact' })
       .eq('id', reviewId)
-      .eq('is_deleted', false)
-      .select('id')
-      .single();
+      .eq('is_deleted', false);
     if (error) throw error;
+    if (!count) throw new Error('Review not found, or you do not have permission to delete it.');
     return true;
   }
 

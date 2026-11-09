@@ -46,7 +46,7 @@ export const siteSettings = {
     },
     {
       id: "emory",
-      name: "Emory",
+      name: "Emory University",
       shortName: "Emory",
       emailDomains: ["emory.edu"],
       colors: { background: "#012169", text: "#F2A900", accent: "#F2A900" },

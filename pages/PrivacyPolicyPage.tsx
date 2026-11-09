@@ -7,17 +7,17 @@ const PrivacyPolicyPage: React.FC = () => {
       <div className="content-section-block" >
         <>
           <p>
-            <strong>[insert company name here]</strong>
+            <strong>More Perfect University</strong>
           </p>
           <p>
             <strong>Privacy Policy</strong>
           </p>
           <p>
-            <em>Last Updated</em>: September 25, 2026
+            <em>Last Updated</em>: November 9, 2026
           </p>
           <p>
             This online Privacy Policy (the "<strong>Policy</strong>") describes how
-            [insert company name here] and its affiliates and subsidiaries (collectively "
+            More Perfect University and its affiliates and subsidiaries (collectively "
             <strong>RYL</strong>," "<strong>we</strong>," "<strong>us</strong>," or "
             <strong>our</strong>") collect, use, disclose, and secure the personal
             information we gather about you through our website,{" "}

@@ -19,7 +19,7 @@ Keep [handoff.md](handoff.md) up to date as each service is set up; it is the on
 
 **Run this first (new features need it)**
 
-- [ ] **You:** Run `migrations/2026-11-10-semester-votes-neighborhoods.sql` in Supabase (SQL Editor -> New query -> paste -> Run) **before** the new site version goes live. It adds: one review per person per semester, up/down votes on reviews, and a neighborhood on every review and on each landlord (so a landlord shows up under the neighborhoods it was added to or reviewed in). Safe to run more than once. Landlords you already added need their neighborhood set once: use **Edit neighborhoods** on the landlord's page as an admin, or the SQL in [data_cheatsheet.md](data_cheatsheet.md) section 2.
+- [ ] **You:** Run `migrations/2026-11-10-semester-votes-neighborhoods.sql` in Supabase (SQL Editor -> New query -> paste -> Run) **before** the new site version goes live. It adds: one review per person per semester, up/down votes on reviews, and a neighborhood on every review and on each landlord (so a landlord shows up under the neighborhoods it was added to or reviewed in). Safe to run more than once. Then also run `migrations/2026-11-10-reviewers-can-delete-own-review.sql`: it lets admins delete landlords and lets reviewers delete their own review (so they can write a new one the same semester). Landlords you already added need their neighborhood set once: use **Edit neighborhoods** on the landlord's page as an admin, or the SQL in [data_cheatsheet.md](data_cheatsheet.md) section 2.
 
 **Email and addresses**
 

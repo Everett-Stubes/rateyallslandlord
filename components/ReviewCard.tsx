@@ -24,7 +24,10 @@ const ReviewCard: React.FC<ReviewCardProps> = ({ review, onApprove, onReject, vo
   const navigate = useNavigate();
 
   const handleDelete = async () => {
-    if (window.confirm('Are you sure you want to delete this review?')) {
+    const message = isOwnReview && !isAdmin
+      ? 'Delete your review? It will be removed from the site, and you can then write a new one.'
+      : 'Are you sure you want to delete this review?';
+    if (window.confirm(message)) {
       await deleteReview(review.id, review.landlord_id);
     }
   };
@@ -184,6 +187,9 @@ const ReviewCard: React.FC<ReviewCardProps> = ({ review, onApprove, onReject, vo
         <div className="review-card__actions">
             {isOwnReview && !review.is_deleted && (
               <button onClick={handleEdit} className="review-action-btn review-action-btn--edit">Edit</button>
+            )}
+            {isOwnReview && !isAdmin && !review.is_deleted && !onApprove && (
+              <button onClick={handleDelete} className="review-action-btn review-action-btn--delete">Delete</button>
             )}
             {onApprove && onReject ? (
               <>

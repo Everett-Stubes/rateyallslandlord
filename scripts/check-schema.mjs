@@ -115,10 +115,11 @@ check('admin can delete a review', deleted.rows.length === 1);
 
 const publicView = await as(null, () => db.query(`SELECT id FROM public.reviews WHERE id = $1`, [reviewId]));
 check('deleted review is hidden from visitors', publicView.rows.length === 0);
+const strangerView = await as(OTHER, () => db.query(`SELECT id FROM public.reviews WHERE id = $1`, [reviewId]));
+check('deleted review is hidden from other users too', strangerView.rows.length === 0);
 
-const authorRestore = await as(STUDENT, () => db.query(
-  `UPDATE public.reviews SET is_deleted = false WHERE id = $1 RETURNING id`, [reviewId]));
-check('author cannot undelete a review an admin removed', authorRestore.rows.length === 0);
+await as(STUDENT, () => db.query(`UPDATE public.reviews SET is_deleted = false WHERE id = $1`, [reviewId]));
+check('author cannot undelete a review an admin removed', (await db.query(`SELECT is_deleted FROM public.reviews WHERE id = $1`, [reviewId])).rows[0].is_deleted === true);
 
 const restored = await as(ADMIN, () => db.query(
   `UPDATE public.reviews SET is_deleted = false WHERE id = $1 RETURNING id`, [reviewId]));
@@ -261,9 +262,20 @@ check('a made-up past date is ignored (review is dated now)', backdated.rows[0]?
 check('backdating cannot dodge the limit', await throws(() => newReview(BACKDATER, otherLandlordId, '2020-01-01 12:00:00+00')));
 
 const sneaky = await as(STUDENT, () => db.query(
-  `UPDATE public.reviews SET semester = '2020-fall', created_at = '2020-01-01', is_deleted = true WHERE id = $1 RETURNING semester, created_at, is_deleted`, [reviewId]));
-check('editing cannot change the semester, date, or deleted flag',
-  sneaky.rows[0]?.semester === currentSemester && sneaky.rows[0]?.is_deleted === false && new Date(sneaky.rows[0].created_at).getFullYear() >= 2026);
+  `UPDATE public.reviews SET semester = '2020-fall', created_at = '2020-01-01' WHERE id = $1 RETURNING semester, created_at`, [reviewId]));
+check('editing cannot change the semester or date',
+  sneaky.rows[0]?.semester === currentSemester && new Date(sneaky.rows[0].created_at).getFullYear() >= 2026);
+
+// A reviewer can delete their own review (no RETURNING: they can't read it back once deleted)...
+const peerReview = (await db.query(`SELECT id FROM public.reviews WHERE user_id = $1 AND NOT is_deleted`, [PEER.id])).rows[0].id;
+await as(PEER, () => db.query(`UPDATE public.reviews SET is_deleted = true WHERE id = $1`, [peerReview]));
+check('a reviewer can delete their own review', (await db.query(`SELECT is_deleted FROM public.reviews WHERE id = $1`, [peerReview])).rows[0].is_deleted === true);
+check('after deleting their review, the reviewer can write a new one this semester', (await newReview(PEER, otherLandlordId)).rows.length === 1);
+// ...but not someone else's, and not bring a deleted one back.
+await as(PEER, () => db.query(`UPDATE public.reviews SET is_deleted = true WHERE id = $1`, [reviewId]));
+check("a reviewer cannot delete someone else's review", (await db.query(`SELECT is_deleted FROM public.reviews WHERE id = $1`, [reviewId])).rows[0].is_deleted === false);
+await as(PEER, () => db.query(`UPDATE public.reviews SET is_deleted = false WHERE id = $1`, [peerReview]));
+check('a reviewer cannot bring back a deleted review', (await db.query(`SELECT is_deleted FROM public.reviews WHERE id = $1`, [peerReview])).rows[0].is_deleted === true);
 
 await db.query(`INSERT INTO public.reviews (landlord_id, user_id, landlord_rating, building_rating, comment, created_at)
   VALUES (1, $1, 4, 4, 'A review from a past semester', '2025-01-10 12:00:00+00')`, [STUDENT.id]);
@@ -282,6 +294,16 @@ check('a review keeps the neighborhood the reviewer picked', hoodReview.rows[0]?
 const hoodEdit = await as(HOODIE, () => db.query(`UPDATE public.reviews SET neighborhood = 'Midtown' WHERE id = $1 RETURNING neighborhood`, [hoodReview.rows[0].id]));
 check('the reviewer can change their review\'s neighborhood', hoodEdit.rows[0]?.neighborhood === 'Midtown');
 check('an absurdly long neighborhood is rejected', await throws(() => as(HOODIE, () => db.query(`UPDATE public.reviews SET neighborhood = $1 WHERE id = $2`, ['x'.repeat(101), hoodReview.rows[0].id]))));
+
+// ---- Deleting landlords (admin only) ----
+const delTarget = await db.query(`INSERT INTO public.landlords (name, city, status) VALUES ('Delete me', 'Atlanta', 'approved') RETURNING id`);
+// Same shape as SupabaseApiService.deleteLandlord: update, then read the row back.
+const softDeleteLandlord = (user, id) => as(user, () => db.query(
+  `UPDATE public.landlords SET is_deleted = true WHERE id = $1 AND is_deleted = false RETURNING id`, [id]));
+check('a regular student cannot delete a landlord', await (async () => { try { return (await softDeleteLandlord(STUDENT, delTarget.rows[0].id)).rows.length === 0; } catch { return true; } })());
+const adminDeleted = await (async () => { try { return (await softDeleteLandlord(ADMIN, delTarget.rows[0].id)).rows.length === 1; } catch (e) { return e.message; } })();
+check('an admin can delete a landlord', adminDeleted === true, String(adminDeleted));
+check('a deleted landlord is hidden from visitors', (await as(null, () => db.query(`SELECT id FROM public.landlords WHERE id = $1`, [delTarget.rows[0].id]))).rows.length === 0);
 
 // ---- Neighborhoods on landlords ----
 const tagged = await as(STUDENT, () => db.query(
