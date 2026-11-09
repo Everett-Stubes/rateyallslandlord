@@ -158,9 +158,10 @@ CREATE UNIQUE INDEX IF NOT EXISTS idx_reviews_one_per_semester
 
 -- 6c. Keep moderation fields under admin control.
 -- New reviews from non-admins always start as 'pending' and are dated now, and non-admins
--- cannot change a review's verification status, student flag, landlord, author, date,
--- semester, or deleted flag. (Locking the date, semester, and deleted flag is what makes
--- the one-review-per-semester rule hold.) Applies only to website requests (the anon and
+-- cannot change a review's verification status, student flag, landlord, author, date, or
+-- semester. They can delete their own review (so they may post a new one) but never bring
+-- back one that was deleted. (Locking the date and semester keeps the one-live-review-per-
+-- semester rule from being dodged.) Applies only to website requests (the anon and
 -- authenticated roles); the SQL Editor and Table Editor run as the project owner and are
 -- not restricted.
 CREATE OR REPLACE FUNCTION public.protect_review_moderation_fields()
@@ -183,7 +184,7 @@ BEGIN
     NEW.user_id := OLD.user_id;
     NEW.created_at := OLD.created_at;
     NEW.semester := OLD.semester;
-    NEW.is_deleted := OLD.is_deleted;
+    NEW.is_deleted := OLD.is_deleted OR NEW.is_deleted;
   END IF;
   RETURN NEW;
 END;
@@ -279,6 +280,12 @@ CREATE POLICY "Students can insert reviews" ON public.reviews
   FOR INSERT TO authenticated WITH CHECK (
     auth.uid() = user_id AND public.is_school_email()
   );
+
+-- A reviewer can always see their own reviews, deleted ones included. (Deleting a review marks
+-- it deleted, and the database rejects that update unless the updated row stays visible to
+-- the person doing it. The website still hides deleted reviews from everyone but admins.)
+CREATE POLICY "Users can see their own reviews" ON public.reviews
+  FOR SELECT TO authenticated USING (auth.uid() = user_id);
 
 CREATE POLICY "Everyone can view all reviews" ON public.reviews
   FOR SELECT TO public USING (NOT is_deleted);

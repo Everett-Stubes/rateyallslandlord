@@ -86,7 +86,7 @@ The free Supabase plan makes no automatic backups. Every few months, and before 
 ## 6. Reviews: one per semester, and votes
 
 - Each person gets **one review per semester** (across all landlords) (spring = Jan-Apr, summer = May-Jul, fall = Aug-Dec, Atlanta time). The database enforces it, and the site explains why when someone tries a second one. A person can edit their review any time.
-- If an admin removes a review at `/admin`, that person can post again that semester. Restoring the removed review is then refused while the newer one exists.
+- A reviewer can delete their own review with the **Delete** button on it, and can then write a new one that semester. If an admin removes a review at `/admin`, that person can post again that semester too. Restoring the removed review is then refused while the newer one exists.
 - Up/down votes never change a landlord's grade. Only confirmed school-email accounts can vote, never on their own review. To see raw totals:
 
   ```sql
