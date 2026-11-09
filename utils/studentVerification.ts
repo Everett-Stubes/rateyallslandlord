@@ -1,33 +1,45 @@
 import { siteSettings } from '../siteSettings';
 
 /**
- * List of verified student email domains, taken from the schools in siteSettings.ts
+ * List of school email domains, taken from the schools in siteSettings.ts.
+ * Subdomains count too: "student.gsu.edu" matches "gsu.edu".
  */
-const VERIFIED_STUDENT_DOMAINS = siteSettings.schools.flatMap((school) => school.emailDomains);
+const VERIFIED_STUDENT_DOMAINS = siteSettings.schools.flatMap((school) =>
+  school.emailDomains.map((domain) => domain.toLowerCase())
+);
 
-/**
- * Checks if an email belongs to a verified student domain
- * @param email - The email address to check
- * @returns true if the email ends with a verified student domain, false otherwise
- */
-export const isStudentEmail = (email: string | undefined | null): boolean => {
-  if (!email) return false;
-
+const getEmailDomain = (email: string | undefined | null): string | null => {
+  if (!email) return null;
   const normalizedEmail = email.toLowerCase().trim();
-
   const atIndex = normalizedEmail.lastIndexOf('@');
-  if (atIndex === -1 || atIndex === normalizedEmail.length - 1) return false;
-  const emailDomain = normalizedEmail.slice(atIndex + 1);
-  return VERIFIED_STUDENT_DOMAINS.includes(emailDomain);
+  if (atIndex <= 0 || atIndex === normalizedEmail.length - 1) return null;
+  return normalizedEmail.slice(atIndex + 1);
 };
 
+const matchesDomain = (emailDomain: string, domain: string) =>
+  emailDomain === domain || emailDomain.endsWith(`.${domain}`);
+
+/** Alumni domains under a school's domain (such as alumni.emory.edu). These are never accepted. */
+const BLOCKED_DOMAINS = siteSettings.blockedEmailDomains.map((domain) => domain.toLowerCase());
+
 /**
- * The accepted domains as readable text, e.g. "@gatech.edu, @gsu.edu, or @student.gsu.edu".
+ * Checks if an email belongs to one of the schools in siteSettings.ts.
+ * Only these emails can create an account and post.
  */
-export const formatSchoolDomains = (): string => {
-  const list = VERIFIED_STUDENT_DOMAINS.map((d) => `@${d}`);
-  if (list.length <= 1) return list.join('');
-  return `${list.slice(0, -1).join(', ')}, or ${list[list.length - 1]}`;
+export const isStudentEmail = (email: string | undefined | null): boolean => {
+  const emailDomain = getEmailDomain(email);
+  if (!emailDomain) return false;
+  if (BLOCKED_DOMAINS.some((d) => matchesDomain(emailDomain, d))) return false;
+  return VERIFIED_STUDENT_DOMAINS.some((d) => matchesDomain(emailDomain, d));
+};
+
+/** The school an email belongs to, if any. */
+export const getSchoolForEmail = (email: string | undefined | null) => {
+  const emailDomain = getEmailDomain(email);
+  if (!emailDomain || !isStudentEmail(email)) return undefined;
+  return siteSettings.schools.find((school) =>
+    school.emailDomains.some((d) => matchesDomain(emailDomain, d.toLowerCase()))
+  );
 };
 
 /**

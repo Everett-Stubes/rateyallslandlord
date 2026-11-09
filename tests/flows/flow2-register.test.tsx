@@ -44,7 +44,7 @@ describe('Flow 2: Register', () => {
 
     // Should show success screen
     await findVerifyEmailText();
-    expect(screen.getByText(/newuser@example\.com/)).toBeInTheDocument();
+    expect(screen.getByText(/newuser@gatech\.edu/)).toBeInTheDocument();
     expect(auth.signUp).toHaveBeenCalledWith('newuser@gatech.edu', 'password123', expect.any(Object));
   });
 
@@ -73,7 +73,7 @@ describe('Flow 2: Register', () => {
     expect(auth.signUp).not.toHaveBeenCalled();
   });
 
-  it('edge: non-school email → asks for a school email; auth.signUp NOT called', async () => {
+  it('edge: non-school email → school email error; auth.signUp NOT called', async () => {
     const user = userEvent.setup();
     const auth = createMockAuthService({
       signUp: vi.fn().mockResolvedValue({ success: true }),
@@ -89,7 +89,7 @@ describe('Flow 2: Register', () => {
     await user.click(screen.getByTestId('captcha-complete'));
     await user.click(getSignUpButton());
 
-    expect(await screen.findByText(/sign up with your school email/i)).toBeInTheDocument();
+    await screen.findByText(/please use your school email/i);
     expect(auth.signUp).not.toHaveBeenCalled();
   });
 });

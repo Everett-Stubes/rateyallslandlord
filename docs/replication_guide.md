@@ -88,7 +88,7 @@ The website uses **Vite**, a tool that runs a local development website and buil
 3. In VS Code's terminal, type `npm ci --registry=https://registry.npmjs.org/` and press Enter. This installs the versions recorded in the lockfile. **You should see installation finish without an `npm error`.** Warnings or security-audit notices are different from a failed install, but should still be reviewed before public use.
 4. Type `npm run dev` and press Enter.
 5. Look for Vite's **Local** address. This repository requests port **5000**, so the usual address is `http://localhost:5000/`, not 3000 or 5173. If the port is busy, Vite may print a different port; use the printed address for browsing.
-6. Open that address in your browser. **You should see the landlord page and a “Demo mode — showing fake data” banner.**
+6. Open that address in your browser. **You should see the landlord page and a “Demo mode: showing fake data” banner.**
 7. Search for a landlord and open a landlord card. The names and reviews are fictional demonstration data.
 8. Do not expect registration, sign-in, or password reset to work in the demo. `MockAuthService` deliberately returns “not available in demo mode.” Some submission forms also need a configured security challenge.
 9. Changes made to the demonstration data are held in memory. They are not shared with other computers and are reset when the application reloads.

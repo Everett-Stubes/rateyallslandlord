@@ -9,8 +9,8 @@ import type { Landlord, Review } from '../types';
 import BrandLogo from '../components/BrandLogo';
 import { siteSettings } from '../siteSettings';
 import { getAllLandlordAddresses, getLandlordProperties } from '../utils/properties';
-
-type Neighborhood = (typeof siteSettings.neighborhoods)[number];
+import { neighborhoods, groupNeighborhoodsForSchool, type Neighborhood } from '../utils/schools';
+import { useSchool } from '../context/SchoolContext';
 
 const isOnStreets = (addresses: string[], streets: string[]) =>
   streets.some(street => addresses.some(a => a.toLowerCase().includes(street.toLowerCase())));
@@ -20,13 +20,16 @@ const isOnStreets = (addresses: string[], streets: string[]) =>
 const isInNeighborhood = (addresses: string[], neighborhood: Neighborhood) =>
   neighborhood.streets.length > 0
     ? isOnStreets(addresses, neighborhood.streets)
-    : !siteSettings.neighborhoods.some(n => n.streets.length > 0 && isOnStreets(addresses, n.streets));
+    : !neighborhoods.some(n => n.streets.length > 0 && isOnStreets(addresses, n.streets));
 
 const MainPage: React.FC = () => {
   const { landlords, loading, deleteLandlord } = useData();
-  const { user, isAdmin } = useAuth();
+  const { isAdmin } = useAuth();
   const { api } = useServices();
   const navigate = useNavigate();
+  const { school } = useSchool();
+  const neighborhoodGroups = useMemo(() => groupNeighborhoodsForSchool(school), [school]);
+  const [showAllNeighborhoods, setShowAllNeighborhoods] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [activeFocus, setActiveFocus] = useState<Neighborhood | null>(null);
   const [ratings, setRatings] = useState<{ [landlordId: number]: number | null }>({});
@@ -81,8 +84,9 @@ const MainPage: React.FC = () => {
       : `${activeFocus.name} neighborhoods`
     : null;
 
+  // Logged-out visitors are sent to log in first, then brought back to the form.
   const handleAddLandlordClick = () => {
-    navigate(user ? '/add-landlord' : '/login');
+    navigate('/add-landlord');
   };
 
   const handleDeleteLandlord = async (landlord: Landlord) => {
@@ -105,9 +109,14 @@ const MainPage: React.FC = () => {
       <div className="hero">
         <div className="hero__content">
           <span className="hero__kicker">
-            {siteSettings.schools.map(s => s.name).join(' · ')} · {siteSettings.city}
+            {school ? `${school.name} · ${siteSettings.city}` : `${siteSettings.city}, ${siteSettings.state}`}
           </span>
-          <BrandLogo variant="homepage" className="hero__logo" />
+          <div className="hero__title-row">
+            <h1 className="hero__title-logo">
+              <BrandLogo variant="homepage" className="hero__logo" />
+            </h1>
+            <p className="hero__tagline">{siteSettings.tagline}</p>
+          </div>
           <p className="hero__subtitle">
             How would your landlord act if everyone was watching?
           </p>
@@ -141,8 +150,16 @@ const MainPage: React.FC = () => {
 
           <div className="focus-areas" role="group" aria-label="Filter by neighborhood">
             <div className="focus-areas__school">
-              <span className="focus-areas__school-name">Neighborhoods</span>
-              {siteSettings.neighborhoods.map(neighborhood => {
+              <span className="focus-areas__school-name">
+                {school ? `Neighborhoods near ${school.shortName}` : 'Neighborhoods'}
+              </span>
+              {[
+                ...neighborhoodGroups.nearby,
+                // Keep a selected neighborhood visible even when the extra ones are hidden.
+                ...(showAllNeighborhoods
+                  ? neighborhoodGroups.more
+                  : neighborhoodGroups.more.filter(n => n.name === activeFocus?.name)),
+              ].map(neighborhood => {
                 const isActive = activeFocus?.name === neighborhood.name;
                 return (
                   <button
@@ -156,6 +173,16 @@ const MainPage: React.FC = () => {
                   </button>
                 );
               })}
+              {neighborhoodGroups.more.length > 0 && (
+                <button
+                  type="button"
+                  className="focus-chip focus-chip--more"
+                  aria-expanded={showAllNeighborhoods}
+                  onClick={() => setShowAllNeighborhoods(open => !open)}
+                >
+                  {showAllNeighborhoods ? 'Fewer neighborhoods' : `+ ${neighborhoodGroups.more.length} more`}
+                </button>
+              )}
             </div>
           </div>
         </div>

@@ -36,10 +36,18 @@ const GSU_STUDENT = { id: '44444444-4444-4444-4444-444444444444', email: 'Someon
 const UNCONFIRMED = { id: '55555555-5555-5555-5555-555555555555', email: 'new@gatech.edu' };
 const LOOKALIKE = { id: '66666666-6666-6666-6666-666666666666', email: 'x@gatech.edu.evil.com' };
 const FAKE_PREFIX = { id: '77777777-7777-7777-7777-777777777777', email: 'gatech.edu@gmail.com' };
+const NOT_GT = { id: '88888888-8888-8888-8888-888888888888', email: 'fake@notgatech.edu' };
+const EMORY_ALUMNUS = { id: '99999999-9999-9999-9999-999999999999', email: 'grad@alumni.emory.edu' };
+const SPELMAN_ALUMNA = { id: 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', email: 'grad@alumnae.spelman.edu' };
+const AGNES_SCOTT = { id: 'bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb', email: 'scottie@agnesscott.edu' };
+const MERCER_STUDENT = { id: 'cccccccc-cccc-cccc-cccc-cccccccccccc', email: 'bear@live.mercer.edu' };
+const SPELMAN = { id: 'dddddddd-dddd-dddd-dddd-dddddddddddd', email: 'jag@spelman.edu' };
 const ADMIN = { id: '33333333-3333-3333-3333-333333333333', email: 'mod@example.com' };
 await db.exec(`
   INSERT INTO auth.users (id, email) VALUES ('${STUDENT.id}', '${STUDENT.email}'), ('${OTHER.id}', '${OTHER.email}'), ('${ADMIN.id}', '${ADMIN.email}'),
-    ('${GSU_STUDENT.id}', '${GSU_STUDENT.email}'), ('${LOOKALIKE.id}', '${LOOKALIKE.email}'), ('${FAKE_PREFIX.id}', '${FAKE_PREFIX.email}');
+    ('${GSU_STUDENT.id}', '${GSU_STUDENT.email}'), ('${LOOKALIKE.id}', '${LOOKALIKE.email}'), ('${FAKE_PREFIX.id}', '${FAKE_PREFIX.email}'),
+    ('${NOT_GT.id}', '${NOT_GT.email}'), ('${EMORY_ALUMNUS.id}', '${EMORY_ALUMNUS.email}'), ('${SPELMAN_ALUMNA.id}', '${SPELMAN_ALUMNA.email}'),
+    ('${AGNES_SCOTT.id}', '${AGNES_SCOTT.email}'), ('${MERCER_STUDENT.id}', '${MERCER_STUDENT.email}'), ('${SPELMAN.id}', '${SPELMAN.email}');
   INSERT INTO auth.users (id, email, email_confirmed_at) VALUES ('${UNCONFIRMED.id}', '${UNCONFIRMED.email}', NULL);
   INSERT INTO public.admins (email) VALUES ('${ADMIN.email}');
 `);
@@ -146,7 +154,20 @@ check('a non-school email cannot add landlords', await landlordBlocked(OTHER));
 check('a school email that is not confirmed cannot post', await blocked(UNCONFIRMED));
 check('a lookalike domain (gatech.edu.evil.com) cannot post', await blocked(LOOKALIKE));
 check('an address that merely starts with the domain cannot post', await blocked(FAKE_PREFIX));
-check('a Georgia State student address works (any capitalization)', !(await blocked(GSU_STUDENT)));
+check('a look-alike domain (notgatech.edu) cannot post', await blocked(NOT_GT));
+check('Emory alumni addresses (alumni.emory.edu) cannot post', await blocked(EMORY_ALUMNUS));
+check('Spelman alumnae addresses (alumnae.spelman.edu) cannot post', await blocked(SPELMAN_ALUMNA));
+check('an Agnes Scott address can post', !(await blocked(AGNES_SCOTT)));
+check('a Mercer student address (live.mercer.edu) can post', !(await blocked(MERCER_STUDENT)));
+check('a Spelman address can post', !(await blocked(SPELMAN)));
+
+const adminPost = await as(ADMIN, () => db.query(
+  `INSERT INTO public.reviews (landlord_id, user_id, landlord_rating, building_rating, comment) VALUES (1, $1, 3, 3, 'admin post') RETURNING id`, [ADMIN.id]));
+check('admins can post without a school email', adminPost.rows.length === 1);
+const adminLandlord = await as(ADMIN, () => db.query(
+  `INSERT INTO public.landlords (name, city, status) VALUES ('Launch Landlord', 'Atlanta', 'approved') RETURNING id`));
+check('admins can add landlords without a school email', adminLandlord.rows.length === 1);
+check('a subdomain address (student.gsu.edu, any capitalization) can post', !(await blocked(GSU_STUDENT)));
 check('a confirmed Georgia Tech address works', !(await blocked(STUDENT)));
 
 const flagged = await db.query(
@@ -159,13 +180,18 @@ catch { domainEditBlocked = true; }
 const domainEdit = domainEditBlocked || (await db.query(`SELECT 1 FROM public.school_email_domains WHERE domain = 'example.com'`)).rows.length === 0;
 check('website users cannot add school domains', domainEdit);
 
-// The domain list in init.sql must match siteSettings.ts, which the registration form uses.
+// The domain lists in init.sql must match siteSettings.ts, which the sign-up form uses.
 const settings = readFileSync(new URL('../siteSettings.ts', import.meta.url), 'utf8');
-const siteDomains = [...settings.matchAll(/emailDomains:\s*\[([^\]]*)\]/g)]
-  .flatMap((m) => [...m[1].matchAll(/"([^"]+)"/g)].map((d) => d[1].toLowerCase())).sort();
-const dbDomains = (await db.query(`SELECT domain FROM public.school_email_domains ORDER BY domain`)).rows.map((r) => r.domain);
-check('school domains in init.sql match siteSettings.ts', JSON.stringify(siteDomains) === JSON.stringify(dbDomains),
-  `settings: ${siteDomains.join(', ')} | database: ${dbDomains.join(', ')}`);
+const quoted = (text) => [...text.matchAll(/"([^"]+)"/g)].map((d) => d[1].toLowerCase());
+const siteAllowed = [...settings.matchAll(/emailDomains:\s*\[([^\]]*)\]/g)].flatMap((m) => quoted(m[1])).sort();
+const siteBlocked = quoted(settings.match(/blockedEmailDomains:\s*\[([^\]]*)\]/)?.[1] ?? '').sort();
+const dbRows = (await db.query(`SELECT domain, blocked FROM public.school_email_domains ORDER BY domain`)).rows;
+const dbAllowed = dbRows.filter((r) => !r.blocked).map((r) => r.domain);
+const dbBlocked = dbRows.filter((r) => r.blocked).map((r) => r.domain);
+check('accepted school domains in init.sql match siteSettings.ts', JSON.stringify(siteAllowed) === JSON.stringify(dbAllowed),
+  `settings: ${siteAllowed.join(', ')} | database: ${dbAllowed.join(', ')}`);
+check('blocked alumni domains in init.sql match siteSettings.ts', JSON.stringify(siteBlocked) === JSON.stringify(dbBlocked),
+  `settings: ${siteBlocked.join(', ')} | database: ${dbBlocked.join(', ')}`);
 
 console.log(failures === 0 ? '\nALL CHECKS PASSED' : `\n${failures} CHECK(S) FAILED`);
 await db.close();

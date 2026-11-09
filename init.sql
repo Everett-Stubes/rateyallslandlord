@@ -76,36 +76,50 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
--- 6a. School email domains. Only accounts whose CONFIRMED email ends in one of these
--- domains can post reviews or add landlords; everyone else can still browse.
--- Keep this list in step with `schools` in siteSettings.ts (npm run check:schema checks that).
--- To add a school later: Table Editor -> school_email_domains -> Insert row, then add it to siteSettings.ts.
+-- 6a. School email domains. Only accounts whose CONFIRMED email is at one of these domains
+-- (or a subdomain, so 'gsu.edu' also accepts 'student.gsu.edu') can post reviews or add
+-- landlords; everyone else can still browse. Rows marked blocked are subdomains that are
+-- NOT accepted (alumni accounts); the most specific matching row wins.
+-- Keep this list in step with `schools` and `blockedEmailDomains` in siteSettings.ts
+-- (npm run check:schema checks that). To add a school later: Table Editor ->
+-- school_email_domains -> Insert row, then add it to siteSettings.ts.
 CREATE TABLE IF NOT EXISTS public.school_email_domains (
   domain text PRIMARY KEY CHECK (domain = lower(domain) AND domain <> '' AND domain NOT LIKE '%@%'),
-  school text NOT NULL
+  school text NOT NULL,
+  blocked boolean NOT NULL DEFAULT false
 );
 
-INSERT INTO public.school_email_domains (domain, school) VALUES
-  ('gatech.edu', 'Georgia Tech'),
-  ('gsu.edu', 'Georgia State'),
-  ('student.gsu.edu', 'Georgia State'),
-  ('agnesscott.edu', 'Agnes Scott'),
-  ('spelman.edu', 'Spelman'),
-  ('live.mercer.edu', 'Mercer'),
-  ('mercer.edu', 'Mercer')
+INSERT INTO public.school_email_domains (domain, school, blocked) VALUES
+  ('gatech.edu', 'Georgia Tech', false),
+  ('gsu.edu', 'Georgia State', false),
+  ('emory.edu', 'Emory', false),
+  ('morehouse.edu', 'Morehouse College', false),
+  ('spelman.edu', 'Spelman College', false),
+  ('cau.edu', 'Clark Atlanta University', false),
+  ('msm.edu', 'Morehouse School of Medicine', false),
+  ('scad.edu', 'SCAD Atlanta', false),
+  ('agnesscott.edu', 'Agnes Scott College', false),
+  ('mercer.edu', 'Mercer University', false),
+  ('alumni.emory.edu', 'Emory', true),
+  ('alumnae.spelman.edu', 'Spelman College', true)
 ON CONFLICT (domain) DO NOTHING;
 
 CREATE OR REPLACE FUNCTION public.is_school_email()
 RETURNS boolean SECURITY DEFINER SET search_path = public AS $$
-  SELECT EXISTS (
-    SELECT 1
+  SELECT COALESCE((
+    SELECT NOT d.blocked
     FROM auth.users u
-    JOIN public.school_email_domains d ON d.domain = lower(split_part(u.email, '@', 2))
+    CROSS JOIN LATERAL (SELECT lower(split_part(u.email, '@', 2)) AS email_domain) e
+    JOIN public.school_email_domains d
+      ON e.email_domain = d.domain
+      OR right(e.email_domain, length(d.domain) + 1) = '.' || d.domain
     WHERE u.id = auth.uid()
       AND u.email_confirmed_at IS NOT NULL
       AND u.email ~ '^[^@[:space:]]+@[^@[:space:]]+$'
       AND lower(u.email) = lower(auth.jwt() ->> 'email')
-  );
+    ORDER BY length(d.domain) DESC
+    LIMIT 1
+  ), false);
 $$ LANGUAGE sql STABLE;
 
 -- 6b. Keep moderation fields under admin control.
@@ -160,9 +174,10 @@ CREATE POLICY "Anyone can view admins" ON public.admins
 CREATE POLICY "Admins can update landlords" ON public.landlords
   FOR UPDATE TO public USING (public.is_admin());
 
--- Only confirmed school-email accounts can add landlords.
-CREATE POLICY "School-email users can insert landlords" ON public.landlords
-  FOR INSERT TO authenticated WITH CHECK (public.is_school_email());
+-- Posting needs a signed-in account with a confirmed school email (admins can always post,
+-- so they can add the launch landlords).
+CREATE POLICY "Students can insert landlords" ON public.landlords
+  FOR INSERT TO authenticated WITH CHECK (public.is_school_email() OR public.is_admin());
 
 CREATE POLICY "Everyone can view all landlords" ON public.landlords
   FOR SELECT TO public USING (NOT is_deleted);
@@ -184,11 +199,13 @@ CREATE POLICY "Users can view their pending landlords" ON public.landlords
 CREATE POLICY "Admins can view all reviews" ON public.reviews
   FOR SELECT TO public USING (public.is_admin());
 
--- Only confirmed school-email accounts can post, and only as themselves. This is
--- enforced here, not just on the website, so scripts using the public database
--- address can't post without a verified school account.
-CREATE POLICY "School-email users can insert their own reviews" ON public.reviews
-  FOR INSERT TO authenticated WITH CHECK (auth.uid() = user_id AND public.is_school_email());
+-- Only confirmed school-email accounts (or admins) can post, and only as themselves. This is
+-- enforced here, not just on the website, so scripts using the public database address
+-- can't post without a verified school account.
+CREATE POLICY "Students can insert reviews" ON public.reviews
+  FOR INSERT TO authenticated WITH CHECK (
+    auth.uid() = user_id AND (public.is_school_email() OR public.is_admin())
+  );
 
 CREATE POLICY "Everyone can view all reviews" ON public.reviews
   FOR SELECT TO public USING (NOT is_deleted);
