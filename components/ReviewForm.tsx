@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { AddressAutofill } from '@mapbox/search-js-react';
 import type { AddressAutofillRetrieveResponse } from '@mapbox/search-js-core';
 import { siteSettings } from '../siteSettings';
+import { neighborhoods, inferNeighborhoodNames } from '../utils/schools';
 
 const MAPBOX_TOKEN = import.meta.env.VITE_MAPBOX_TOKEN as string;
 
@@ -38,6 +39,9 @@ interface ReviewFormProps {
   setBedrooms: (value: string) => void;
   propertyAddress: string;
   setPropertyAddress: (value: string) => void;
+  /** Name of the neighborhood the property is in (one of the names in siteSettings.ts). */
+  neighborhood: string;
+  setNeighborhood: (value: string) => void;
   tags?: string[];
   setTags?: (tags: string[]) => void;
 }
@@ -50,8 +54,17 @@ const ReviewForm: React.FC<ReviewFormProps> = ({
   rentAmount, setRentAmount,
   bedrooms, setBedrooms,
   propertyAddress, setPropertyAddress,
+  neighborhood, setNeighborhood,
   tags = [], setTags,
 }) => {
+  // Guess the neighborhood from the address until the reviewer picks one themselves.
+  const [neighborhoodPicked, setNeighborhoodPicked] = useState(Boolean(neighborhood));
+  useEffect(() => {
+    if (neighborhoodPicked) return;
+    const guess = inferNeighborhoodNames([propertyAddress])[0];
+    if (guess) setNeighborhood(guess);
+  }, [propertyAddress, neighborhoodPicked, setNeighborhood]);
+
   const toggleTag = (tag: string) => {
     if (!setTags) return;
     if (tags.includes(tag)) {
@@ -120,6 +133,12 @@ const ReviewForm: React.FC<ReviewFormProps> = ({
         <p className="form-hint">
           Reviews are anonymous. Don't include your name, unit number, or other details a landlord could use to
           figure out who you are.
+        </p>
+        <p className="review-rules">
+          <strong>Review rules:</strong> Only write about what you personally experienced, and keep it true. Share your
+          opinion, not accusations you can't back up. Don't name individual people (staff or other tenants), share
+          anyone's phone number or email, or include threats or hate speech. A review is one student's opinion, not a
+          statement by Rate Y'all's Landlord, and we may remove reviews that break these rules.
         </p>
       </div>
 
@@ -193,6 +212,25 @@ const ReviewForm: React.FC<ReviewFormProps> = ({
         </AddressAutofill>
         <p className="form-hint">
           We only show the building. Your unit number is removed before your review is saved.
+        </p>
+      </div>
+
+      <div>
+        <label htmlFor="neighborhood" className="form-label">Neighborhood</label>
+        <select
+          id="neighborhood"
+          value={neighborhood}
+          onChange={e => { setNeighborhoodPicked(true); setNeighborhood(e.target.value); }}
+          className="form-input"
+          required
+        >
+          <option value="" disabled>Select the neighborhood this property is in</option>
+          {neighborhoods.map(n => (
+            <option key={n.name} value={n.name}>{n.name}</option>
+          ))}
+        </select>
+        <p className="form-hint">
+          This is how students find this landlord when they browse by neighborhood. Choose "Other" if none fit.
         </p>
       </div>
     </div>

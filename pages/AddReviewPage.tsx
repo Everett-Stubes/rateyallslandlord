@@ -1,15 +1,16 @@
 import { removeUnitNumber } from '../utils/properties';
 import React, { useState, useEffect, useRef } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import { useData } from '../context/DataContext';
 import { useAuth } from '../context/AuthContext';
-import type { Landlord } from '../types';
+import type { Landlord, Review } from '../types';
 import LoadingSpinner from '../components/LoadingSpinner';
 import ReviewForm from '../components/ReviewForm';
 import TurnstileWidget from '../components/TurnstileWidget';
 import { useApiService } from '../context/ServicesContext';
 import { TurnstileInstance } from '@marsidev/react-turnstile';
 import { isStudentEmail } from '../utils/studentVerification';
+import { getSemester, semesterLabel, SEMESTER_RULE_EXPLANATION } from '../utils/semester';
 
 
 const AddReviewPage: React.FC = () => {
@@ -27,9 +28,13 @@ const AddReviewPage: React.FC = () => {
   const [rentAmount, setRentAmount] = useState('');
   const [bedrooms, setBedrooms] = useState('');
   const [propertyAddress, setPropertyAddress] = useState('');
+  const [neighborhood, setNeighborhood] = useState('');
   const [tags, setTags] = useState<string[]>([]);
   const [uploading, setUploading] = useState(false);
   const [turnstileToken, setTurnstileToken] = useState<string>('');
+  // The person's review from the current semester (of any landlord), if they already wrote one.
+  const [reviewThisSemester, setReviewThisSemester] = useState<Review | null>(null);
+  const [reviewedLandlordName, setReviewedLandlordName] = useState('');
   const turnstileRef = useRef<TurnstileInstance>(null);
 
   const landlordId = Number(id);
@@ -37,6 +42,19 @@ const AddReviewPage: React.FC = () => {
   useEffect(() => {
     if (landlordId) getLandlord(landlordId).then(data => setLandlord(data || null));
   }, [landlordId, getLandlord]);
+
+  useEffect(() => {
+    if (!user?.id || !landlordId) return;
+    api.getCurrentSemesterReviewByUser(user.id)
+      .then(async existing => {
+        setReviewThisSemester(existing ?? null);
+        if (existing) {
+          const reviewed = existing.landlord_id === landlordId ? undefined : await api.getLandlordById(existing.landlord_id);
+          setReviewedLandlordName(reviewed?.name ?? '');
+        }
+      })
+      .catch(error => console.error('Could not check for an earlier review:', error));
+  }, [api, user?.id, landlordId]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -54,6 +72,7 @@ const AddReviewPage: React.FC = () => {
         rent_amount: rentAmount ? parseFloat(rentAmount) : undefined,
         bedrooms: bedrooms ? parseInt(bedrooms, 10) : undefined,
         property_address: propertyAddress ? removeUnitNumber(propertyAddress) : undefined,
+        neighborhood: neighborhood || undefined,
         verification_status: 'pending' as const,
         created_by_student: createdByStudent,
         tags,
@@ -73,6 +92,28 @@ const AddReviewPage: React.FC = () => {
 
   if (loading || !landlord) return <LoadingSpinner />;
 
+  if (reviewThisSemester) {
+    return (
+      <div className="form-page">
+        <div className="semester-notice">
+          <h2>You already posted a review this semester</h2>
+          <p>
+            You reviewed {reviewedLandlordName || landlord.name} in {semesterLabel(getSemester())}. {SEMESTER_RULE_EXPLANATION} If
+            your situation changed, edit that review. You can post a new one when the next semester starts.
+          </p>
+          <div className="semester-notice__actions">
+            <Link to={`/landlord/${reviewThisSemester.landlord_id}/review/${reviewThisSemester.id}/edit`} className="btn btn-primary">
+              Edit my review
+            </Link>
+            <Link to={`/landlord/${landlordId}`} className="btn btn-gray-mid">
+              Back to {landlord.name}
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="form-page">
       <h1 className="form-page__title">{landlord?.name}</h1>
@@ -87,6 +128,7 @@ const AddReviewPage: React.FC = () => {
           rentAmount={rentAmount} setRentAmount={setRentAmount}
           bedrooms={bedrooms} setBedrooms={setBedrooms}
           propertyAddress={propertyAddress} setPropertyAddress={setPropertyAddress}
+          neighborhood={neighborhood} setNeighborhood={setNeighborhood}
           tags={tags} setTags={setTags}
         />
 

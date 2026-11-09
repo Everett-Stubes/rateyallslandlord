@@ -1,6 +1,14 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { IApiService, ReviewUpdate } from './interfaces';
-import type { Landlord, Review } from '../types';
+import type { Landlord, Review, ReviewVotes } from '../types';
+import { getSemester, semesterLabel, SEMESTER_RULE_EXPLANATION } from '../utils/semester';
+
+// Postgres code for "unique constraint broken": here, a second review by the same person in one semester.
+const UNIQUE_VIOLATION = '23505';
+
+function oneReviewPerSemesterError(): Error {
+  return new Error(`You already posted a review in ${semesterLabel(getSemester())}. ${SEMESTER_RULE_EXPLANATION}`);
+}
 
 export class SupabaseApiService implements IApiService {
   constructor(private client: SupabaseClient) {}
@@ -89,6 +97,18 @@ export class SupabaseApiService implements IApiService {
     return data?.[0];
   }
 
+  async getCurrentSemesterReviewByUser(userId: string): Promise<Review | undefined> {
+    const { data, error } = await this.client
+      .from('reviews')
+      .select('*')
+      .eq('user_id', userId)
+      .eq('is_deleted', false)
+      .eq('semester', getSemester())
+      .limit(1);
+    if (error) throw error;
+    return data?.[0];
+  }
+
   async addLandlord(
     landlordData: Omit<Landlord, 'id' | 'is_deleted' | 'created_at' | 'status'>,
     reviewData?: Omit<Review, 'id' | 'landlord_id' | 'is_deleted' | 'created_at' | 'updated_at'>
@@ -105,7 +125,7 @@ export class SupabaseApiService implements IApiService {
       const { error: reviewError } = await this.client
         .from('reviews')
         .insert([{ ...reviewData, landlord_id: newLandlord.id }]);
-      if (reviewError) throw reviewError;
+      if (reviewError) throw reviewError.code === UNIQUE_VIOLATION ? oneReviewPerSemesterError() : reviewError;
     }
 
     return newLandlord;
@@ -119,7 +139,7 @@ export class SupabaseApiService implements IApiService {
       .insert([reviewData])
       .select()
       .single();
-    if (error) throw error;
+    if (error) throw error.code === UNIQUE_VIOLATION ? oneReviewPerSemesterError() : error;
     return data;
   }
 
@@ -208,6 +228,55 @@ export class SupabaseApiService implements IApiService {
       .eq('id', landlordId);
     if (error) throw error;
     return true;
+  }
+
+  async updateLandlordNeighborhoods(landlordId: number, neighborhoods: string[]): Promise<boolean> {
+    const { error } = await this.client
+      .from('landlords')
+      .update({ neighborhoods })
+      .eq('id', landlordId);
+    if (error) throw error;
+    return true;
+  }
+
+  async getReviewVotes(landlordId: number, userId?: string): Promise<ReviewVotes> {
+    const { data: totals, error } = await this.client.rpc('get_review_vote_counts', { p_landlord_id: landlordId });
+    if (error) throw error;
+    const counts: ReviewVotes['counts'] = {};
+    for (const row of (totals ?? []) as { review_id: number; upvotes: number; downvotes: number }[]) {
+      counts[row.review_id] = { up: Number(row.upvotes), down: Number(row.downvotes) };
+    }
+
+    const mine: ReviewVotes['mine'] = {};
+    const reviewIds = Object.keys(counts).map(Number);
+    if (userId && reviewIds.length > 0) {
+      const { data: own, error: ownError } = await this.client
+        .from('review_votes')
+        .select('review_id, value')
+        .eq('user_id', userId)
+        .in('review_id', reviewIds);
+      if (ownError) throw ownError;
+      for (const row of (own ?? []) as { review_id: number; value: number }[]) {
+        mine[row.review_id] = row.value === 1 ? 1 : -1;
+      }
+    }
+    return { counts, mine };
+  }
+
+  async setReviewVote(reviewId: number, userId: string, value: 1 | -1 | 0): Promise<void> {
+    if (value === 0) {
+      const { error } = await this.client
+        .from('review_votes')
+        .delete()
+        .eq('review_id', reviewId)
+        .eq('user_id', userId);
+      if (error) throw error;
+      return;
+    }
+    const { error } = await this.client
+      .from('review_votes')
+      .upsert({ review_id: reviewId, user_id: userId, value }, { onConflict: 'review_id,user_id' });
+    if (error) throw error;
   }
 
   async getAdminStats(): Promise<{ landlordCount: number; reviewCount: number; addressCount: number; userCount: number }> {

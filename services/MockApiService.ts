@@ -1,5 +1,5 @@
 import type { IApiService, ReviewUpdate } from './interfaces';
-import type { Landlord, Review } from '../types';
+import type { Landlord, Review, ReviewVotes } from '../types';
 
 // Clearly fake Atlanta landlord data (Home Park, Midtown, Downtown, and the Westside) for demo/development mode
 const MOCK_LANDLORDS: Landlord[] = [
@@ -222,6 +222,9 @@ const MOCK_REVIEWS: Record<number, Review[]> = {
 
 let nextId = 1000;
 
+// Demo-mode votes live in memory only: reviewId -> userId -> 1 (up) or -1 (down).
+const MOCK_VOTES: Record<number, Record<string, 1 | -1>> = {};
+
 export class MockApiService implements IApiService {
   async getLandlords(): Promise<Landlord[]> {
     return MOCK_LANDLORDS.filter((landlord) => !landlord.is_deleted);
@@ -255,6 +258,10 @@ export class MockApiService implements IApiService {
     _landlordId: number,
     _userId: string
   ): Promise<Review | undefined> {
+    return undefined;
+  }
+
+  async getCurrentSemesterReviewByUser(_userId: string): Promise<Review | undefined> {
     return undefined;
   }
 
@@ -333,6 +340,32 @@ export class MockApiService implements IApiService {
 
   async updateLandlordAddresses(_landlordId: number, _addresses: string[]): Promise<boolean> {
     return true;
+  }
+
+  async updateLandlordNeighborhoods(landlordId: number, neighborhoods: string[]): Promise<boolean> {
+    const landlord = MOCK_LANDLORDS.find((l) => l.id === landlordId);
+    if (landlord) landlord.neighborhoods = neighborhoods;
+    return true;
+  }
+
+  async getReviewVotes(landlordId: number, userId?: string): Promise<ReviewVotes> {
+    const counts: ReviewVotes['counts'] = {};
+    const mine: ReviewVotes['mine'] = {};
+    for (const review of MOCK_REVIEWS[landlordId] ?? []) {
+      const votes = MOCK_VOTES[review.id] ?? {};
+      const values = Object.values(votes);
+      if (values.length > 0) {
+        counts[review.id] = { up: values.filter((v) => v === 1).length, down: values.filter((v) => v === -1).length };
+      }
+      if (userId && votes[userId]) mine[review.id] = votes[userId];
+    }
+    return { counts, mine };
+  }
+
+  async setReviewVote(reviewId: number, userId: string, value: 1 | -1 | 0): Promise<void> {
+    const votes = (MOCK_VOTES[reviewId] ??= {});
+    if (value === 0) delete votes[userId];
+    else votes[userId] = value;
   }
 
   async getAdminStats(): Promise<{ landlordCount: number; reviewCount: number; addressCount: number; userCount: number }> {

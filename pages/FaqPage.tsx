@@ -36,6 +36,25 @@ const FaqPage: React.FC = () => {
       ),
     },
     {
+      q: 'How many reviews can I post?',
+      a: (
+        <>
+          You can post one review per semester (spring, summer, and fall). That keeps any one person from swinging a
+          landlord's grade. If something changes, edit your review any time with the Edit button on it, and when a new
+          semester starts you can post a fresh one.
+        </>
+      ),
+    },
+    {
+      q: 'What do the up and down arrows on reviews do?',
+      a: (
+        <>
+          Signed-in students can mark a review as helpful (up) or not (down). Votes only show how others felt about a
+          review; they never change a landlord's grade. You can't vote on your own review, and nobody can see who voted.
+        </>
+      ),
+    },
+    {
       q: 'Who can leave a review?',
       a: (
         <>

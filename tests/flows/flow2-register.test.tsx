@@ -36,7 +36,8 @@ describe('Flow 2: Register', () => {
     await user.type(getPasswordField(), 'password123');
     await user.type(getConfirmPasswordField(), 'password123');
 
-    // Complete captcha
+    // Agree to the terms, then complete captcha
+    await user.click(screen.getByRole('checkbox', { name: /terms of use/i }));
     await user.click(screen.getByTestId('captcha-complete'));
 
     // Click Sign Up
@@ -48,7 +49,10 @@ describe('Flow 2: Register', () => {
     expect(auth.signUp).toHaveBeenCalledWith(
       'newuser@gatech.edu',
       'password123',
-      expect.objectContaining({ captchaToken: 'test-captcha-token' })
+      expect.objectContaining({
+        captchaToken: 'test-captcha-token',
+        data: expect.objectContaining({ terms_accepted_at: expect.any(String) }),
+      })
     );
   });
 
@@ -66,7 +70,8 @@ describe('Flow 2: Register', () => {
     await user.type(getPasswordField(), 'password123');
     await user.type(getConfirmPasswordField(), 'differentpassword');
 
-    // Complete captcha
+    // Agree to the terms, then complete captcha
+    await user.click(screen.getByRole('checkbox', { name: /terms of use/i }));
     await user.click(screen.getByTestId('captcha-complete'));
 
     // Click Sign Up

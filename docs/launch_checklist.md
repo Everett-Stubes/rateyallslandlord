@@ -12,9 +12,14 @@ Keep [handoff.md](handoff.md) up to date as each service is set up; it is the on
 - [x] School picker with ten schools: Georgia Tech, Georgia State, Emory, Morehouse, Spelman, Clark Atlanta, Morehouse School of Medicine, SCAD, Agnes Scott, Mercer.
 - [x] Only confirmed school-email accounts can post reviews or add landlords (subdomains count, alumni addresses are blocked); admins can add landlords but not post reviews, so every review is from a verified school email. The site says so on landlord pages, the FAQ, and the About page.
 - [x] Reviewer privacy: unit numbers are removed before a review is saved and never shown, and the list of admin emails is not public.
+- [x] Sign-up bot-check fix, Gmail sending, and the live address `rateyallslandlord.com` work (the confirmation email can land in spam at some schools).
 - [x] Contact address (rateyallslandlord@gmail.com) is on the About and Contact pages and in the legal pages.
 
 ## To do before inviting real users
+
+**Run this first (new features need it)**
+
+- [ ] **You:** Run `migrations/2026-11-10-semester-votes-neighborhoods.sql` in Supabase (SQL Editor -> New query -> paste -> Run) **before** the new site version goes live. It adds: one review per person per semester, up/down votes on reviews, and a neighborhood on every review and on each landlord (so a landlord shows up under the neighborhoods it was added to or reviewed in). Safe to run more than once. Landlords you already added need their neighborhood set once: use **Edit neighborhoods** on the landlord's page as an admin, or the SQL in [data_cheatsheet.md](data_cheatsheet.md) section 2.
 
 **Email and addresses**
 

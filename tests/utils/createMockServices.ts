@@ -57,6 +57,7 @@ export function createMockApiService(overrides?: Partial<IApiService>): IApiServ
     getReviewsByLandlordId: vi.fn().mockResolvedValue([]),
     getReviewById: vi.fn().mockResolvedValue(undefined),
     getLatestReviewForLandlordByUser: vi.fn().mockResolvedValue(undefined),
+    getCurrentSemesterReviewByUser: vi.fn().mockResolvedValue(undefined),
     uploadVerificationFile: vi.fn().mockResolvedValue('file-path'),
     deleteVerificationFile: vi.fn().mockResolvedValue(undefined),
     getVerificationFileUrl: vi.fn().mockResolvedValue('https://example.com/file'),
@@ -71,6 +72,9 @@ export function createMockApiService(overrides?: Partial<IApiService>): IApiServ
     updateLandlordStatus: vi.fn().mockResolvedValue(true),
     updateReviewVerificationStatus: vi.fn().mockResolvedValue(true),
     updateLandlordAddresses: vi.fn().mockResolvedValue(true),
+    updateLandlordNeighborhoods: vi.fn().mockResolvedValue(true),
+    getReviewVotes: vi.fn().mockResolvedValue({ counts: {}, mine: {} }),
+    setReviewVote: vi.fn().mockResolvedValue(undefined),
     ...overrides,
   };
 }

@@ -13,6 +13,7 @@ const RegisterPage: React.FC = () => {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
   const [turnstileToken, setTurnstileToken] = useState<string>('');
+  const [agreedToTerms, setAgreedToTerms] = useState(false);
   const [success, setSuccess] = useState(false);
   const turnstileRef = useRef<TurnstileInstance>(null);
   const { register, loading } = useAuth();
@@ -27,6 +28,7 @@ const RegisterPage: React.FC = () => {
       setError(`Please use your school email (for example, ${exampleEmail}). Accounts are only for students at the schools listed above.`);
       return;
     }
+    if (!agreedToTerms) { setError('Please agree to the Terms of Use and Privacy Policy to create an account.'); return; }
     if (!turnstileToken) { setError('Please complete the security verification.'); return; }
     if (password !== confirmPassword) { setError('Passwords do not match.'); return; }
     if (password.length < 6) { setError('Password must be at least 6 characters long.'); return; }
@@ -108,6 +110,19 @@ const RegisterPage: React.FC = () => {
             />
           </div>
 
+          <label className="signup-terms">
+            <input
+              type="checkbox"
+              checked={agreedToTerms}
+              onChange={(e) => { setAgreedToTerms(e.target.checked); setError(''); }}
+            />
+            <span>
+              I agree to the <Link to="/terms-and-conditions" target="_blank" rel="noopener noreferrer">Terms of Use</Link>{' '}
+              and <Link to="/privacy-policy" target="_blank" rel="noopener noreferrer">Privacy Policy</Link>. I understand
+              reviews are one student's opinion and that I'm responsible for what I post.
+            </span>
+          </label>
+
           <div style={{ display: 'flex', justifyContent: 'center', padding: '0.5rem 0' }}>
             <TurnstileWidget
               turnstileRef={turnstileRef}
@@ -126,7 +141,7 @@ const RegisterPage: React.FC = () => {
             </div>
           )}
 
-          <button type="submit" disabled={loading || !turnstileToken} className="btn btn-primary btn-full btn-lg">
+          <button type="submit" disabled={loading || !turnstileToken || !agreedToTerms} className="btn btn-primary btn-full btn-lg">
             {loading ? (
               <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}>
                 <svg className="animate-spin" style={{ width: '1.25rem', height: '1.25rem' }} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">

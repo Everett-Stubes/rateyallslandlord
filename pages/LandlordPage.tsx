@@ -1,15 +1,16 @@
 
 import React, { useEffect, useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate, useLocation } from 'react-router-dom';
 import { useData } from '../context/DataContext';
 import { useAuth } from '../context/AuthContext';
 import LoadingSpinner from '../components/LoadingSpinner';
-import type { Landlord, Review } from '../types';
+import type { Landlord, Review, ReviewVotes } from '../types';
 import ReviewCard from '../components/ReviewCard';
 import { useApiService } from '../context/ServicesContext';
 import { toLetterGrade, gradeColors } from '../utils/grading';
 import { getDisplayLandlordCity } from '../utils/landlordLocation';
-import { getLandlordProperties, isReviewForProperty, toBuildingAddress } from '../utils/properties';
+import { getAllLandlordAddresses, getLandlordProperties, isReviewForProperty, toBuildingAddress } from '../utils/properties';
+import { neighborhoods as allNeighborhoods, getLandlordNeighborhoodNames } from '../utils/schools';
 import { AddressAutofill } from '@mapbox/search-js-react';
 import type { AddressAutofillRetrieveResponse } from '@mapbox/search-js-core';
 import { siteSettings } from '../siteSettings';
@@ -21,13 +22,18 @@ const LandlordPage: React.FC = () => {
   const api = useApiService();
   const { id } = useParams<{ id: string }>();
   const { getLandlord, getReviewsForLandlord, loading } = useData();
-  const { isAdmin } = useAuth();
+  const { isAdmin, user } = useAuth();
+  const navigate = useNavigate();
+  const location = useLocation();
   const [landlord, setLandlord] = useState<Landlord | null>(null);
   const [reviews, setReviews] = useState<Review[]>([]);
   const [isEditingAddresses, setIsEditingAddresses] = useState(false);
   const [newAddress, setNewAddress] = useState('');
   const [isSaving, setIsSaving] = useState(false);
   const [selectedPropertyKey, setSelectedPropertyKey] = useState<string | null>(null);
+  const [votes, setVotes] = useState<ReviewVotes>({ counts: {}, mine: {} });
+  const [isEditingNeighborhoods, setIsEditingNeighborhoods] = useState(false);
+  const [draftNeighborhoods, setDraftNeighborhoods] = useState<string[]>([]);
 
   useEffect(() => {
     const landlordId = Number(id);
@@ -36,6 +42,63 @@ const LandlordPage: React.FC = () => {
       getReviewsForLandlord(landlordId).then(setReviews);
     }
   }, [id, getLandlord, getReviewsForLandlord, isAdmin]);
+
+  // Vote totals are public; the signed-in person's own votes come with them.
+  useEffect(() => {
+    const landlordId = Number(id);
+    if (!landlordId) return;
+    api.getReviewVotes(landlordId, user?.id)
+      .then(setVotes)
+      .catch(error => console.error('Error loading votes:', error));
+  }, [id, api, user?.id]);
+
+  // Clicking your current vote again removes it. Votes never change a landlord's grade.
+  const handleVote = async (reviewId: number, value: 1 | -1) => {
+    if (!user) {
+      navigate('/login', { state: { from: `${location.pathname}${location.search}` } });
+      return;
+    }
+    const before = votes;
+    const current = before.mine[reviewId];
+    const next: 1 | -1 | 0 = current === value ? 0 : value;
+    const counts = { ...before.counts };
+    const totals = { ...(counts[reviewId] ?? { up: 0, down: 0 }) };
+    if (current === 1) totals.up -= 1;
+    if (current === -1) totals.down -= 1;
+    if (next === 1) totals.up += 1;
+    if (next === -1) totals.down += 1;
+    counts[reviewId] = totals;
+    const mine = { ...before.mine };
+    if (next === 0) delete mine[reviewId];
+    else mine[reviewId] = next;
+    setVotes({ counts, mine });
+    try {
+      await api.setReviewVote(reviewId, user.id, next);
+    } catch (error) {
+      console.error('Error saving vote:', error);
+      setVotes(before);
+      alert('Could not save your vote. Only accounts with a confirmed school email can vote, and you can\'t vote on your own review.');
+    }
+  };
+
+  const startEditingNeighborhoods = () => {
+    if (!landlord) return;
+    setDraftNeighborhoods(landlord.neighborhoods ?? []);
+    setIsEditingNeighborhoods(true);
+  };
+
+  const saveNeighborhoods = async () => {
+    if (!landlord) return;
+    setIsSaving(true);
+    try {
+      await api.updateLandlordNeighborhoods(landlord.id, draftNeighborhoods);
+      setLandlord({ ...landlord, neighborhoods: draftNeighborhoods });
+      setIsEditingNeighborhoods(false);
+    } catch (error) {
+      console.error('Error saving neighborhoods:', error);
+      alert('Failed to save neighborhoods. Please try again.');
+    } finally { setIsSaving(false); }
+  };
 
   const handleAddAddress = async () => {
     if (!landlord) return;
@@ -121,6 +184,40 @@ const LandlordPage: React.FC = () => {
                   <span>{displayCity}</span>
                 </div>
               )}
+
+              <div className="landlord-neighborhoods">
+                {isEditingNeighborhoods ? (
+                  <>
+                    <div className="neighborhood-picker" role="group" aria-label="Neighborhoods">
+                      {allNeighborhoods.map(n => {
+                        const active = draftNeighborhoods.includes(n.name);
+                        return (
+                          <button
+                            key={n.name}
+                            type="button"
+                            className={`neighborhood-chip${active ? ' neighborhood-chip--active' : ''}`}
+                            aria-pressed={active}
+                            onClick={() => setDraftNeighborhoods(active ? draftNeighborhoods.filter(x => x !== n.name) : [...draftNeighborhoods, n.name])}
+                          >
+                            {n.name}
+                          </button>
+                        );
+                      })}
+                    </div>
+                    <button onClick={saveNeighborhoods} disabled={isSaving} className="landlord-address-btn landlord-address-btn-add">Save</button>
+                    <button onClick={() => setIsEditingNeighborhoods(false)} disabled={isSaving} className="landlord-address-btn landlord-address-btn-done">Cancel</button>
+                  </>
+                ) : (
+                  <>
+                    {[...getLandlordNeighborhoodNames(landlord.neighborhoods, getAllLandlordAddresses(landlord, activeReviews), activeReviews.map(r => r.neighborhood))].map(name => (
+                      <span key={name} className="landlord-tag">{name}</span>
+                    ))}
+                    {isAdmin && (
+                      <button onClick={startEditingNeighborhoods} className="landlord-address-manage-btn">Edit neighborhoods</button>
+                    )}
+                  </>
+                )}
+              </div>
 
               {properties.length > 0 && (
                 <div className="landlord-addresses">
@@ -326,7 +423,14 @@ const LandlordPage: React.FC = () => {
 
         <div className="reviews-list">
           {shownReviews.length > 0 ? (
-            shownReviews.map(review => <ReviewCard key={review.id} review={review} />)
+            shownReviews.map(review => (
+              <ReviewCard
+                key={review.id}
+                review={review}
+                votes={{ ...(votes.counts[review.id] ?? { up: 0, down: 0 }), mine: votes.mine[review.id] }}
+                onVote={value => handleVote(review.id, value)}
+              />
+            ))
           ) : (
             <div className="reviews-empty">
               <div className="reviews-empty-icon">
