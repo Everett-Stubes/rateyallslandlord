@@ -1,48 +1,45 @@
 # Launch checklist: real data on rateyallslandlord.com
 
-Keep [handoff.md](handoff.md) up to date as each service is set up; it is the one-pager for whoever takes over. Everything here uses free plans except the domain. **You** = steps that need the site owner (account sign-ups, payment, pasting secret keys). **Code** = changes made in this repository.
+Keep [handoff.md](handoff.md) up to date as each service is set up; it is the one-pager for whoever takes over. Everything uses free plans except the domain. **You** = steps that need the site owner (account sign-ups, payment, pasting secret keys). **Code** = changes made in this repository. Day-to-day data tasks (making an admin, adding landlords, cleaning up test data, backups) are in [data_cheatsheet.md](data_cheatsheet.md).
 
-## 1. Domain (the only cost)
+## Done
 
-- [ ] **You:** Check that `rateyallslandlord.com` is available. Pick one or two backups and add them to [website_customization.md](website_customization.md).
-- [ ] **You:** Buy it through **Cloudflare Registrar** (sold at cost, about $10–11 a year for a .com; check at checkout). It then uses the same Cloudflare account as the hosting.
-- [ ] **You:** Create the virtual card, then pay with it. Load about $15 for one year or $25 for two, and lock the card to Cloudflare if your bank allows it.
-- [ ] **You:** Cloudflare auto-renews. Put a calendar reminder one month before the renewal date to make sure the card has money, or the domain can lapse.
-- [ ] **You:** Turn on two-step login (2FA) for Cloudflare, Supabase, and GitHub.
+- [x] Domain bought (Cloudflare), paid with a limited virtual card.
+- [x] Supabase project created, with the database set up and **empty** (no sample data). The upgrade script `migrations/2026-11-09-school-email-only-posting.sql` has been run.
+- [x] Turnstile widget created and CAPTCHA protection turned on in Supabase; login, sign-up, resend-confirmation, and password-reset requests send the token for server-side checking.
+- [x] Mapbox token created.
+- [x] Site code merged to `main` and deployed by Cloudflare (a Worker named `rateyallslandlord`).
+- [x] School picker with ten schools: Georgia Tech, Georgia State, Emory, Morehouse, Spelman, Clark Atlanta, Morehouse School of Medicine, SCAD, Agnes Scott, Mercer.
+- [x] Only confirmed school-email accounts can post reviews or add landlords (subdomains count, alumni addresses are blocked); admins can add landlords but not post reviews, so every review is from a verified school email. The site says so on landlord pages, the FAQ, and the About page.
+- [x] Reviewer privacy: unit numbers are removed before a review is saved and never shown, and the list of admin emails is not public.
+- [x] Contact address (rateyallslandlord@gmail.com) is on the About and Contact pages and in the legal pages.
 
-Your name and address on the domain registration are hidden from the public lookup by Cloudflare by default.
+## To do before inviting real users
 
-## 2. Database: Supabase (free)
+**Email and addresses**
 
-- [ ] **You:** Create a Supabase account and project ([guide, part 4](replication_guide.md#4-create-a-supabase-project)).
-- [ ] **You:** Paste `init.sql` into the SQL Editor and run it.
-- [ ] **You:** Delete the fake landlord and reviews (they're labelled "fake") before launch.
-- [ ] **You:** Register on the site, then add your email to the `admins` table so you can approve reviews at `/admin`.
-- [ ] **You:** Download a backup of the data now and then. The free plan has no automatic backups, and it pauses a project after about a week with no visitors.
+- [x] **You:** Set up Gmail sending in Supabase (Authentication → Emails → SMTP Settings: host `smtp.gmail.com`, port `587`, the Gmail address as username and sender, and a Google *app password*). Without it nobody receives confirmation emails. [Guide, part 5](replication_guide.md#configure-confirmation-and-password-reset-email).
+- [ ] **You:** Set Supabase's **Site URL** and **Redirect URLs** to the live address (Authentication → URL Configuration): `https://ADDRESS/verify-email?verification=1` and `https://ADDRESS/reset-password`. They still point at `localhost`.
+- [ ] **You:** Add the live address to the Turnstile widget's hostnames.
+- [x] **Decision:** the Mapbox token is **not** URL-restricted, on purpose. Mapbox only lets you create a restricted token after adding a payment card, and with no card on file Mapbox cannot bill anyone. The cost of leaving it is that someone could use up the free monthly allowance, which would pause address suggestions until the next month (people can still type addresses by hand). Don't add a card to Mapbox.
+- [ ] **You:** Attach `rateyallslandlord.com` to the Cloudflare Worker (Settings → Domains & Routes → Add → Custom domain), then repeat the three steps above with the custom domain.
+- [ ] **You:** Delete the duplicate Cloudflare project `rateyallslandlordmain` (it only shows failed builds).
+- [ ] **You:** In Cloudflare, check the build variables (Settings → Build → Variables and secrets) are the five from [guide, part 8](replication_guide.md#8-publish-a-trial-site-with-cloudflare-pages). With them missing, the site shows "Demo mode" with fake landlords.
 
-## 3. Email
+**Legal pages** (the Terms and Privacy Policy came from a template)
 
-The site's contact address is the team's Gmail account. There is no separate mailing list; the emails of people who create accounts are stored by Supabase.
+- [x] **Code:** Website name, contact email, and website address are filled in.
+- [ ] **You:** Decide and fill in what is still blank: the **operator's name** (about 95 places), a **governing law** (for example "the State of Georgia"), the **court venue**, a **mailing address** for legal notices, and the **translation service** named in the Terms. Ask More Perfect University or a lawyer whether the template's arbitration and class-action sections suit a student project.
 
-- [x] **Code:** Gmail address (rateyallslandlord@gmail.com) is on the About and Contact pages.
-- [ ] **You:** Supabase's built-in sender can't email the public, so connect a sender for sign-up and password-reset emails ([guide, part 5](replication_guide.md#configure-confirmation-and-password-reset-email)). Two free options:
-  - **Gmail (works today, no domain needed):** turn on 2-Step Verification for the team Gmail account, create an **app password** in its Google Account security settings, and enter it in Supabase's SMTP settings with host `smtp.gmail.com`, port `587`, and the Gmail address as username and sender. Google limits a regular account to roughly 500 emails a day. Never paste the app password into chat or `.env.local`.
-  - **Resend or Brevo (after the domain):** emails come from `@rateyallslandlord.com` and are less likely to land in spam. Each requires verifying the domain.
+**Real data**
 
-## 4. Hosting: Cloudflare Pages (free)
+- [ ] **You:** Sign up on the live site with your school email, then make yourself an admin ([data_cheatsheet.md](data_cheatsheet.md), section 1).
+- [ ] **You:** Add the landlords to list at launch (section 2 of the cheat-sheet), then approve them at `/admin`.
+- [ ] **You:** Run the end-to-end test from [guide, part 11](replication_guide.md#11-test-before-sharing): sign up, confirm email, log in, reset password, post a review, approve it. Then delete the test review and test accounts (cheat-sheet section 4).
+- [ ] **You:** Export a backup of the tables (cheat-sheet section 5) and put a reminder in your calendar to repeat it. Also a reminder a month before the domain renews.
 
-- [ ] **You:** Create a Turnstile widget and copy its sitekey and secret key ([guide, part 6](replication_guide.md#6-set-up-cloudflare-turnstile)).
-- [ ] **You:** In Supabase, turn on CAPTCHA protection with the Turnstile **secret** key ([guide](replication_guide.md#turn-on-server-side-checking-in-supabase)).
-- [ ] **You:** Create a Mapbox account and copy a public `pk.` token ([guide, part 7](replication_guide.md#7-set-up-mapbox-address-suggestions)).
-- [ ] **You:** Connect this GitHub repository to Cloudflare Pages with the five settings in [guide, part 8](replication_guide.md#8-publish-a-trial-site-with-cloudflare-pages).
-- [ ] **You:** Attach the domain, then add it to Supabase redirect URLs, Turnstile, and Mapbox ([parts 9–10](replication_guide.md#9-connect-your-domain)).
+## Open decisions
 
-## 5. Before inviting real users
-
-- [x] **Code:** Login, sign-up, resend-confirmation, and password-reset requests send the Turnstile token to Supabase for server-side checking.
-- [x] **Code:** Database rules allow only confirmed school-email accounts (Georgia Tech, Georgia State, Emory, Morehouse, Spelman, Clark Atlanta, Morehouse School of Medicine, SCAD, Agnes Scott, Mercer; subdomains count, alumni addresses are blocked) or admins to post reviews or add landlords, as themselves.
-- [ ] **You:** The live Supabase database needs the update in `migrations/2026-11-09-school-email-only-posting.sql`: paste it into Supabase → SQL Editor → New query → Run.
-- [ ] **Decide:** `gsu.edu` also covers Georgia State faculty and staff, and `mercer.edu` also covers Mercer's other campuses. Subdomains count, so students-only isn't possible for Georgia State without listing `student.gsu.edu` separately.
-- [ ] **Code + you:** Review the Privacy Policy and Terms. They came from the template.
-- [ ] **You:** Fill in the landlords to list at launch in [website_customization.md](website_customization.md).
-- [ ] **You:** Run the checks in [guide, part 11](replication_guide.md#11-test-before-sharing): sign up, confirm email, log in, reset password, post a review, approve it.
+- `gsu.edu` also covers Georgia State faculty and staff, and `mercer.edu` also covers Mercer's other campuses (such as Macon), so those users can post too.
+- The SCAD and Morehouse School of Medicine student email domains are listed but not confirmed; check with a student at each school.
+- Each review carries a random reviewer ID, visible only through the public database address. It doesn't name anyone, but it lets someone link one person's reviews together. Hiding it needs a bigger database change.

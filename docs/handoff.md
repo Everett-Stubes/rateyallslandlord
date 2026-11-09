@@ -26,10 +26,10 @@ When someone edits the code on GitHub's `main` branch, Cloudflare Pages rebuilds
 | Service | What it does | Login method | Cost | Status / key facts |
 | --- | --- | --- | --- | --- |
 | GitHub | Holds the code; Supabase login also uses it | Everett's GitHub, 2-step on | Free | Repo: `Everett-Stubes/rateyallslandlord` |
-| Cloudflare | Domain, hosting (Pages), bot check (Turnstile), DNS | Email + 2-step (authenticator app) | Domain only | Domain: rateyallslandlord.com, registered 2026-11-09. Renews: **TBD (check Cloudflare → Domain Registration)**. Pages address: **TBD** |
+| Cloudflare | Domain, hosting (Pages), bot check (Turnstile), DNS | Email + 2-step (authenticator app) | Domain only | Domain: rateyallslandlord.com, registered 2026-11-09. Renews: **TBD (check Cloudflare → Domain Registration)**. Live address: https://rateyallslandlord.rateyallslandlord.workers.dev (a Cloudflare Worker named `rateyallslandlord`, built from the `main` branch) |
 | Supabase | Database, user accounts, sign-up emails | "Continue with GitHub" | Free | Project ref `ywgbwddksbvsaoxycwmv`, region East US. URL `https://ywgbwddksbvsaoxycwmv.supabase.co` |
 | Gmail (team address) | Sends confirmation and password-reset emails; contact address | Email + password + 2-step | Free | Address: rateyallslandlord@gmail.com. Uses an *app password* (see below) |
-| Mapbox | Address suggestions | **TBD** | Free tier | Public token `pk.eyJ1IjoicmF0ZXlhbGxzbGFuZGxvcmQi...` (full value is in Cloudflare Pages' build variables); limit it to the site's web addresses in Mapbox |
+| Mapbox | Address suggestions | **TBD** | Free tier | Public token `pk.eyJ1IjoicmF0ZXlhbGxzbGFuZGxvcmQi...` (full value is in the Cloudflare build variables). Not URL-restricted on purpose: restricting needs a payment card on the account, and with no card Mapbox can't bill anyone. Don't add a card. If address suggestions stop mid-month, the free allowance ran out and resets next month. |
 | Turnstile | Bot check | Part of Cloudflare | Free | Sitekey: `0x4AAAAAAF6fq7QhK5vwxdeG` (public). Secret key is stored in Supabase only |
 
 Public values (safe to see; they ship inside the website): the Supabase URL above, the Supabase publishable key `sb_publishable_l2BqAp-7bi-rzNeLlp1ULA_6FGFMTy0`, the Turnstile sitekey, and the Mapbox `pk.` token. These are set as build variables in Cloudflare Pages (see `docs/replication_guide.md`, part 8).
@@ -100,4 +100,4 @@ For every row: the **where** column says where to find or create it. Write the v
 
 ## More detail
 
-[Launch checklist](launch_checklist.md) · [Setup guide](replication_guide.md) · [Site customization](website_customization.md) · [Architecture](architecture.md)
+[Data cheat-sheet](data_cheatsheet.md) · [Launch checklist](launch_checklist.md) · [Setup guide](replication_guide.md) · [Site customization](website_customization.md) · [Architecture](architecture.md)

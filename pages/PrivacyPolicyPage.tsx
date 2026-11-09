@@ -18,11 +18,10 @@ const PrivacyPolicyPage: React.FC = () => {
           <p>
             This online Privacy Policy (the "<strong>Policy</strong>") describes how
             [insert company name here] and its affiliates and subsidiaries (collectively "
-            <strong>[insert company abbreviation here]</strong>," "<strong>we</strong>," "<strong>us</strong>," or "
+            <strong>RYL</strong>," "<strong>we</strong>," "<strong>us</strong>," or "
             <strong>our</strong>") collect, use, disclose, and secure the personal
-            information we gather about you through our websites,{" "}
-            [insert company website URL here], [insert website URL here], and{" "}
-            [insert website URL here]{" "}
+            information we gather about you through our website,{" "}
+            rateyallslandlord.com{" "}
             (collectively, the "<strong>Sites</strong>"), and when you otherwise
             interact with us (collectively, the "<strong>Services</strong>").
           </p>
@@ -34,7 +33,7 @@ const PrivacyPolicyPage: React.FC = () => {
             and regulations, such as aggregated, anonymized, or deidentified data.
             Nothing in this Policy will constitute an admission or evidence that any
             particular data privacy or information security law or regulation applies to
-            [insert company abbreviation here] generally or in any specific context.
+            RYL generally or in any specific context.
           </p>
           <h1 id="1-you-consent-to-this-policy">1. You Consent to This Policy</h1>
           <p>
@@ -228,7 +227,7 @@ const PrivacyPolicyPage: React.FC = () => {
                   performance of Services.
                 </td>
                 <td>
-                  [insert company abbreviation here]
+                  RYL
                   <br />
                   <br />
                   <a href="https://tools.google.com/dlpage/gaoptout">Google</a>
@@ -541,7 +540,7 @@ const PrivacyPolicyPage: React.FC = () => {
             7. CROSS-BORDER TRANSFERS OF PERSONAL INFORMATION
           </h1>
           <p>
-            [insert company abbreviation here] is the controller for all personal information subject to this Policy
+            RYL is the controller for all personal information subject to this Policy
             that is collected from residents of the EEA, UK, and Switzerland. We process
             personal information on our servers in the United States, which does not
             have an adequacy decision, and may do so in other countries. If you use our
@@ -624,14 +623,14 @@ const PrivacyPolicyPage: React.FC = () => {
           <h1 id="shine-the-light-disclosure">13. Shine the light Disclosure</h1>
           <p>
             If you are a California resident and have an established business
-            relationship with us, [insert company abbreviation here] does not disclose personal information to third
+            relationship with us, RYL does not disclose personal information to third
             parties, for those third parties' direct marketing purposes during the
             preceding calendar year.
           </p>
           <h1 id="contact-us">14. CONTACT US</h1>
           <p>
             If you have any questions about this Policy, please contact us by email at{" "}
-            [insert contact email here].
+            rateyallslandlord@gmail.com.
           </p>
         </>
 

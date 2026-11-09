@@ -45,7 +45,11 @@ describe('Flow 2: Register', () => {
     // Should show success screen
     await findVerifyEmailText();
     expect(screen.getByText(/newuser@gatech\.edu/)).toBeInTheDocument();
-    expect(auth.signUp).toHaveBeenCalledWith('newuser@gatech.edu', 'password123', expect.any(Object));
+    expect(auth.signUp).toHaveBeenCalledWith(
+      'newuser@gatech.edu',
+      'password123',
+      expect.objectContaining({ captchaToken: 'test-captcha-token' })
+    );
   });
 
   it('edge: mismatched passwords → "Passwords do not match." error; auth.signUp NOT called', async () => {

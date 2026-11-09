@@ -22,6 +22,8 @@ await db.exec(`
   ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON SEQUENCES TO anon, authenticated;
 `);
 
+const testSeed = readFileSync(new URL('./test-seed.sql', import.meta.url), 'utf8');
+
 try {
   await db.exec(sql);
   console.log('PASS init.sql runs');
@@ -66,8 +68,13 @@ async function as(user, fn) {
   try { return await fn(); } finally { await db.exec('RESET ROLE'); }
 }
 
+const emptyCount = await db.query(`SELECT (SELECT count(*) FROM public.landlords)::int AS landlords, (SELECT count(*) FROM public.reviews)::int AS reviews`);
+check('a new database starts with no landlords or reviews', emptyCount.rows[0].landlords === 0 && emptyCount.rows[0].reviews === 0);
+
+// The tests below use fake data from scripts/test-seed.sql.
+await db.exec(testSeed);
 const seed = await db.query(`SELECT verification_status FROM public.reviews WHERE id = 2`);
-check('seed data keeps its verified review', seed.rows[0]?.verification_status === 'verified');
+check('test data keeps its verified review', seed.rows[0]?.verification_status === 'verified');
 
 // What AddReviewPage sends, including a forged 'verified' status.
 const inserted = await as(STUDENT, () => db.query(
