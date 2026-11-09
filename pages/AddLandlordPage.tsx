@@ -11,6 +11,7 @@ import { AddressAutofill } from '@mapbox/search-js-react';
 import type { AddressAutofillRetrieveResponse } from '@mapbox/search-js-core';
 import { siteSettings } from '../siteSettings';
 import { isStudentEmail } from '../utils/studentVerification';
+import { neighborhoods as allNeighborhoods, inferNeighborhoodNames } from '../utils/schools';
 
 const MAPBOX_TOKEN = import.meta.env.VITE_MAPBOX_TOKEN as string;
 
@@ -26,6 +27,9 @@ const AddLandlordPage: React.FC = () => {
   const [bedrooms, setBedrooms] = useState('');
   const [propertyAddress, setPropertyAddress] = useState('');
   const [tags, setTags] = useState<string[]>([]);
+  const [selectedNeighborhoods, setSelectedNeighborhoods] = useState<string[]>([]);
+  // Once the person picks a neighborhood themselves, typing an address no longer changes the picks.
+  const [neighborhoodsTouched, setNeighborhoodsTouched] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [turnstileToken, setTurnstileToken] = useState<string>('');
   const [showSuggestions, setShowSuggestions] = useState(false);
@@ -44,6 +48,18 @@ const AddLandlordPage: React.FC = () => {
       setPropertyAddress(prev => prev || address);
     }
     setAddReview(checked);
+  };
+
+  // Suggest neighborhoods from the address (streets in siteSettings.ts) until the person chooses.
+  useEffect(() => {
+    if (neighborhoodsTouched) return;
+    const guess = inferNeighborhoodNames([address, propertyAddress].filter(Boolean));
+    setSelectedNeighborhoods(guess);
+  }, [address, propertyAddress, neighborhoodsTouched]);
+
+  const toggleNeighborhood = (name: string) => {
+    setNeighborhoodsTouched(true);
+    setSelectedNeighborhoods(current => current.includes(name) ? current.filter(n => n !== name) : [...current, name]);
   };
 
   // Filter approved landlords whose name contains the typed text
@@ -110,6 +126,7 @@ const AddLandlordPage: React.FC = () => {
     if (!user) { navigate('/login'); return; }
     if (!turnstileToken) { alert('Please complete the security verification.'); return; }
     if (!name) { alert('Please fill in landlord name.'); return; }
+    if (selectedNeighborhoods.length === 0) { alert('Please pick a neighborhood. Choose "Other" if none fit.'); return; }
 
     // Check for exact match before submitting
     const existing = findExactMatch(name);
@@ -119,7 +136,13 @@ const AddLandlordPage: React.FC = () => {
     }
 
     setUploading(true);
-    const landlordData = { name, addresses: address ? [address] : undefined, city: siteSettings.city };
+    const landlordAddress = removeUnitNumber(address || (addReview ? propertyAddress : ''));
+    const landlordData = {
+      name,
+      addresses: landlordAddress ? [landlordAddress] : undefined,
+      neighborhoods: selectedNeighborhoods,
+      city: siteSettings.city,
+    };
     let reviewData;
     if (addReview) {
       reviewData = {
@@ -215,6 +238,29 @@ const AddLandlordPage: React.FC = () => {
             </AddressAutofill>
           </div>
         )}
+
+        <div>
+          <span className="form-label" id="neighborhood-label">Neighborhood</span>
+          <div className="neighborhood-picker" role="group" aria-labelledby="neighborhood-label">
+            {allNeighborhoods.map(n => {
+              const active = selectedNeighborhoods.includes(n.name);
+              return (
+                <button
+                  key={n.name}
+                  type="button"
+                  className={`neighborhood-chip${active ? ' neighborhood-chip--active' : ''}`}
+                  aria-pressed={active}
+                  onClick={() => toggleNeighborhood(n.name)}
+                >
+                  {n.name}
+                </button>
+              );
+            })}
+          </div>
+          <p className="neighborhood-hint">
+            Pick every neighborhood this landlord rents in. This is how students find them when they browse by neighborhood. Choose "Other" if none fit.
+          </p>
+        </div>
 
         <div className="form-divider">
           <label className="form-checkbox-row">

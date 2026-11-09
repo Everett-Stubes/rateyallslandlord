@@ -9,18 +9,8 @@ import type { Landlord, Review } from '../types';
 import BrandLogo from '../components/BrandLogo';
 import { siteSettings } from '../siteSettings';
 import { getAllLandlordAddresses, getLandlordProperties } from '../utils/properties';
-import { neighborhoods, groupNeighborhoodsForSchool, type Neighborhood } from '../utils/schools';
+import { groupNeighborhoodsForSchool, getLandlordNeighborhoodNames, type Neighborhood } from '../utils/schools';
 import { useSchool } from '../context/SchoolContext';
-
-const isOnStreets = (addresses: string[], streets: string[]) =>
-  streets.some(street => addresses.some(a => a.toLowerCase().includes(street.toLowerCase())));
-
-// A neighborhood with streets matches landlords with a property on one of them. One with no
-// streets ("Other") matches landlords outside all of the named neighborhoods.
-const isInNeighborhood = (addresses: string[], neighborhood: Neighborhood) =>
-  neighborhood.streets.length > 0
-    ? isOnStreets(addresses, neighborhood.streets)
-    : !neighborhoods.some(n => n.streets.length > 0 && isOnStreets(addresses, n.streets));
 
 const MainPage: React.FC = () => {
   const { landlords, loading, deleteLandlord } = useData();
@@ -69,7 +59,7 @@ const MainPage: React.FC = () => {
     return landlords.filter(landlord => {
       const reviews = reviewsByLandlord[landlord.id] ?? [];
       const addresses = getAllLandlordAddresses(landlord, reviews);
-      if (activeFocus && !isInNeighborhood(addresses, activeFocus)) return false;
+      if (activeFocus && !getLandlordNeighborhoodNames(landlord.neighborhoods, addresses).has(activeFocus.name)) return false;
       if (!term) return true;
       if (landlord.name.toLowerCase().includes(term)) return true;
       if (addresses.some(a => a.toLowerCase().includes(term))) return true;

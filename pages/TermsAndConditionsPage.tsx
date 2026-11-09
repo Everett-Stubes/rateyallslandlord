@@ -19,7 +19,7 @@ const TermsAndConditionsPage: React.FC<TermsAndConditionsPageProps> = ({ title =
             <strong>Terms of Use</strong>
           </p>
           <p>
-            <em>Last Updated</em>: September 25, 2026
+            <em>Last Updated</em>: November 9, 2026
           </p>
           <p>
             <strong>
@@ -58,6 +58,51 @@ const TermsAndConditionsPage: React.FC<TermsAndConditionsPageProps> = ({ title =
             posting on this Site. Please return to this Site periodically to ensure you
             are familiar with the most current version of these Terms of Use.
           </p>
+          <div className="terms-reviews-box">
+            <h2 id="about-reviews">About reviews and votes (plain-English summary)</h2>
+            <ul>
+              <li>
+                <strong>Reviews are opinions.</strong> Every review, rating, tag, and vote is written by an individual
+                user. It is that user's own opinion and experience, not a statement, endorsement, or guarantee by
+                Rate Y'all's Landlord. We do not write reviews, and we do not investigate whether they are accurate.
+              </li>
+              <li>
+                <strong>"Verified" means a school email, nothing more.</strong> We confirm that a reviewer controls a
+                school email address. We do not confirm that they rented from the landlord, or that what they wrote is
+                true or complete.
+              </li>
+              <li>
+                <strong>You are responsible for what you post.</strong> Only write about what you personally
+                experienced, keep it truthful, and share opinions rather than accusations you can't back up. Do not name
+                individual people (staff or other tenants), share anyone's private contact details, or post threats,
+                harassment, or hate speech. Do not post a review of a landlord you have not dealt with.
+              </li>
+              <li>
+                <strong>One review per landlord each semester.</strong> You may edit your own review at any time. Votes
+                (up or down) are only a signal of how helpful others found a review; they do not change a landlord's
+                grade.
+              </li>
+              <li>
+                <strong>We may remove content.</strong> We may remove or hide any review, vote, or account at our
+                discretion, with or without notice, but we are not required to. If you believe a review breaks these
+                rules, email rateyallslandlord@gmail.com with a link to the review and what is wrong with it, and we
+                will look at it.
+              </li>
+              <li>
+                <strong>Do your own research.</strong> Reviews are not professional advice. Read your lease, visit the
+                property, and talk to current tenants before you sign.
+              </li>
+              <li>
+                <strong>We host, you speak.</strong> We are a platform that publishes content written by our users. To
+                the fullest extent allowed by law, including 47 U.S.C. § 230, we are not the publisher or speaker of
+                that content and are not responsible for it.
+              </li>
+            </ul>
+            <p>
+              This summary is part of these Terms. The full legal terms follow; if anything conflicts, the stricter
+              protection for Rate Y'all's Landlord applies to the extent the law allows.
+            </p>
+          </div>
           <h1 id="-dispute-resolution-">
             <strong>1. DISPUTE RESOLUTION</strong>
           </h1>

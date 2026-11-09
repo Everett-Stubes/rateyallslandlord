@@ -38,6 +38,19 @@ insert into public.landlords (name, addresses, city, status) values
   ('Another Landlord LLC', array['789 Placeholder Rd SE'], 'Atlanta', 'approved');
 ```
 
+Each landlord also has a **neighborhoods** list, which is how it shows up when someone clicks a neighborhood on the home page. The site also guesses from the street addresses, but the list is what you set. In the SQL above, add it as a column (names must match the ones in `siteSettings.ts` exactly, such as `Home Park`):
+
+```sql
+insert into public.landlords (name, addresses, city, status, neighborhoods) values
+  ('Example Property Management', array['123 Hemphill Ave NW'], 'Atlanta', 'approved', array['Home Park']);
+```
+
+To fix an existing landlord that doesn't show up under its neighborhood (or use **Edit neighborhoods** on its page when logged in as an admin):
+
+```sql
+update public.landlords set neighborhoods = array['Home Park'] where name = 'Example Property Management';
+```
+
 ## 3. See what is in the database
 
 ```sql
@@ -68,6 +81,17 @@ Test accounts are removed in the dashboard under **Authentication → Users** (c
 
 The free Supabase plan makes no automatic backups. Every few months, and before any big change, open **Table Editor**, pick `landlords`, then `reviews`, and use **Export → Download as CSV** on each. Keep the files somewhere private: reviews are tied to anonymous account IDs but still belong to your users.
 
-## 6. If a review or landlord needs removing
+## 6. Reviews: one per semester, and votes
+
+- Each person gets **one review per landlord per semester** (spring = Jan-Apr, summer = May-Jul, fall = Aug-Dec, Atlanta time). The database enforces it, and the site explains why when someone tries a second one. A person can edit their review any time.
+- If an admin removes a review at `/admin`, that person can post again that semester. Restoring the removed review is then refused while the newer one exists.
+- Up/down votes never change a landlord's grade. Only confirmed school-email accounts can vote, never on their own review. To see raw totals:
+
+  ```sql
+  select review_id, sum((value = 1)::int) as up, sum((value = -1)::int) as down
+  from public.review_votes group by review_id order by review_id;
+  ```
+
+## 7. If a review or landlord needs removing
 
 Admins can delete and restore reviews and landlords at `/admin`. Deleted items are hidden from visitors but kept in the database (they're marked `is_deleted`). To remove something permanently, use the SQL above.

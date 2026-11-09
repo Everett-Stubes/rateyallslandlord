@@ -3463,3 +3463,166 @@ ol {
     grid-template-columns: repeat(2, 1fr);
   }
 }
+/* Review votes */
+.review-votes {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0.75rem 0;
+}
+
+.review-votes__label {
+  font-size: 0.875rem;
+  color: var(--neutral-300);
+  margin-right: 0.25rem;
+}
+
+.review-vote-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.25rem 0.75rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--primary-300);
+  background: none;
+  border: 1px solid var(--primary-200);
+  border-radius: 999px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.review-vote-btn svg {
+  width: 0.875rem;
+  height: 0.875rem;
+}
+
+.review-vote-btn:hover:not(:disabled) {
+  background-color: var(--neutral-200);
+}
+
+.review-vote-btn--active {
+  color: #fff;
+  background-color: var(--primary-300);
+  border-color: var(--primary-300);
+}
+
+.review-vote-btn--active:hover:not(:disabled) {
+  background-color: var(--primary-300);
+}
+
+.review-vote-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* One review per semester notice */
+.semester-notice {
+  max-width: 40rem;
+  margin: 2rem auto;
+  padding: 1.5rem;
+  text-align: center;
+  background-color: var(--primary-100);
+  border: 1px solid var(--primary-200);
+  border-radius: var(--radius-lg);
+}
+
+.semester-notice h2 {
+  margin: 0 0 0.5rem;
+}
+
+.semester-notice p {
+  margin: 0 0 1rem;
+  line-height: 1.5;
+}
+
+.semester-notice__actions {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+/* Neighborhood picker (add landlord) and tags (landlord page) */
+.neighborhood-picker {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.neighborhood-chip {
+  padding: 0.375rem 0.75rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--primary-300);
+  background: none;
+  border: 1px solid var(--primary-200);
+  border-radius: 999px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.neighborhood-chip:hover {
+  background-color: var(--neutral-200);
+}
+
+.neighborhood-chip--active {
+  color: #fff;
+  background-color: var(--primary-300);
+  border-color: var(--primary-300);
+}
+
+.neighborhood-chip--active:hover {
+  background-color: var(--primary-300);
+}
+
+.neighborhood-hint {
+  margin-top: 0.375rem;
+  font-size: 0.8125rem;
+  color: var(--neutral-300);
+}
+
+.landlord-neighborhoods {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+}
+
+.signup-terms {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  margin: 1rem 0;
+  font-size: 0.875rem;
+  line-height: 1.4;
+}
+
+.signup-terms input {
+  margin-top: 0.2rem;
+}
+
+.terms-reviews-box {
+  margin: 1.5rem 0;
+  padding: 1rem 1.25rem;
+  background-color: var(--primary-100);
+  border: 1px solid var(--primary-200);
+  border-radius: var(--radius-lg);
+  line-height: 1.5;
+}
+
+.terms-reviews-box h2 {
+  margin-top: 0;
+}
+
+.review-rules {
+  margin: 1rem 0;
+  padding: 0.75rem 1rem;
+  font-size: 0.875rem;
+  line-height: 1.45;
+  background-color: var(--primary-100);
+  border: 1px solid var(--primary-200);
+  border-radius: var(--radius-lg);
+}

@@ -60,11 +60,11 @@ export class SupabaseAuthService implements IAuthService {
     return { success: false, error: 'Invalid email or password.' };
   }
 
-  async signUp(email: string, password: string, options: { redirectTo: string; captchaToken?: string }) {
+  async signUp(email: string, password: string, options: { redirectTo: string; captchaToken?: string; data?: Record<string, unknown> }) {
     const { data, error } = await this.client.auth.signUp({
       email,
       password,
-      options: { emailRedirectTo: options.redirectTo, captchaToken: options.captchaToken },
+      options: { emailRedirectTo: options.redirectTo, captchaToken: options.captchaToken, data: options.data },
     });
 
     if (error) return { success: false, error: error.message };

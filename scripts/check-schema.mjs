@@ -149,8 +149,12 @@ try {
 check('users cannot post reviews under someone else\'s account', impersonationBlocked);
 
 // Only confirmed school-email accounts can post.
-const attempt = (user, uid = user.id) => as(user, () => db.query(
-  `INSERT INTO public.reviews (landlord_id, user_id, landlord_rating, building_rating, comment) VALUES (1, $1, 3, 3, 'school check')`, [uid]));
+// Each attempt uses a fresh landlord, so the one-review-per-semester rule never gets in the way.
+const attempt = async (user, uid = user.id) => {
+  const probe = await db.query(`INSERT INTO public.landlords (name, city, status) VALUES ('Probe landlord', 'Atlanta', 'approved') RETURNING id`);
+  return as(user, () => db.query(
+    `INSERT INTO public.reviews (landlord_id, user_id, landlord_rating, building_rating, comment) VALUES ($1, $2, 3, 3, 'school check')`, [probe.rows[0].id, uid]));
+};
 const blocked = async (user) => { try { await attempt(user); return false; } catch { return true; } };
 const landlordBlocked = async (user) => {
   try { await as(user, () => db.query(`INSERT INTO public.landlords (name, city) VALUES ('Probe', 'Atlanta')`)); return false; } catch { return true; }
@@ -192,6 +196,85 @@ const strangerAdmins = await as(STUDENT, () => db.query(`SELECT email FROM publi
 check('regular users cannot see the admin list', strangerAdmins.rows.length === 0);
 const ownAdmin = await as(ADMIN, () => db.query(`SELECT email FROM public.admins`));
 check('an admin can still see their own admin row', ownAdmin.rows.length === 1 && ownAdmin.rows[0].email === ADMIN.email);
+
+// ---- Votes on reviews ----
+const throws = async (fn) => { try { await fn(); return false; } catch { return true; } };
+const castVote = (user, reviewId, value, asUserId = user?.id) => as(user, () => db.query(
+  `INSERT INTO public.review_votes (review_id, user_id, value) VALUES ($1, $2, $3) RETURNING value`, [reviewId, asUserId, value]));
+const countsFor = async (user, landlordId) => (await as(user, () => db.query(
+  `SELECT review_id, upvotes::int AS up, downvotes::int AS down FROM public.get_review_vote_counts($1)`, [landlordId]))).rows;
+
+check('a school-email user can upvote someone else\'s review', (await castVote(SPELMAN, reviewId, 1)).rows[0]?.value === 1);
+check('the review author cannot vote on their own review', await throws(() => castVote(STUDENT, reviewId, 1)));
+check('a non-school email cannot vote', await throws(() => castVote(OTHER, reviewId, 1)));
+check('an unconfirmed school email cannot vote', await throws(() => castVote(UNCONFIRMED, reviewId, 1)));
+check('logged-out visitors cannot vote', await throws(() => castVote(null, reviewId, 1, SPELMAN.id)));
+check('users cannot vote as someone else', await throws(() => castVote(AGNES_SCOTT, reviewId, 1, OTHER.id)));
+check('a vote must be up (1) or down (-1)', await throws(() => castVote(AGNES_SCOTT, reviewId, 5)));
+check('one vote per person per review', await throws(() => castVote(SPELMAN, reviewId, -1)));
+await castVote(AGNES_SCOTT, reviewId, -1);
+const changed = await as(SPELMAN, () => db.query(`UPDATE public.review_votes SET value = -1 WHERE review_id = $1 AND user_id = $2 RETURNING value`, [reviewId, SPELMAN.id]));
+check('a voter can change their vote', changed.rows[0]?.value === -1);
+const stolen = await as(AGNES_SCOTT, () => db.query(`UPDATE public.review_votes SET value = 1 WHERE review_id = $1 AND user_id = $2 RETURNING value`, [reviewId, SPELMAN.id]));
+check("a voter cannot change someone else's vote", stolen.rows.length === 0);
+await castVote(MERCER_STUDENT, reviewId, 1);
+const tally = (await countsFor(null, 1)).find((r) => r.review_id === reviewId);
+check('vote totals are public and correct (1 up, 2 down)', tally?.up === 1 && tally?.down === 2, JSON.stringify(tally));
+const ownVotes = await as(AGNES_SCOTT, () => db.query(`SELECT user_id FROM public.review_votes`));
+check('a voter sees only their own votes, never who else voted', ownVotes.rows.length === 1 && ownVotes.rows[0].user_id === AGNES_SCOTT.id);
+const anonVotes = await as(null, () => db.query(`SELECT user_id FROM public.review_votes`));
+check('logged-out visitors cannot read individual votes', anonVotes.rows.length === 0);
+const removed = await as(MERCER_STUDENT, () => db.query(`DELETE FROM public.review_votes WHERE review_id = $1 RETURNING user_id`, [reviewId]));
+check('a voter can remove their own vote (and only theirs)', removed.rows.length === 1 && removed.rows[0].user_id === MERCER_STUDENT.id);
+await db.exec(`UPDATE public.reviews SET is_deleted = true WHERE id = 3`);
+check('nobody can vote on a deleted review', await throws(() => castVote(AGNES_SCOTT, 3, 1)));
+await db.exec(`UPDATE public.reviews SET is_deleted = false WHERE id = 3`);
+
+// ---- One review per person, per landlord, per semester ----
+const semesterOf = async (ts) => (await db.query(`SELECT public.semester_of($1::timestamptz) AS s`, [ts])).rows[0].s;
+check('Jan-Apr is spring', (await semesterOf('2026-01-01 00:00:00-05')) === '2026-spring' && (await semesterOf('2026-04-30 12:00:00-04')) === '2026-spring');
+check('May-Jul is summer', (await semesterOf('2026-05-01 12:00:00-04')) === '2026-summer' && (await semesterOf('2026-07-31 12:00:00-04')) === '2026-summer');
+check('Aug-Dec is fall', (await semesterOf('2026-08-01 12:00:00-04')) === '2026-fall' && (await semesterOf('2026-12-31 12:00:00-05')) === '2026-fall');
+check('semesters follow Atlanta time (10pm Apr 30 is still spring)', (await semesterOf('2026-05-01 02:00:00+00')) === '2026-spring');
+
+const currentSemester = (await db.query(`SELECT public.semester_of(now()) AS s`)).rows[0].s;
+const mine = (await db.query(`SELECT semester FROM public.reviews WHERE id = $1`, [reviewId])).rows[0];
+check('a new review is stamped with the current semester', mine?.semester === currentSemester, mine?.semester);
+
+const newReview = (user, landlordId, extra = '') => as(user, () => db.query(
+  `INSERT INTO public.reviews (landlord_id, user_id, landlord_rating, building_rating, comment${extra ? ', created_at' : ''})
+   VALUES ($1, $2, 3, 3, 'Another review'${extra ? `, '${extra}'` : ''}) RETURNING id, semester, created_at`, [landlordId, user.id]));
+const dup = await (async () => { try { await newReview(STUDENT, 1); return null; } catch (e) { return e.message; } })();
+check('a second review of the same landlord this semester is blocked', Boolean(dup) && dup.includes('idx_reviews_one_per_semester'), dup ?? 'was allowed');
+const otherLandlordId = adminLandlord.rows[0].id;
+check('the same person can still review a different landlord this semester', (await newReview(STUDENT, otherLandlordId)).rows.length === 1);
+
+const backdated = await newReview(GSU_STUDENT, 1, '2020-01-01 12:00:00+00');
+check('a made-up past date is ignored (review is dated now)', backdated.rows[0]?.semester === currentSemester && new Date(backdated.rows[0].created_at).getFullYear() >= 2026, backdated.rows[0]?.semester);
+check('backdating cannot dodge the limit', await throws(() => newReview(GSU_STUDENT, 1, '2020-01-01 12:00:00+00')));
+
+const sneaky = await as(STUDENT, () => db.query(
+  `UPDATE public.reviews SET semester = '2020-fall', created_at = '2020-01-01', is_deleted = true WHERE id = $1 RETURNING semester, created_at, is_deleted`, [reviewId]));
+check('editing cannot change the semester, date, or deleted flag',
+  sneaky.rows[0]?.semester === currentSemester && sneaky.rows[0]?.is_deleted === false && new Date(sneaky.rows[0].created_at).getFullYear() >= 2026);
+
+await db.query(`INSERT INTO public.reviews (landlord_id, user_id, landlord_rating, building_rating, comment, created_at)
+  VALUES (1, $1, 4, 4, 'A review from a past semester', '2025-01-10 12:00:00+00')`, [STUDENT.id]);
+const priorSemester = (await db.query(`SELECT semester FROM public.reviews WHERE comment = 'A review from a past semester'`)).rows[0];
+check('an earlier semester does not block a new review (2025-spring)', priorSemester?.semester === '2025-spring');
+
+await as(ADMIN, () => db.query(`UPDATE public.reviews SET is_deleted = true WHERE id = $1`, [reviewId]));
+check('after an admin removes a review, the author can post again that semester', (await newReview(STUDENT, 1)).rows.length === 1);
+check('an admin cannot restore a review that would break the one-per-semester rule', await throws(() => as(ADMIN, () => db.query(`UPDATE public.reviews SET is_deleted = false WHERE id = $1`, [reviewId]))));
+
+// ---- Neighborhoods on landlords ----
+const tagged = await as(STUDENT, () => db.query(
+  `INSERT INTO public.landlords (name, addresses, city, neighborhoods) VALUES ('Tagged Landlord', ARRAY['No Known Street'], 'Atlanta', ARRAY['Home Park']) RETURNING id, neighborhoods`));
+check('a landlord keeps the neighborhoods it was added with', tagged.rows[0]?.neighborhoods?.[0] === 'Home Park');
+const studentRetag = await as(STUDENT, () => db.query(`UPDATE public.landlords SET neighborhoods = ARRAY['Midtown'] WHERE id = $1 RETURNING id`, [tagged.rows[0].id]));
+check('students cannot re-tag a landlord', studentRetag.rows.length === 0);
+const adminRetag = await as(ADMIN, () => db.query(`UPDATE public.landlords SET neighborhoods = ARRAY['Midtown', 'Home Park'] WHERE id = $1 RETURNING neighborhoods`, [tagged.rows[0].id]));
+check('admins can re-tag a landlord', adminRetag.rows[0]?.neighborhoods?.length === 2);
 
 // The domain lists in init.sql must match siteSettings.ts, which the sign-up form uses.
 const settings = readFileSync(new URL('../siteSettings.ts', import.meta.url), 'utf8');

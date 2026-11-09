@@ -71,6 +71,9 @@ export function createMockApiService(overrides?: Partial<IApiService>): IApiServ
     updateLandlordStatus: vi.fn().mockResolvedValue(true),
     updateReviewVerificationStatus: vi.fn().mockResolvedValue(true),
     updateLandlordAddresses: vi.fn().mockResolvedValue(true),
+    updateLandlordNeighborhoods: vi.fn().mockResolvedValue(true),
+    getReviewVotes: vi.fn().mockResolvedValue({ counts: {}, mine: {} }),
+    setReviewVote: vi.fn().mockResolvedValue(undefined),
     ...overrides,
   };
 }

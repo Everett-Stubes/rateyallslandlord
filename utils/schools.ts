@@ -12,6 +12,31 @@ export interface Neighborhood {
 
 export const neighborhoods: Neighborhood[] = siteSettings.neighborhoods;
 
+const OTHER_NEIGHBORHOOD = 'Other';
+
+const isOnStreets = (addresses: string[], streets: string[]) =>
+  streets.some((street) => addresses.some((a) => a.toLowerCase().includes(street.toLowerCase())));
+
+/** Names of the neighborhoods whose streets appear in these addresses. */
+export function inferNeighborhoodNames(addresses: string[]): string[] {
+  return neighborhoods
+    .filter((n) => n.streets.length > 0 && isOnStreets(addresses, n.streets))
+    .map((n) => n.name);
+}
+
+/**
+ * Every neighborhood a landlord belongs to: the ones picked when it was added, plus any
+ * whose streets match its addresses. A landlord in none of the named neighborhoods falls
+ * under the catch-all "Other".
+ */
+export function getLandlordNeighborhoodNames(tagged: string[] | null | undefined, addresses: string[]): Set<string> {
+  const known = new Set(neighborhoods.map((n) => n.name));
+  const names = new Set<string>([...(tagged ?? []).filter((name) => known.has(name)), ...inferNeighborhoodNames(addresses)]);
+  const hasNamedOne = [...names].some((name) => name !== OTHER_NEIGHBORHOOD);
+  if (!hasNamedOne) names.add(OTHER_NEIGHBORHOOD);
+  return names;
+}
+
 export const findSchool = (id: string | null | undefined): School | undefined =>
   id ? siteSettings.schools.find((school) => school.id === id) : undefined;
 

@@ -13,7 +13,7 @@ export class MockAuthService implements IAuthService {
     return { success: false, error: 'Authentication is not available in demo mode.' };
   }
 
-  async signUp(_email: string, _password: string, _options: { redirectTo: string; captchaToken?: string }) {
+  async signUp(_email: string, _password: string, _options: { redirectTo: string; captchaToken?: string; data?: Record<string, unknown> }) {
     return { success: false, error: 'Registration is not available in demo mode.' };
   }
 

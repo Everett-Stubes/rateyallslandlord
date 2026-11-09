@@ -1,15 +1,16 @@
 import { removeUnitNumber } from '../utils/properties';
 import React, { useState, useEffect, useRef } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import { useData } from '../context/DataContext';
 import { useAuth } from '../context/AuthContext';
-import type { Landlord } from '../types';
+import type { Landlord, Review } from '../types';
 import LoadingSpinner from '../components/LoadingSpinner';
 import ReviewForm from '../components/ReviewForm';
 import TurnstileWidget from '../components/TurnstileWidget';
 import { useApiService } from '../context/ServicesContext';
 import { TurnstileInstance } from '@marsidev/react-turnstile';
 import { isStudentEmail } from '../utils/studentVerification';
+import { getSemester, semesterLabel, SEMESTER_RULE_EXPLANATION } from '../utils/semester';
 
 
 const AddReviewPage: React.FC = () => {
@@ -30,6 +31,8 @@ const AddReviewPage: React.FC = () => {
   const [tags, setTags] = useState<string[]>([]);
   const [uploading, setUploading] = useState(false);
   const [turnstileToken, setTurnstileToken] = useState<string>('');
+  // The person's review of this landlord from the current semester, if they already wrote one.
+  const [reviewThisSemester, setReviewThisSemester] = useState<Review | null>(null);
   const turnstileRef = useRef<TurnstileInstance>(null);
 
   const landlordId = Number(id);
@@ -37,6 +40,17 @@ const AddReviewPage: React.FC = () => {
   useEffect(() => {
     if (landlordId) getLandlord(landlordId).then(data => setLandlord(data || null));
   }, [landlordId, getLandlord]);
+
+  useEffect(() => {
+    if (!user?.id || !landlordId) return;
+    api.getLatestReviewForLandlordByUser(landlordId, user.id)
+      .then(latest => {
+        const current = getSemester();
+        const sameSemester = latest && !latest.is_deleted && (latest.semester ?? getSemester(latest.created_at)) === current;
+        setReviewThisSemester(sameSemester ? latest : null);
+      })
+      .catch(error => console.error('Could not check for an earlier review:', error));
+  }, [api, user?.id, landlordId]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -72,6 +86,28 @@ const AddReviewPage: React.FC = () => {
   };
 
   if (loading || !landlord) return <LoadingSpinner />;
+
+  if (reviewThisSemester) {
+    return (
+      <div className="form-page">
+        <div className="semester-notice">
+          <h2>You already reviewed {landlord.name} this semester</h2>
+          <p>
+            You posted a review of this landlord in {semesterLabel(getSemester())}. {SEMESTER_RULE_EXPLANATION} If
+            your situation changed, edit your review below. You can post a new one when the next semester starts.
+          </p>
+          <div className="semester-notice__actions">
+            <Link to={`/landlord/${landlordId}/review/${reviewThisSemester.id}/edit`} className="btn btn-primary">
+              Edit my review
+            </Link>
+            <Link to={`/landlord/${landlordId}`} className="btn btn-gray-mid">
+              Back to {landlord.name}
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="form-page">

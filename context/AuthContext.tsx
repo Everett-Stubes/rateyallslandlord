@@ -115,6 +115,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const result = await auth.signUp(email, password, {
         redirectTo: `${globalThis.location.origin}/verify-email?verification=1`,
         captchaToken,
+        // Kept with the account as proof the person agreed to the Terms when they signed up.
+        data: { terms_accepted_at: new Date().toISOString() },
       });
       if (result.error) throw new Error(result.error);
       return result.success;

@@ -15,6 +15,7 @@ CREATE TABLE IF NOT EXISTS public.landlords (
   name text NOT NULL,
   city text NOT NULL,
   addresses text[] DEFAULT '{}'::text[],
+  neighborhoods text[] DEFAULT '{}'::text[], -- names from siteSettings.ts, picked when the landlord is added
   status text DEFAULT 'pending'::text CHECK (status = ANY (ARRAY['pending'::text, 'approved'::text, 'rejected'::text])),
   is_deleted boolean DEFAULT false,
   created_at timestamp with time zone DEFAULT now(),
@@ -39,6 +40,7 @@ CREATE TABLE IF NOT EXISTS public.reviews (
   created_at timestamp with time zone DEFAULT now(),
   updated_at timestamp with time zone DEFAULT now(),
   created_by_student boolean DEFAULT false,
+  semester text NOT NULL, -- e.g. '2026-fall'; filled in by a trigger from created_at
   CONSTRAINT reviews_pkey PRIMARY KEY (id),
   CONSTRAINT reviews_landlord_id_fkey FOREIGN KEY (landlord_id) REFERENCES public.landlords(id) ON DELETE CASCADE,
   CONSTRAINT reviews_user_id_fkey FOREIGN KEY (user_id) REFERENCES auth.users(id) ON DELETE SET NULL
@@ -122,11 +124,44 @@ RETURNS boolean SECURITY DEFINER SET search_path = public AS $$
   ), false);
 $$ LANGUAGE sql STABLE;
 
--- 6b. Keep moderation fields under admin control.
--- New reviews from non-admins always start as 'pending', and non-admins cannot
--- change a review's verification status, student flag, landlord, or author.
--- Applies only to website requests (the anon and authenticated roles); the SQL
--- Editor and Table Editor run as the project owner and are not restricted.
+-- 6b. One review per person, per landlord, per semester.
+-- Semesters (Atlanta time): spring = Jan-Apr, summer = May-Jul, fall = Aug-Dec.
+-- Keep this in step with utils/semester.ts.
+CREATE OR REPLACE FUNCTION public.semester_of(ts timestamptz)
+RETURNS text LANGUAGE sql IMMUTABLE AS $$
+  SELECT to_char(ts AT TIME ZONE 'America/New_York', 'YYYY') || '-' ||
+    CASE
+      WHEN extract(month FROM ts AT TIME ZONE 'America/New_York') <= 4 THEN 'spring'
+      WHEN extract(month FROM ts AT TIME ZONE 'America/New_York') <= 7 THEN 'summer'
+      ELSE 'fall'
+    END;
+$$;
+
+CREATE OR REPLACE FUNCTION public.set_review_semester()
+RETURNS trigger AS $$
+BEGIN
+  NEW.semester := public.semester_of(COALESCE(NEW.created_at, now()));
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE TRIGGER trigger_reviews_set_semester
+  BEFORE INSERT ON public.reviews
+  FOR EACH ROW
+  EXECUTE FUNCTION public.set_review_semester();
+
+-- Deleted reviews don't count, so an admin removing one lets the author post again.
+CREATE UNIQUE INDEX IF NOT EXISTS idx_reviews_one_per_semester
+  ON public.reviews (user_id, landlord_id, semester)
+  WHERE NOT is_deleted AND user_id IS NOT NULL;
+
+-- 6c. Keep moderation fields under admin control.
+-- New reviews from non-admins always start as 'pending' and are dated now, and non-admins
+-- cannot change a review's verification status, student flag, landlord, author, date,
+-- semester, or deleted flag. (Locking the date, semester, and deleted flag is what makes
+-- the one-review-per-semester rule hold.) Applies only to website requests (the anon and
+-- authenticated roles); the SQL Editor and Table Editor run as the project owner and are
+-- not restricted.
 CREATE OR REPLACE FUNCTION public.protect_review_moderation_fields()
 RETURNS trigger AS $$
 BEGIN
@@ -136,6 +171,8 @@ BEGIN
   IF TG_OP = 'INSERT' THEN
     NEW.verification_status := 'pending';
     NEW.is_deleted := false;
+    NEW.created_at := now();
+    NEW.updated_at := now();
     -- Only school-email accounts can post, so every review is a student review.
     NEW.created_by_student := true;
   ELSE
@@ -143,6 +180,9 @@ BEGIN
     NEW.created_by_student := OLD.created_by_student;
     NEW.landlord_id := OLD.landlord_id;
     NEW.user_id := OLD.user_id;
+    NEW.created_at := OLD.created_at;
+    NEW.semester := OLD.semester;
+    NEW.is_deleted := OLD.is_deleted;
   END IF;
   RETURN NEW;
 END;
@@ -153,11 +193,38 @@ CREATE OR REPLACE TRIGGER trigger_reviews_protect_moderation
   FOR EACH ROW
   EXECUTE FUNCTION public.protect_review_moderation_fields();
 
+-- 6d. Up and down votes on reviews. Votes are display-only: they never change a landlord's
+-- grade. Each person has one vote per review (click again to remove it). Voter identities
+-- are private: the website reads only totals (through get_review_vote_counts) plus the
+-- signed-in person's own votes.
+CREATE TABLE IF NOT EXISTS public.review_votes (
+  review_id bigint NOT NULL REFERENCES public.reviews(id) ON DELETE CASCADE,
+  user_id uuid NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  value smallint NOT NULL CHECK (value IN (1, -1)),
+  created_at timestamp with time zone DEFAULT now(),
+  CONSTRAINT review_votes_pkey PRIMARY KEY (review_id, user_id)
+);
+
+CREATE INDEX IF NOT EXISTS idx_review_votes_user_id ON public.review_votes(user_id);
+
+CREATE OR REPLACE FUNCTION public.get_review_vote_counts(p_landlord_id bigint)
+RETURNS TABLE (review_id bigint, upvotes bigint, downvotes bigint)
+LANGUAGE sql STABLE SECURITY DEFINER SET search_path = public AS $$
+  SELECT v.review_id,
+         count(*) FILTER (WHERE v.value = 1),
+         count(*) FILTER (WHERE v.value = -1)
+  FROM public.review_votes v
+  JOIN public.reviews r ON r.id = v.review_id
+  WHERE r.landlord_id = p_landlord_id AND NOT r.is_deleted
+  GROUP BY v.review_id;
+$$;
+
 -- 7. Enable Row Level Security (RLS)
 ALTER TABLE public.admins ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.landlords ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.reviews ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.school_email_domains ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.review_votes ENABLE ROW LEVEL SECURITY;
 
 -- 8. Row Level Security policies
 
@@ -219,6 +286,29 @@ CREATE POLICY "Users can update own reviews" ON public.reviews
 -- Lets the admin page verify, delete, and restore any review.
 CREATE POLICY "Admins can update reviews" ON public.reviews
   FOR UPDATE TO public USING (public.is_admin());
+
+-- Review votes Table Policies
+-- Only confirmed school-email accounts can vote, never on their own review or a deleted one.
+CREATE POLICY "Users can see their own votes" ON public.review_votes
+  FOR SELECT TO authenticated USING (user_id = auth.uid());
+
+CREATE POLICY "Students can vote on other people's reviews" ON public.review_votes
+  FOR INSERT TO authenticated WITH CHECK (
+    user_id = auth.uid()
+    AND public.is_school_email()
+    AND EXISTS (
+      SELECT 1 FROM public.reviews r
+      WHERE r.id = review_id AND NOT r.is_deleted AND r.user_id IS DISTINCT FROM auth.uid()
+    )
+  );
+
+CREATE POLICY "Students can change their vote" ON public.review_votes
+  FOR UPDATE TO authenticated
+  USING (user_id = auth.uid())
+  WITH CHECK (user_id = auth.uid() AND public.is_school_email());
+
+CREATE POLICY "Users can remove their vote" ON public.review_votes
+  FOR DELETE TO authenticated USING (user_id = auth.uid());
 
 -- No sample data is added here, so a new database starts empty and ready for real data.
 -- (The tests use fake data from scripts/test-seed.sql instead.)

@@ -121,6 +121,12 @@ const ReviewForm: React.FC<ReviewFormProps> = ({
           Reviews are anonymous. Don't include your name, unit number, or other details a landlord could use to
           figure out who you are.
         </p>
+        <p className="review-rules">
+          <strong>Review rules:</strong> Only write about what you personally experienced, and keep it true. Share your
+          opinion, not accusations you can't back up. Don't name individual people (staff or other tenants), share
+          anyone's phone number or email, or include threats or hate speech. A review is one student's opinion, not a
+          statement by Rate Y'all's Landlord, and we may remove reviews that break these rules.
+        </p>
       </div>
 
       <div>

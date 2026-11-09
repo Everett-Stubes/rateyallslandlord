@@ -11,10 +11,14 @@ interface ReviewCardProps {
   review: Review;
   onApprove?: () => void;
   onReject?: () => void;
+  /** Vote totals and the signed-in user's own vote. Leave out to hide voting (admin queue). */
+  votes?: { up: number; down: number; mine?: 1 | -1 };
+  /** Called with 1 (up) or -1 (down); the page decides whether that adds, changes, or removes the vote. */
+  onVote?: (value: 1 | -1) => void;
 }
 
 
-const ReviewCard: React.FC<ReviewCardProps> = ({ review, onApprove, onReject }) => {
+const ReviewCard: React.FC<ReviewCardProps> = ({ review, onApprove, onReject, votes, onVote }) => {
   const { isAdmin, user } = useAuth();
   const { deleteReview, restoreReview } = useData();
   const navigate = useNavigate();
@@ -142,6 +146,36 @@ const ReviewCard: React.FC<ReviewCardProps> = ({ review, onApprove, onReject }) 
           {review.tags.map(tag => (
             <span key={tag} className="review-tag">#{tag.toLowerCase()}</span>
           ))}
+        </div>
+      )}
+
+      {votes && onVote && (
+        <div className="review-votes" role="group" aria-label="Was this review helpful?">
+          <span className="review-votes__label">Helpful?</span>
+          <button
+            type="button"
+            className={`review-vote-btn${votes.mine === 1 ? ' review-vote-btn--active' : ''}`}
+            aria-pressed={votes.mine === 1}
+            aria-label={`Upvote (${votes.up})`}
+            disabled={Boolean(isOwnReview)}
+            title={isOwnReview ? "You can't vote on your own review" : user ? 'Upvote' : 'Log in to vote'}
+            onClick={() => onVote(1)}
+          >
+            <svg viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M10 4l7 9H3l7-9z" /></svg>
+            {votes.up}
+          </button>
+          <button
+            type="button"
+            className={`review-vote-btn${votes.mine === -1 ? ' review-vote-btn--active' : ''}`}
+            aria-pressed={votes.mine === -1}
+            aria-label={`Downvote (${votes.down})`}
+            disabled={Boolean(isOwnReview)}
+            title={isOwnReview ? "You can't vote on your own review" : user ? 'Downvote' : 'Log in to vote'}
+            onClick={() => onVote(-1)}
+          >
+            <svg viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M10 16L3 7h14l-7 9z" /></svg>
+            {votes.down}
+          </button>
         </div>
       )}
 
