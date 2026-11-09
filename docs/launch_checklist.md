@@ -20,7 +20,8 @@ Keep [handoff.md](handoff.md) up to date as each service is set up; it is the on
 
 - [x] **You:** Set up Gmail sending in Supabase (Authentication → Emails → SMTP Settings: host `smtp.gmail.com`, port `587`, the Gmail address as username and sender, and a Google *app password*). Without it nobody receives confirmation emails. [Guide, part 5](replication_guide.md#configure-confirmation-and-password-reset-email).
 - [ ] **You:** Set Supabase's **Site URL** and **Redirect URLs** to the live address (Authentication → URL Configuration): `https://ADDRESS/verify-email?verification=1` and `https://ADDRESS/reset-password`. They still point at `localhost`.
-- [ ] **You:** Add the live address to the Turnstile widget's hostnames, and restrict the Mapbox token to it.
+- [ ] **You:** Add the live address to the Turnstile widget's hostnames.
+- [x] **Decision:** the Mapbox token is **not** URL-restricted, on purpose. Mapbox only lets you create a restricted token after adding a payment card, and with no card on file Mapbox cannot bill anyone. The cost of leaving it is that someone could use up the free monthly allowance, which would pause address suggestions until the next month (people can still type addresses by hand). Don't add a card to Mapbox.
 - [ ] **You:** Attach `rateyallslandlord.com` to the Cloudflare Worker (Settings → Domains & Routes → Add → Custom domain), then repeat the three steps above with the custom domain.
 - [ ] **You:** Delete the duplicate Cloudflare project `rateyallslandlordmain` (it only shows failed builds).
 - [ ] **You:** In Cloudflare, check the build variables (Settings → Build → Variables and secrets) are the five from [guide, part 8](replication_guide.md#8-publish-a-trial-site-with-cloudflare-pages). With them missing, the site shows "Demo mode" with fake landlords.
