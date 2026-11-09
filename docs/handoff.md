@@ -26,7 +26,7 @@ When someone edits the code on GitHub's `main` branch, Cloudflare Pages rebuilds
 | Service | What it does | Login method | Cost | Status / key facts |
 | --- | --- | --- | --- | --- |
 | GitHub | Holds the code; Supabase login also uses it | Everett's GitHub, 2-step on | Free | Repo: `Everett-Stubes/rateyallslandlord` |
-| Cloudflare | Domain, hosting (Pages), bot check (Turnstile), DNS | Email + 2-step (authenticator app) | Domain only | Domain: rateyallslandlord.com, registered 2026-11-09. Renews: **TBD (check Cloudflare → Domain Registration)**. Pages address: **TBD** |
+| Cloudflare | Domain, hosting (Pages), bot check (Turnstile), DNS | Email + 2-step (authenticator app) | Domain only | Domain: rateyallslandlord.com, registered 2026-11-09. Renews: **TBD (check Cloudflare → Domain Registration)**. Live address: https://rateyallslandlord.rateyallslandlord.workers.dev (a Cloudflare Worker named `rateyallslandlord`, built from the `main` branch) |
 | Supabase | Database, user accounts, sign-up emails | "Continue with GitHub" | Free | Project ref `ywgbwddksbvsaoxycwmv`, region East US. URL `https://ywgbwddksbvsaoxycwmv.supabase.co` |
 | Gmail (team address) | Sends confirmation and password-reset emails; contact address | Email + password + 2-step | Free | Address: rateyallslandlord@gmail.com. Uses an *app password* (see below) |
 | Mapbox | Address suggestions | **TBD** | Free tier | Public token `pk.eyJ1IjoicmF0ZXlhbGxzbGFuZGxvcmQi...` (full value is in Cloudflare Pages' build variables); limit it to the site's web addresses in Mapbox |
