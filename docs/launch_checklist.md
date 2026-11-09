@@ -1,6 +1,6 @@
 # Launch checklist: real data on rateyallslandlord.com
 
-Everything here uses free plans except the domain. **You** = steps that need the site owner (account sign-ups, payment, pasting secret keys). **Code** = changes made in this repository.
+Keep [handoff.md](handoff.md) up to date as each service is set up; it is the one-pager for whoever takes over. Everything here uses free plans except the domain. **You** = steps that need the site owner (account sign-ups, payment, pasting secret keys). **Code** = changes made in this repository.
 
 ## 1. Domain (the only cost)
 
