@@ -6,7 +6,7 @@ This is the "Website Customization" form from More Perfect University's Rate You
 
 | Choice | Address | Status | Where it's set |
 | --- | --- | --- | --- |
-| Top choice | rateyallslandlord.com | Chosen; not yet registered | `siteSettings.ts` (`domain`), `index.html` (`og:url`) |
+| Top choice | rateyallslandlord.com | Registered in Cloudflare (2026-11-09); paid by the team | `siteSettings.ts` (`domain`), `index.html` (`og:url`) |
 | Backup 1 | | | |
 | Backup 2 | | | |
 
