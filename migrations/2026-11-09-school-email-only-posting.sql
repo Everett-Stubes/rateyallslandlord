@@ -13,6 +13,7 @@ INSERT INTO public.school_email_domains (domain, school) VALUES
   ('gsu.edu', 'Georgia State'),
   ('student.gsu.edu', 'Georgia State'),
   ('agnesscott.edu', 'Agnes Scott'),
+  ('spelman.edu', 'Spelman'),
   ('live.mercer.edu', 'Mercer'),
   ('mercer.edu', 'Mercer')
 ON CONFLICT (domain) DO NOTHING;

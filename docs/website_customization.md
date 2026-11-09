@@ -19,6 +19,7 @@ The team is paying for the domain directly (the playbook mentions More Perfect U
 | Georgia Tech | gatech.edu | `siteSettings.ts` (`schools`) |
 | Georgia State | gsu.edu (faculty/staff), student.gsu.edu (students) | `siteSettings.ts` (`schools`) |
 | Agnes Scott | agnesscott.edu (everyone) | `siteSettings.ts` (`schools`) |
+| Spelman | spelman.edu (students and staff) | `siteSettings.ts` (`schools`) |
 | Mercer | live.mercer.edu (students), mercer.edu (faculty/staff). Shared with Mercer's Macon campus. | `siteSettings.ts` (`schools`) |
 
 **Only people who sign up with one of these exact email domains (and confirm the email) can post reviews or add landlords.** Everyone else can read the site. This is enforced in two places that must stay the same:

@@ -29,6 +29,11 @@ export const siteSettings = {
       emailDomains: ["agnesscott.edu"],
     },
     {
+      name: "Spelman",
+      // Students and staff share this domain (confirmed by the team). Alumnae use alumnae.spelman.edu, which is not accepted.
+      emailDomains: ["spelman.edu"],
+    },
+    {
       name: "Mercer",
       // live.mercer.edu is students; mercer.edu is faculty and staff. Both are shared with Mercer's Macon campus.
       emailDomains: ["live.mercer.edu", "mercer.edu"],

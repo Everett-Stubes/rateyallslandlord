@@ -1,6 +1,6 @@
 # Rate Y'all's Landlord — Atlanta
 
-Landlord reviews for Atlanta renters, starting with **Georgia Tech**, **Georgia State**, **Agnes Scott**, and **Mercer** students. The planned address is [rateyallslandlord.com](https://rateyallslandlord.com). The homepage sorts landlords by neighborhood: **Home Park**, **Midtown**, **Downtown**, **Decatur**, **Chamblee & Doraville**, and **Other**. Landlords with several properties are supported: each building gets its own grades on the landlord's page.
+Landlord reviews for Atlanta renters, starting with **Georgia Tech**, **Georgia State**, **Agnes Scott**, **Spelman**, and **Mercer** students. The planned address is [rateyallslandlord.com](https://rateyallslandlord.com). The homepage sorts landlords by neighborhood: **Home Park**, **Midtown**, **Downtown**, **Decatur**, **Chamblee & Doraville**, and **Other**. Landlords with several properties are supported: each building gets its own grades on the landlord's page.
 
 This repository started from More Perfect University's [Rate Your Landlord template](https://github.com/moreperfectuniversity/rateyourlandlord-template), including the editable-logo work from its pull request #4.
 
