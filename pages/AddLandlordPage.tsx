@@ -1,3 +1,4 @@
+import { removeUnitNumber } from '../utils/properties';
 import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useData } from '../context/DataContext';
@@ -127,7 +128,7 @@ const AddLandlordPage: React.FC = () => {
         would_rent_again: wouldRentAgain,
         rent_amount: rentAmount ? parseFloat(rentAmount) : undefined,
         bedrooms: bedrooms ? parseInt(bedrooms, 10) : undefined,
-        property_address: propertyAddress || undefined,
+        property_address: propertyAddress ? removeUnitNumber(propertyAddress) : undefined,
         verification_status: 'pending' as const,
         created_by_student: isStudentEmail(user?.email),
         tags,
@@ -151,12 +152,6 @@ const AddLandlordPage: React.FC = () => {
   return (
     <div className="form-page">
       <h1 className="form-page__title">Add a New Landlord</h1>
-
-      {!user && (
-        <div className="alert alert-warning" style={{ marginBottom: '1rem' }}>
-          Please <a href="/login" style={{ textDecoration: 'underline', marginLeft: '0.25rem', fontWeight: 600 }}>Log in</a> to add a landlord.
-        </div>
-      )}
 
       <form onSubmit={handleSubmit} className="form-page__form">
         <div>
@@ -192,7 +187,7 @@ const AddLandlordPage: React.FC = () => {
           </div>
         </div>
 
-        {/* Address field — hidden once the review checkbox is checked */}
+        {/* Address field: hidden once the review checkbox is checked */}
         {!addReview && (
           <div>
             <label htmlFor="address" className="form-label">Property Address (Optional)</label>

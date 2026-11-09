@@ -117,6 +117,10 @@ const ReviewForm: React.FC<ReviewFormProps> = ({
           rows={4}
           required
         />
+        <p className="form-hint">
+          Reviews are anonymous. Don't include your name, unit number, or other details a landlord could use to
+          figure out who you are.
+        </p>
       </div>
 
       <div>
@@ -187,6 +191,9 @@ const ReviewForm: React.FC<ReviewFormProps> = ({
             required
           />
         </AddressAutofill>
+        <p className="form-hint">
+          We only show the building. Your unit number is removed before your review is saved.
+        </p>
       </div>
     </div>
   );

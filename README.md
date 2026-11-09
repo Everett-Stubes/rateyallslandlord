@@ -1,6 +1,6 @@
 # Rate Y'all's Landlord — Atlanta
 
-Landlord reviews for Atlanta renters, starting with **Georgia Tech** and **Georgia State** students. The planned address is [rateyallslandlord.com](https://rateyallslandlord.com). The homepage sorts landlords by neighborhood: **Home Park**, **Midtown**, **Downtown**, and **Other**. Landlords with several properties are supported: each building gets its own grades on the landlord's page.
+Landlord reviews for Atlanta college students: Georgia Tech, Georgia State, Emory, the four AUC schools (Morehouse, Spelman, Clark Atlanta, Morehouse School of Medicine), SCAD Atlanta, Agnes Scott, and Mercer. The planned address is [rateyallslandlord.com](https://rateyallslandlord.com). On first visit a pop-up asks for the visitor's school, recolors the site in that school's colors, and sorts the neighborhood buttons closest-to-campus first. Anyone can read; posting needs an account made with a school email. Landlords with several properties are supported: each building gets its own grades on the landlord's page.
 
 This repository started from More Perfect University's [Rate Your Landlord template](https://github.com/moreperfectuniversity/rateyourlandlord-template), including the editable-logo work from its pull request #4.
 
@@ -37,7 +37,7 @@ npm ci
 npm run dev
 ```
 
-**6. Open [http://localhost:5000](http://localhost:5000)** in your browser. You should see the homepage with a yellow "Demo mode — showing fake data" banner. Changes you save to the code show up in the browser right away.
+**6. Open [http://localhost:5000](http://localhost:5000)** in your browser. You should see the homepage with a yellow "Demo mode: showing fake data" banner. Changes you save to the code show up in the browser right away.
 
 **7. To stop it,** click in the terminal and press **Ctrl+C**. Next time, skip step 4 and just run `npm run dev`.
 
@@ -50,9 +50,7 @@ npm run dev
 
 Sign-up, login, and posting reviews don't work in demo mode. To connect a real database, follow [the setup guide from part 4](docs/replication_guide.md#4-create-a-supabase-project).
 
-**Change the city, schools, and neighborhoods** in [`siteSettings.ts`](siteSettings.ts): student email domains, the address example on the forms, and the neighborhood buttons on the homepage all come from that file. **Change the logo wording and colors** in [`logoSettings.ts`](logoSettings.ts); the [logo customization guide](docs/logo_customization.md) explains how.
-
-The [launch checklist](docs/launch_checklist.md) lists what is left before real data goes live, and who does each step.
+**Change the city, schools, and neighborhoods** in [`siteSettings.ts`](siteSettings.ts): the slogan, the schools in the pop-up (colors, campus location, and the email domains allowed to post), the address example on the forms, and the neighborhood buttons on the homepage all come from that file. If you change email domains, also update `is_school_email` in [`init.sql`](init.sql). **Change the logo wording and colors** in [`logoSettings.ts`](logoSettings.ts); the [logo customization guide](docs/logo_customization.md) explains how.
 
 The [Atlanta website building doc](docs/website_customization.md) tracks the playbook's customization choices (domain, neighborhoods, colors, landlord list, About/FAQ/Resources) and what the team still needs to fill in.
 
@@ -69,7 +67,7 @@ A personal copy does not automatically become a working public service. Legal pa
 | Visual Studio Code | A text editor used to open the downloaded folder, create a settings file, and run a few commands. |
 | Supabase | Holds real landlord and review data and manages email/password accounts. |
 | Cloudflare Pages | Builds the website from your GitHub copy and puts it online. |
-| Cloudflare Turnstile | Shows the security challenge on login, sign-up, and other forms. Supabase checks it on its server once CAPTCHA protection is turned on (see the guide). |
+| Cloudflare Turnstile | Shows the security challenge on certain forms. Its current limitations are explained in the guide. |
 | Cloudflare DNS | Connects a domain name to the website, if you choose to use your own domain. |
 | Mapbox | Supplies address suggestions in the forms. |
 
@@ -87,9 +85,10 @@ Check each provider's current pricing, limits, and account requirements before e
 - In this copy, `package-lock.json` already uses the public npm registry (the template's private Replit download addresses were replaced; versions and integrity hashes are unchanged).
 - `package.json` has `dev`, `build`, `preview`, and `check:schema` commands. The files in `tests/` are not runnable yet: their test packages are not installed.
 - The demonstration stores changes in memory, not in a real database.
-- Turnstile tokens are sent to Supabase with login, sign-up, and password-reset requests. They are only checked once CAPTCHA protection is turned on in Supabase ([guide, part 6](docs/replication_guide.md#turn-on-server-side-checking-in-supabase)).
+- Turnstile completion is checked in the browser, but its token is not sent for server verification. Do not treat the displayed challenge as complete spam protection.
 - The real data service does not implement verification-document uploads. Do not collect real verification documents.
 - The review form and `init.sql` now use the same review fields, and `npm run check:schema` runs `init.sql` in a real Postgres to check review submission, editing, and moderation. It does not replace a test against your own Supabase project.
+- Posting needs a school email: the sign-up form rejects other emails, and `init.sql` makes the database refuse landlords and reviews from accounts without one (admins excepted). Supabase itself can still create an account for any email through its API; that account just can't post. An existing database needs [`migrations/2026-11-09-school-email-only-posting.sql`](migrations/2026-11-09-school-email-only-posting.sql) run once to get this rule (safe to run again).
 - Existing branding, legal placeholders, contact information, and local assumptions need review for your own site.
 
 This documentation does **not** certify the project as production-ready, select a license, or grant rights to reuse branding, fonts, or other assets.

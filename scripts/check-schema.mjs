@@ -11,7 +11,7 @@ await db.exec(`
   CREATE ROLE anon NOLOGIN;
   CREATE ROLE authenticated NOLOGIN;
   CREATE SCHEMA auth;
-  CREATE TABLE auth.users (id uuid PRIMARY KEY, email text);
+  CREATE TABLE auth.users (id uuid PRIMARY KEY, email text, email_confirmed_at timestamptz DEFAULT now());
   CREATE FUNCTION auth.jwt() RETURNS jsonb LANGUAGE sql STABLE AS
     $$ SELECT coalesce(nullif(current_setting('request.jwt.claims', true), ''), '{}')::jsonb $$;
   CREATE FUNCTION auth.uid() RETURNS uuid LANGUAGE sql STABLE AS $$ SELECT (auth.jwt() ->> 'sub')::uuid $$;
@@ -32,9 +32,23 @@ try {
 
 const STUDENT = { id: '11111111-1111-1111-1111-111111111111', email: 'student@gatech.edu' };
 const OTHER = { id: '22222222-2222-2222-2222-222222222222', email: 'other@example.com' };
+const GSU_STUDENT = { id: '44444444-4444-4444-4444-444444444444', email: 'Someone@Student.GSU.edu' };
+const UNCONFIRMED = { id: '55555555-5555-5555-5555-555555555555', email: 'new@gatech.edu' };
+const LOOKALIKE = { id: '66666666-6666-6666-6666-666666666666', email: 'x@gatech.edu.evil.com' };
+const FAKE_PREFIX = { id: '77777777-7777-7777-7777-777777777777', email: 'gatech.edu@gmail.com' };
+const NOT_GT = { id: '88888888-8888-8888-8888-888888888888', email: 'fake@notgatech.edu' };
+const EMORY_ALUMNUS = { id: '99999999-9999-9999-9999-999999999999', email: 'grad@alumni.emory.edu' };
+const SPELMAN_ALUMNA = { id: 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', email: 'grad@alumnae.spelman.edu' };
+const AGNES_SCOTT = { id: 'bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb', email: 'scottie@agnesscott.edu' };
+const MERCER_STUDENT = { id: 'cccccccc-cccc-cccc-cccc-cccccccccccc', email: 'bear@live.mercer.edu' };
+const SPELMAN = { id: 'dddddddd-dddd-dddd-dddd-dddddddddddd', email: 'jag@spelman.edu' };
 const ADMIN = { id: '33333333-3333-3333-3333-333333333333', email: 'mod@example.com' };
 await db.exec(`
-  INSERT INTO auth.users VALUES ('${STUDENT.id}', '${STUDENT.email}'), ('${OTHER.id}', '${OTHER.email}'), ('${ADMIN.id}', '${ADMIN.email}');
+  INSERT INTO auth.users (id, email) VALUES ('${STUDENT.id}', '${STUDENT.email}'), ('${OTHER.id}', '${OTHER.email}'), ('${ADMIN.id}', '${ADMIN.email}'),
+    ('${GSU_STUDENT.id}', '${GSU_STUDENT.email}'), ('${LOOKALIKE.id}', '${LOOKALIKE.email}'), ('${FAKE_PREFIX.id}', '${FAKE_PREFIX.email}'),
+    ('${NOT_GT.id}', '${NOT_GT.email}'), ('${EMORY_ALUMNUS.id}', '${EMORY_ALUMNUS.email}'), ('${SPELMAN_ALUMNA.id}', '${SPELMAN_ALUMNA.email}'),
+    ('${AGNES_SCOTT.id}', '${AGNES_SCOTT.email}'), ('${MERCER_STUDENT.id}', '${MERCER_STUDENT.email}'), ('${SPELMAN.id}', '${SPELMAN.email}');
+  INSERT INTO auth.users (id, email, email_confirmed_at) VALUES ('${UNCONFIRMED.id}', '${UNCONFIRMED.email}', NULL);
   INSERT INTO public.admins (email) VALUES ('${ADMIN.email}');
 `);
 
@@ -126,6 +140,64 @@ try {
     `INSERT INTO public.reviews (landlord_id, user_id, landlord_rating, building_rating, comment) VALUES (1, '${STUDENT.id}', 1, 1, 'fake')`));
 } catch { impersonationBlocked = true; }
 check('users cannot post reviews under someone else\'s account', impersonationBlocked);
+
+// Only confirmed school-email accounts can post.
+const attempt = (user, uid = user.id) => as(user, () => db.query(
+  `INSERT INTO public.reviews (landlord_id, user_id, landlord_rating, building_rating, comment) VALUES (1, $1, 3, 3, 'school check')`, [uid]));
+const blocked = async (user) => { try { await attempt(user); return false; } catch { return true; } };
+const landlordBlocked = async (user) => {
+  try { await as(user, () => db.query(`INSERT INTO public.landlords (name, city) VALUES ('Probe', 'Atlanta')`)); return false; } catch { return true; }
+};
+
+check('a non-school email cannot post reviews', await blocked(OTHER));
+check('a non-school email cannot add landlords', await landlordBlocked(OTHER));
+check('a school email that is not confirmed cannot post', await blocked(UNCONFIRMED));
+check('a lookalike domain (gatech.edu.evil.com) cannot post', await blocked(LOOKALIKE));
+check('an address that merely starts with the domain cannot post', await blocked(FAKE_PREFIX));
+check('a look-alike domain (notgatech.edu) cannot post', await blocked(NOT_GT));
+check('Emory alumni addresses (alumni.emory.edu) cannot post', await blocked(EMORY_ALUMNUS));
+check('Spelman alumnae addresses (alumnae.spelman.edu) cannot post', await blocked(SPELMAN_ALUMNA));
+check('an Agnes Scott address can post', !(await blocked(AGNES_SCOTT)));
+check('a Mercer student address (live.mercer.edu) can post', !(await blocked(MERCER_STUDENT)));
+check('a Spelman address can post', !(await blocked(SPELMAN)));
+
+check('admins without a school email cannot post reviews', await blocked(ADMIN));
+const adminLandlord = await as(ADMIN, () => db.query(
+  `INSERT INTO public.landlords (name, city, status) VALUES ('Launch Landlord', 'Atlanta', 'approved') RETURNING id`));
+check('admins can add landlords without a school email', adminLandlord.rows.length === 1);
+check('a subdomain address (student.gsu.edu, any capitalization) can post', !(await blocked(GSU_STUDENT)));
+check('a confirmed Georgia Tech address works', !(await blocked(STUDENT)));
+
+const flagged = await db.query(
+  `SELECT created_by_student FROM public.reviews WHERE comment = 'school check' ORDER BY id DESC LIMIT 1`);
+check('reviews from school accounts are flagged as student reviews', flagged.rows[0]?.created_by_student === true);
+
+let domainEditBlocked = false;
+try { await as(STUDENT, () => db.query(`INSERT INTO public.school_email_domains (domain, school) VALUES ('example.com', 'Fake')`)); }
+catch { domainEditBlocked = true; }
+const domainEdit = domainEditBlocked || (await db.query(`SELECT 1 FROM public.school_email_domains WHERE domain = 'example.com'`)).rows.length === 0;
+check('website users cannot add school domains', domainEdit);
+
+// The list of admin emails is not public.
+const anonAdmins = await as(null, () => db.query(`SELECT email FROM public.admins`));
+check('logged-out visitors cannot see the admin list', anonAdmins.rows.length === 0);
+const strangerAdmins = await as(STUDENT, () => db.query(`SELECT email FROM public.admins`));
+check('regular users cannot see the admin list', strangerAdmins.rows.length === 0);
+const ownAdmin = await as(ADMIN, () => db.query(`SELECT email FROM public.admins`));
+check('an admin can still see their own admin row', ownAdmin.rows.length === 1 && ownAdmin.rows[0].email === ADMIN.email);
+
+// The domain lists in init.sql must match siteSettings.ts, which the sign-up form uses.
+const settings = readFileSync(new URL('../siteSettings.ts', import.meta.url), 'utf8');
+const quoted = (text) => [...text.matchAll(/"([^"]+)"/g)].map((d) => d[1].toLowerCase());
+const siteAllowed = [...settings.matchAll(/emailDomains:\s*\[([^\]]*)\]/g)].flatMap((m) => quoted(m[1])).sort();
+const siteBlocked = quoted(settings.match(/blockedEmailDomains:\s*\[([^\]]*)\]/)?.[1] ?? '').sort();
+const dbRows = (await db.query(`SELECT domain, blocked FROM public.school_email_domains ORDER BY domain`)).rows;
+const dbAllowed = dbRows.filter((r) => !r.blocked).map((r) => r.domain);
+const dbBlocked = dbRows.filter((r) => r.blocked).map((r) => r.domain);
+check('accepted school domains in init.sql match siteSettings.ts', JSON.stringify(siteAllowed) === JSON.stringify(dbAllowed),
+  `settings: ${siteAllowed.join(', ')} | database: ${dbAllowed.join(', ')}`);
+check('blocked alumni domains in init.sql match siteSettings.ts', JSON.stringify(siteBlocked) === JSON.stringify(dbBlocked),
+  `settings: ${siteBlocked.join(', ')} | database: ${dbBlocked.join(', ')}`);
 
 console.log(failures === 0 ? '\nALL CHECKS PASSED' : `\n${failures} CHECK(S) FAILED`);
 await db.close();

@@ -40,7 +40,9 @@ The site's contact address is the team's Gmail account. There is no separate mai
 ## 5. Before inviting real users
 
 - [x] **Code:** Login, sign-up, resend-confirmation, and password-reset requests send the Turnstile token to Supabase for server-side checking.
-- [x] **Code:** Database rules allow only signed-in accounts to post reviews, as themselves.
+- [x] **Code:** Database rules allow only confirmed school-email accounts (Georgia Tech, Georgia State, Emory, Morehouse, Spelman, Clark Atlanta, Morehouse School of Medicine, SCAD, Agnes Scott, Mercer; subdomains count, alumni addresses are blocked) or admins to post reviews or add landlords, as themselves.
+- [ ] **You:** The live Supabase database needs the update in `migrations/2026-11-09-school-email-only-posting.sql`: paste it into Supabase → SQL Editor → New query → Run.
+- [ ] **Decide:** `gsu.edu` also covers Georgia State faculty and staff, and `mercer.edu` also covers Mercer's other campuses. Subdomains count, so students-only isn't possible for Georgia State without listing `student.gsu.edu` separately.
 - [ ] **Code + you:** Review the Privacy Policy and Terms. They came from the template.
 - [ ] **You:** Fill in the landlords to list at launch in [website_customization.md](website_customization.md).
 - [ ] **You:** Run the checks in [guide, part 11](replication_guide.md#11-test-before-sharing): sign up, confirm email, log in, reset password, post a review, approve it.

@@ -32,7 +32,7 @@ describe('Flow 2: Register', () => {
     renderPage(<RegisterPage />, { api, auth });
 
     // Fill the form
-    await user.type(getEmailField(), 'newuser@example.com');
+    await user.type(getEmailField(), 'newuser@gatech.edu');
     await user.type(getPasswordField(), 'password123');
     await user.type(getConfirmPasswordField(), 'password123');
 
@@ -44,8 +44,8 @@ describe('Flow 2: Register', () => {
 
     // Should show success screen
     await findVerifyEmailText();
-    expect(screen.getByText(/newuser@example\.com/)).toBeInTheDocument();
-    expect(auth.signUp).toHaveBeenCalledWith('newuser@example.com', 'password123', expect.any(Object));
+    expect(screen.getByText(/newuser@gatech\.edu/)).toBeInTheDocument();
+    expect(auth.signUp).toHaveBeenCalledWith('newuser@gatech.edu', 'password123', expect.any(Object));
   });
 
   it('edge: mismatched passwords → "Passwords do not match." error; auth.signUp NOT called', async () => {
@@ -58,7 +58,7 @@ describe('Flow 2: Register', () => {
     const { default: RegisterPage } = await import('../../pages/RegisterPage');
     renderPage(<RegisterPage />, { api, auth });
 
-    await user.type(getEmailField(), 'test@example.com');
+    await user.type(getEmailField(), 'test@gatech.edu');
     await user.type(getPasswordField(), 'password123');
     await user.type(getConfirmPasswordField(), 'differentpassword');
 
@@ -70,6 +70,26 @@ describe('Flow 2: Register', () => {
 
     // Should show error
     await findMismatchedPasswordsText();
+    expect(auth.signUp).not.toHaveBeenCalled();
+  });
+
+  it('edge: non-school email → school email error; auth.signUp NOT called', async () => {
+    const user = userEvent.setup();
+    const auth = createMockAuthService({
+      signUp: vi.fn().mockResolvedValue({ success: true }),
+    });
+    const api = createMockApiService();
+
+    const { default: RegisterPage } = await import('../../pages/RegisterPage');
+    renderPage(<RegisterPage />, { api, auth });
+
+    await user.type(getEmailField(), 'someone@gmail.com');
+    await user.type(getPasswordField(), 'password123');
+    await user.type(getConfirmPasswordField(), 'password123');
+    await user.click(screen.getByTestId('captcha-complete'));
+    await user.click(getSignUpButton());
+
+    await screen.findByText(/please use your school email/i);
     expect(auth.signUp).not.toHaveBeenCalled();
   });
 });

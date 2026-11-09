@@ -85,6 +85,7 @@ For every row: the **where** column says where to find or create it. Write the v
 **Every semester:** check the links on the Resources page; skim pending reviews and landlords at `/admin`.
 **Before the domain renews:** make sure the card has money, or the domain can lapse. Set a calendar reminder a month ahead.
 **Every few months:** in Supabase, export the data (Table Editor → Export). The free plan has no automatic backups, and it pauses a project that has had no visits for about a week.
+**To add a school:** add its email domain in two places: `siteSettings.ts` (`schools`) and Supabase → Table Editor → `school_email_domains` → Insert row. Only accounts with a confirmed email on one of those domains can post reviews or add landlords. See `docs/website_customization.md`.
 **After any change to the web address:** add it in Supabase (Authentication → URL Configuration), Turnstile (hostnames), and Mapbox (token URLs).
 
 ## Handoff checklist

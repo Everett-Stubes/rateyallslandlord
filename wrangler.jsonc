@@ -1,0 +1,13 @@
+{
+  // Cloudflare deploy settings. `npx wrangler deploy` (Cloudflare's deploy command)
+  // uploads the built site from dist/. Opening a page like /login directly works because
+  // unknown paths fall back to index.html (the "single-page-application" setting).
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "rateyallslandlord",
+  "compatibility_date": "2026-11-09",
+  "observability": { "enabled": true },
+  "assets": {
+    "directory": "./dist",
+    "not_found_handling": "single-page-application"
+  }
+}

@@ -9,7 +9,7 @@ This reference supports the [plain-English setup guide](replication_guide.md). I
 3. `services/supabase.ts` chooses demo mode when either Supabase connection setting is missing. When both exist, the app creates a real Supabase client; it does not validate the setup first or automatically fall back on database errors.
 4. `context/ServicesContext.tsx` supplies the mock or real services. `MockApiService` holds demonstration records in memory. `MockAuthService` does not provide real registration, login, or password reset.
 5. `SupabaseApiService` reads and writes landlord/review records directly through Supabase. `SupabaseAuthService` uses email/password authentication. Database permissions are enforced by Supabase, not by whether the browser shows an admin button.
-6. Pages hosts the built browser files. `public/_redirects` contains `/* /index.html 200` for client-side routing.
+6. Cloudflare hosts the built browser files. `wrangler.jsonc` sets `not_found_handling: single-page-application` so client-side routes like `/login` load directly. (A `_redirects` file with `/* /index.html 200` is rejected by Workers hosting.)
 7. `functions/api/hello.js` is a sample Cloudflare Pages Function. It is not used to verify challenges, send auth email, or store documents.
 
 ## Files checked for the setup guide
@@ -31,7 +31,7 @@ This reference supports the [plain-English setup guide](replication_guide.md). I
 | `App.tsx`, relevant page files | Demo banner, route names, and separate account/legal/contact pages. |
 | `pages/ContactPage.tsx` | Email is a `mailto` link, not a server-backed contact form. |
 | `init.sql` | Trial database setup reference and table/rating-model comparison. No SQL changes were made for this documentation work. |
-| `functions/api/hello.js`, `public/_redirects` | Sample Function and Pages route fallback. |
+| `functions/api/hello.js`, `wrangler.jsonc` | Sample Function (unused) and Cloudflare deploy/route-fallback settings. |
 | `.github/workflows/test.yml`, `tests/` | Test files exist, but the checked base workflow calls a missing script. Workflow correction is separate from documentation. |
 
 There is no `.env.local.example` in the checked repository. The guide creates `.env.local` in the editor rather than asking Windows users to run `cp`.

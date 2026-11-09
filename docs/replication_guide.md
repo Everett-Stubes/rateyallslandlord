@@ -88,7 +88,7 @@ The website uses **Vite**, a tool that runs a local development website and buil
 3. In VS Code's terminal, type `npm ci --registry=https://registry.npmjs.org/` and press Enter. This installs the versions recorded in the lockfile. **You should see installation finish without an `npm error`.** Warnings or security-audit notices are different from a failed install, but should still be reviewed before public use.
 4. Type `npm run dev` and press Enter.
 5. Look for Vite's **Local** address. This repository requests port **5000**, so the usual address is `http://localhost:5000/`, not 3000 or 5173. If the port is busy, Vite may print a different port; use the printed address for browsing.
-6. Open that address in your browser. **You should see the landlord page and a “Demo mode — showing fake data” banner.**
+6. Open that address in your browser. **You should see the landlord page and a “Demo mode: showing fake data” banner.**
 7. Search for a landlord and open a landlord card. The names and reviews are fictional demonstration data.
 8. Do not expect registration, sign-in, or password reset to work in the demo. `MockAuthService` deliberately returns “not available in demo mode.” Some submission forms also need a configured security challenge.
 9. Changes made to the demonstration data are held in memory. They are not shared with other computers and are reset when the application reloads.
@@ -269,7 +269,9 @@ This repository has no D1 database, KV store, or R2 integration. Those Cloudflar
 
 The root `functions/api/hello.js` is a sample Pages Function returning “Hello World!” It is not an email, CAPTCHA-verification, or review-upload backend. Vite's local dev and preview servers do not run Pages Functions. Do not mistake a working `/api/hello` on Pages for proof of working form protection.
 
-`public/_redirects` already contains `/* /index.html 200`, which supports opening React routes directly on Pages. Leave that file in place. Refresh `/login` on the deployed site as a routing check.
+There is no `_redirects` file on purpose. Cloudflare's Workers hosting rejects `/* /index.html 200` as an "infinite loop" and fails the deploy. Instead, `wrangler.jsonc` in the repository root tells Cloudflare to serve `index.html` for any page it doesn't recognize (`"not_found_handling": "single-page-application"`), which is what makes opening `/login` directly work. Refresh `/login` on the deployed site as a routing check.
+
+**If your build succeeds but the deploy step fails:** Cloudflare may have created a Worker project (its deploy command is `npx wrangler deploy`) instead of a Pages project. That works with this repository as long as `wrangler.jsonc` is present. For a Worker project, the build variables live under **Settings → Build → Variables and secrets** (not the runtime variables), and the domain is added under **Settings → Domains & Routes → Add → Custom domain**.
 
 Changes to `VITE_` values require a **new build/deployment**. Changing only dashboard values does not rewrite files already sent to visitors. In the project's Deployments view, use the redeploy/retry option to start a new build after saving updated settings. **TO CONFIRM:** the action's exact label may differ.
 
@@ -391,7 +393,7 @@ Use the table to find the next safe check. Record the exact error text, which st
 | Pages cannot see your repository | Check the Cloudflare GitHub app's access to that specific personal repository and the correct GitHub account. |
 | Pages build fails | Read its install/build logs. Confirm the public-registry lockfile, `npm run build`, `dist`, repository-root setting, Node version, and build variables. Do not use the development server as a Pages build command. |
 | The GitHub Actions **Build** check fails | Open the failed run and read the first error. The check runs `npm ci` and then `npm run build` on Node.js 22, the same steps Cloudflare Pages uses, so fix the error locally with those two commands before pushing again. It does not run the files in `tests/`; their test packages are not installed. |
-| Refreshing `/login` gives a host-level 404 | Check that the built site includes `_redirects` from `public/_redirects` and that Pages, not another hosting mode, serves `dist`. |
+| Refreshing `/login` gives a host-level 404 | Check that `wrangler.jsonc` is in the repository root with `"not_found_handling": "single-page-application"`, and that the deploy succeeded. |
 | Custom domain is pending or HTTPS fails | Check Pages' Custom domains status, nameserver/domain activation or CNAME target, and any requested domain verification. Add the domain through Pages, not only DNS. Avoid deleting email records. |
 | Your account cannot see admin controls | Confirm the email registered/verified in this project is the one entered in `admins`, then sign out and sign in. Do not publish credentials or disable permissions. |
 | A document upload is unavailable | There is no real-service upload implementation. A storage bucket or R2 account alone does not add one. |
