@@ -48,12 +48,13 @@ describe('Flow 3: Login', () => {
 
     await user.type(getEmailField(), 'test@gatech.edu');
     await user.type(getPasswordField(), 'mypassword');
+    await user.click(screen.getByTestId('captcha-complete'));
 
     await user.click(getLoginButton());
 
     // auth.signIn should be called with correct args
     await waitFor(() => {
-      expect(auth.signIn).toHaveBeenCalledWith('test@gatech.edu', 'mypassword');
+      expect(auth.signIn).toHaveBeenCalledWith('test@gatech.edu', 'mypassword', 'test-captcha-token');
     });
 
     // Should navigate to home page
@@ -82,6 +83,7 @@ describe('Flow 3: Login', () => {
 
     await user.type(getEmailField(), 'unverified@gatech.edu');
     await user.type(getPasswordField(), 'mypassword');
+    await user.click(screen.getByTestId('captcha-complete'));
 
     await user.click(getLoginButton());
 

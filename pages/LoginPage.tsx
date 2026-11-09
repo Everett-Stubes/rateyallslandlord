@@ -14,9 +14,18 @@ const LoginPage: React.FC = () => {
   const [resetMessage, setResetMessage] = useState('');
   const [resetError, setResetError] = useState('');
   const [resendMessage, setResendMessage] = useState('');
+  // The login form and the reset-password popup each have their own security check.
+  // A Turnstile token works only once, so each widget is reset after it is used.
+  const [loginToken, setLoginToken] = useState<string>('');
+  const loginTurnstileRef = useRef<TurnstileInstance>(null);
   const [turnstileToken, setTurnstileToken] = useState<string>('');
   const turnstileRef = useRef<TurnstileInstance>(null);
-  const { login, resetPassword, loading } = useAuth();
+  const { login, resetPassword, resendVerification, loading } = useAuth();
+
+  const resetLoginCheck = () => {
+    loginTurnstileRef.current?.reset();
+    setLoginToken('');
+  };
   const navigate = useNavigate();
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -24,7 +33,9 @@ const LoginPage: React.FC = () => {
     setError('');
     setEmailNotVerified(false);
     setResendMessage('');
-    const result = await login(email, password);
+    if (!loginToken) { setError('Please complete the security verification.'); return; }
+    const result = await login(email, password, loginToken);
+    resetLoginCheck();
     if (result.success) {
       navigate('/');
     } else {
@@ -35,19 +46,15 @@ const LoginPage: React.FC = () => {
 
   const handleResendVerification = async () => {
     if (!email) { setResendMessage('Please enter your email address.'); return; }
+    if (!loginToken) { setResendMessage('Please complete the security verification above, then try again.'); return; }
     try {
-      const { supabase } = await import('../services/supabase');
-      const { error } = await supabase.auth.resend({
-        type: 'signup',
-        email: email,
-        options: { emailRedirectTo: `${globalThis.location.origin}/verify-email` },
-      });
-      if (error) console.error('Error resending verification email:', error);
-      setResendMessage('If this account exists and is unverified, a new verification email has been sent. Please check your inbox and spam folder.');
+      const result = await resendVerification(email, loginToken);
+      if (!result.success) console.error('Error resending verification email:', result.error);
     } catch (err) {
       console.error('Error resending verification email:', err);
-      setResendMessage('If this account exists and is unverified, a new verification email has been sent. Please check your inbox and spam folder.');
     }
+    resetLoginCheck();
+    setResendMessage('If this account exists and is unverified, a new verification email has been sent. Please check your inbox and spam folder.');
   };
 
   const handleResetPassword = async (e: React.FormEvent) => {
@@ -56,8 +63,9 @@ const LoginPage: React.FC = () => {
     setResetMessage('');
     if (!turnstileToken) { setResetError('Please complete the security verification.'); return; }
     if (!resetEmail) { setResetError('Please enter your email address.'); return; }
-    const result = await resetPassword(resetEmail);
+    const result = await resetPassword(resetEmail, turnstileToken);
     if (result.success) {
+      turnstileRef.current?.reset();
       setResetMessage('Password reset email sent! Please check your inbox.');
       setTimeout(() => {
         setShowResetModal(false);
@@ -94,6 +102,15 @@ const LoginPage: React.FC = () => {
             />
           </div>
 
+          <div style={{ display: 'flex', justifyContent: 'center', padding: '0.5rem 0' }}>
+            <TurnstileWidget
+              turnstileRef={loginTurnstileRef}
+              onSuccess={(token) => setLoginToken(token)}
+              onExpire={() => setLoginToken('')}
+              onError={() => setLoginToken('')}
+            />
+          </div>
+
           {error && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
               <p style={{ color: 'var(--primary-300)', fontSize: '0.875rem' }}>{error}</p>
@@ -112,7 +129,7 @@ const LoginPage: React.FC = () => {
             </div>
           )}
 
-          <button type="submit" disabled={loading} className="btn btn-primary btn-full btn-lg">
+          <button type="submit" disabled={loading || !loginToken} className="btn btn-primary btn-full btn-lg">
             {loading ? 'Logging in...' : 'Login'}
           </button>
         </form>

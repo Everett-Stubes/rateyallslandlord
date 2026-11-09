@@ -143,8 +143,12 @@ CREATE POLICY "Users can view their pending landlords" ON public.landlords
 CREATE POLICY "Admins can view all reviews" ON public.reviews
   FOR SELECT TO public USING (public.is_admin());
 
-CREATE POLICY "Anyone can insert reviews" ON public.reviews
-  FOR INSERT TO public WITH CHECK (user_id IS NULL OR auth.uid() = user_id);
+-- Only signed-in accounts can post, and only as themselves. The website already
+-- requires login to review; this stops scripts from posting through the public
+-- database address without an account (accounts need the security check and a
+-- confirmed email).
+CREATE POLICY "Signed-in users can insert their own reviews" ON public.reviews
+  FOR INSERT TO authenticated WITH CHECK (auth.uid() IS NOT NULL AND auth.uid() = user_id);
 
 CREATE POLICY "Everyone can view all reviews" ON public.reviews
   FOR SELECT TO public USING (NOT is_deleted);

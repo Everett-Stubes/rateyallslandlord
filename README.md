@@ -52,6 +52,8 @@ Sign-up, login, and posting reviews don't work in demo mode. To connect a real d
 
 **Change the city, schools, and neighborhoods** in [`siteSettings.ts`](siteSettings.ts): student email domains, the address example on the forms, and the neighborhood buttons on the homepage all come from that file. **Change the logo wording and colors** in [`logoSettings.ts`](logoSettings.ts); the [logo customization guide](docs/logo_customization.md) explains how.
 
+The [launch checklist](docs/launch_checklist.md) lists what is left before real data goes live, and who does each step.
+
 The [Atlanta website building doc](docs/website_customization.md) tracks the playbook's customization choices (domain, neighborhoods, colors, landlord list, About/FAQ/Resources) and what the team still needs to fill in.
 
 A personal copy does not automatically become a working public service. Legal pages, the contact email, and some local assumptions still need review before launch.
@@ -67,7 +69,7 @@ A personal copy does not automatically become a working public service. Legal pa
 | Visual Studio Code | A text editor used to open the downloaded folder, create a settings file, and run a few commands. |
 | Supabase | Holds real landlord and review data and manages email/password accounts. |
 | Cloudflare Pages | Builds the website from your GitHub copy and puts it online. |
-| Cloudflare Turnstile | Shows the security challenge on certain forms. Its current limitations are explained in the guide. |
+| Cloudflare Turnstile | Shows the security challenge on login, sign-up, and other forms. Supabase checks it on its server once CAPTCHA protection is turned on (see the guide). |
 | Cloudflare DNS | Connects a domain name to the website, if you choose to use your own domain. |
 | Mapbox | Supplies address suggestions in the forms. |
 
@@ -85,7 +87,7 @@ Check each provider's current pricing, limits, and account requirements before e
 - In this copy, `package-lock.json` already uses the public npm registry (the template's private Replit download addresses were replaced; versions and integrity hashes are unchanged).
 - `package.json` has `dev`, `build`, `preview`, and `check:schema` commands. The files in `tests/` are not runnable yet: their test packages are not installed.
 - The demonstration stores changes in memory, not in a real database.
-- Turnstile completion is checked in the browser, but its token is not sent for server verification. Do not treat the displayed challenge as complete spam protection.
+- Turnstile tokens are sent to Supabase with login, sign-up, and password-reset requests. They are only checked once CAPTCHA protection is turned on in Supabase ([guide, part 6](docs/replication_guide.md#turn-on-server-side-checking-in-supabase)).
 - The real data service does not implement verification-document uploads. Do not collect real verification documents.
 - The review form and `init.sql` now use the same review fields, and `npm run check:schema` runs `init.sql` in a real Postgres to check review submission, editing, and moderation. It does not replace a test against your own Supabase project.
 - Existing branding, legal placeholders, contact information, and local assumptions need review for your own site.

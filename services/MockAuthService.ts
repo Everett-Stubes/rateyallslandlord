@@ -9,18 +9,22 @@ export class MockAuthService implements IAuthService {
     return { unsubscribe: () => {} };
   }
 
-  async signIn(_email: string, _password: string) {
+  async signIn(_email: string, _password: string, _captchaToken?: string) {
     return { success: false, error: 'Authentication is not available in demo mode.' };
   }
 
-  async signUp(_email: string, _password: string, _options: { redirectTo: string }) {
+  async signUp(_email: string, _password: string, _options: { redirectTo: string; captchaToken?: string }) {
     return { success: false, error: 'Registration is not available in demo mode.' };
   }
 
   async signOut() {}
 
-  async resetPassword(_email: string, _options: { redirectTo: string }) {
+  async resetPassword(_email: string, _options: { redirectTo: string; captchaToken?: string }) {
     return { success: false, error: 'Password reset is not available in demo mode.' };
+  }
+
+  async resendVerification(_email: string, _options: { redirectTo: string; captchaToken?: string }) {
+    return { success: false, error: 'Email verification is not available in demo mode.' };
   }
 
   async updatePassword(_password: string) {

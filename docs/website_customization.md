@@ -6,11 +6,11 @@ This is the "Website Customization" form from More Perfect University's Rate You
 
 | Choice | Address | Status | Where it's set |
 | --- | --- | --- | --- |
-| Top choice | rateyallslandlord.com | Chosen; not yet registered | `siteSettings.ts` (`domain`), `index.html` (`og:url`) |
+| Top choice | rateyallslandlord.com | Registered in Cloudflare (2026-11-09); paid by the team | `siteSettings.ts` (`domain`), `index.html` (`og:url`) |
 | Backup 1 | | | |
 | Backup 2 | | | |
 
-The playbook says More Perfect University will pay for a domain for at least two years. Ask them before buying one.
+The team is paying for the domain directly (the playbook mentions More Perfect University may cover it; we're not using that).
 
 ## Schools
 
@@ -62,7 +62,7 @@ Logo colors are separate. Change them in `logoSettings.ts`; see [logo_customizat
 
 ## About page
 
-Drafted in `pages/AboutPage.tsx` from the playbook's messaging: why the site exists, where we're starting, how it works, and who's behind it. **Still needed:** the team's contact email (replace `[insert email here]`), and any local story or motivation you want to add.
+Drafted in `pages/AboutPage.tsx` from the playbook's messaging: why the site exists, where we're starting, how it works, and who's behind it. **Still needed:** any local story or motivation you want to add.
 
 ## FAQ page
 
