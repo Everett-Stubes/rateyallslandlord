@@ -13,7 +13,7 @@ const PrivacyPolicyPage: React.FC = () => {
             <strong>Privacy Policy</strong>
           </p>
           <p>
-            <em>Last Updated</em>: September 25, 2026
+            <em>Last Updated</em>: November 9, 2026
           </p>
           <p>
             This online Privacy Policy (the "<strong>Policy</strong>") describes how
