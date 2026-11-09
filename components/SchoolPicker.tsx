@@ -70,7 +70,7 @@ const SchoolPicker: React.FC = () => {
               aria-pressed={school?.id === option.id}
               onClick={() => chooseSchool(option)}
             >
-              <span className="school-option__short">{option.shortName}</span>
+              <span className={`school-option__short${option.shortName.length > 9 ? ' school-option__short--long' : ''}`}>{option.shortName}</span>
               {option.shortName !== option.name && <span className="school-option__name">{option.name}</span>}
             </button>
           ))}

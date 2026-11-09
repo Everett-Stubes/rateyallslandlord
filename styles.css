@@ -919,8 +919,26 @@ ol {
 }
 
 @media (min-width: 640px) {
+  /* Eight columns, with every button two wide, so an unfinished last row can be centered. */
   .school-picker__grid {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-columns: repeat(8, minmax(0, 1fr));
+  }
+
+  .school-option {
+    grid-column: span 2;
+  }
+
+  /* Center a last row that has 1, 2, or 3 buttons instead of 4. */
+  .school-option:nth-last-child(1):nth-child(4n + 1) {
+    grid-column: 4 / span 2;
+  }
+
+  .school-option:nth-last-child(2):nth-child(4n + 1) {
+    grid-column: 3 / span 2;
+  }
+
+  .school-option:nth-last-child(3):nth-child(4n + 1) {
+    grid-column: 2 / span 2;
   }
 }
 
@@ -960,6 +978,13 @@ ol {
   line-height: 1;
   letter-spacing: 0.02em;
   text-transform: uppercase;
+  /* Keep the big label on one line so no button is taller than the rest. */
+  white-space: nowrap;
+}
+
+/* Longer labels (such as AGNES SCOTT) are a little smaller so they fit on one line. */
+.school-option__short--long {
+  font-size: 1.2rem;
 }
 
 .school-option__name {
