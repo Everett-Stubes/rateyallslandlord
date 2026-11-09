@@ -32,13 +32,13 @@ const TermsAndConditionsPage: React.FC<TermsAndConditionsPageProps> = ({ title =
           <p>
             These Terms of Use ("<strong>Terms</strong>" or "
             <strong>Terms of Use</strong>") constitute an agreement between you ("
-            <strong>you</strong>" or the "<strong>user</strong>") and [insert company name here]
+            <strong>you</strong>" or the "<strong>user</strong>") and More Perfect University
             and its affiliates, subsidiaries or assigns (collectively, "
-            <strong>[insert company name here]</strong>," "<strong>we</strong>," "
+            <strong>More Perfect University</strong>," "<strong>we</strong>," "
             <strong>us</strong>" or "<strong>our</strong>"). This website (the "
-            <strong>Site</strong>") is owned and operated by [insert company name here]. Access
+            <strong>Site</strong>") is owned and operated by More Perfect University. Access
             and use of this Site and our services provided through the Site and offline
-            (together, the "<strong>Services</strong>") are provided by [insert company name here]
+            (together, the "<strong>Services</strong>") are provided by More Perfect University
             to you on condition that you accept these Terms of Use. By accessing or
             using the Services, you signify that you have read, understand, and agree to
             be bound by these Terms of Use. If you do not agree to accept these Terms of
@@ -108,7 +108,7 @@ const TermsAndConditionsPage: React.FC<TermsAndConditionsPageProps> = ({ title =
           </h1>
           <p>
             PLEASE READ THIS SECTION CAREFULLY BECAUSE IT LIMITS THE MANNER IN WHICH YOU
-            AND [insert company name here] CAN SEEK RELIEF FROM EACH OTHER AND REQUIRES ALL
+            AND MORE PERFECT UNIVERSITY CAN SEEK RELIEF FROM EACH OTHER AND REQUIRES ALL
             DISPUTES TO BE BROUGHT SOLELY ON AN INDIVIDUAL BASIS AND NOT AS A CLASS
             ACTION OR ANY OTHER KIND OF REPRESENTATIVE PROCEEDING.
           </p>
@@ -117,20 +117,20 @@ const TermsAndConditionsPage: React.FC<TermsAndConditionsPageProps> = ({ title =
           </h2>
           These Terms, and all matters
           relating to the Services, and any disputes and claims arising therefrom or
-          related thereto between you and [insert company name here] (in each case, including
+          related thereto between you and More Perfect University (in each case, including
           non-contractual disputes or claims) will be governed by [insert governing law here],
           without regard to its principles of conflicts of law that might require the
-          application of the laws of another jurisdiction. You and [insert company name here]
+          application of the laws of another jurisdiction. You and More Perfect University
           agree to the exclusive jurisdiction of the federal and state courts located
-          in [insert court venue here], and you and [insert company name here] agree to submit
+          in [insert court venue here], and you and More Perfect University agree to submit
           to the exercise of personal jurisdiction of such courts for the purposes of
           litigating any applicable Dispute
           <h2 id="-disputes-are-any-disputes-claims-actions-and-other-controversies-between-you-and-rateyourlandlord-or-between-you-and-the-affiliates-or-agents-of-rateyourlandlord-that-in-either-case-arise-out-of-or-relate-to-these-terms-the-services-or-any-other-products-or-services-related-thereto-whether-based-in-contract-tort-warranty-fraud-misrepresentation-statute-regulation-or-another-legal-or-equitable-basis">
             B. <strong>"Disputes"</strong> 
           </h2>
           are any disputes, claims, actions, and other
-          controversies between you and [insert company name here] or between you and the
-          affiliates or agents of [insert company name here] that, in either case, arise out of
+          controversies between you and More Perfect University or between you and the
+          affiliates or agents of More Perfect University that, in either case, arise out of
           or relate to these Terms, the Services, or any other products or services
           related thereto, whether based in contract, tort, warranty, fraud,
           misrepresentation, statute, regulation, or another legal or equitable basis
@@ -138,8 +138,8 @@ const TermsAndConditionsPage: React.FC<TermsAndConditionsPageProps> = ({ title =
             <strong>C. Informal Dispute Resolution Prior to Litigation</strong>. 
           </h2>
           If you
-          have a Dispute with [insert company name here] or if [insert company name here] has a Dispute
-          with you, you or [insert company name here] must first attempt to resolve the Dispute
+          have a Dispute with More Perfect University or if More Perfect University has a Dispute
+          with you, you or More Perfect University must first attempt to resolve the Dispute
           through informal negotiation for a period of sixty (60) days, or such longer
           period as mutually agreed in writing (email suffices) by the parties ("Informal Resolution Period") from the day either party
           receives a written notice of a Dispute from the other party (a "Claimant Notice") in accordance with these Terms. The
@@ -158,14 +158,14 @@ const TermsAndConditionsPage: React.FC<TermsAndConditionsPageProps> = ({ title =
             these Terms, and (v) a personally signed statement from the claimant (and
             not their counsel) verifying the accuracy of the contents of the notice. A
             Claimant Notice must be individualized, meaning it can only concern yours or
-            [insert company name here]'s Dispute and no other person's or entity's Dispute.
+            More Perfect University's Dispute and no other person's or entity's Dispute.
             <br />
             <br />
-            You will send any Claimant Notice to [insert company name here] at the following
+            You will send any Claimant Notice to More Perfect University at the following
             address:
             <br />
             <br />
-            [insert company name here]
+            More Perfect University
           </p>
           <p>Re: Notice of Dispute</p>
           [insert mailing address here]
@@ -183,9 +183,9 @@ const TermsAndConditionsPage: React.FC<TermsAndConditionsPageProps> = ({ title =
             If a party receives a Claimant Notice, the receiving party will acknowledge
             receipt of the Claimant Notice and make a good faith effort during the
             Informal Resolution Period to either resolve the Dispute or explain why the
-            claimant is not entitled to relief. Neither you nor [insert company name here] may
+            claimant is not entitled to relief. Neither you nor More Perfect University may
             commence any court action or other legal proceeding regarding a Dispute
-            before the end of the Informal Resolution Period. If you or [insert company name here]
+            before the end of the Informal Resolution Period. If you or More Perfect University
             file a court action or other legal proceeding regarding a Dispute without
             complying with the requirements in Section 1, including waiting until the
             conclusion of the Informal Resolution Period, the other party may (i) seek
@@ -200,7 +200,7 @@ const TermsAndConditionsPage: React.FC<TermsAndConditionsPageProps> = ({ title =
           The recipient of a Claimant Notice may
           request an individualized telephone or video settlement conference, and both
           parties shall personally attend (with counsel, if represented) any
-          conference that is held. You and [insert company name here] agree to work
+          conference that is held. You and More Perfect University agree to work
           cooperatively to schedule the conference at the earliest mutually convenient
           time (with the Informal Resolution Period being extended as needed until
           that time) and to seek to reach a resolution during any such conference
@@ -211,22 +211,22 @@ const TermsAndConditionsPage: React.FC<TermsAndConditionsPageProps> = ({ title =
           fullest extent permitted by applicable law. NO DISPUTE SHALL BE JOINED TO
           ANY OTHER DISPUTE, INCLUDING ANY DISPUTE INVOLVING ANY OTHER CURRENT OR
           FORMER USER OF THE SERVICES. NO CLASS ACTION PROCEEDINGS OR ANY PROCEEDINGS
-          IN WHICH EITHER YOU OR [insert company name here] ACTS OR PROPOSES TO ACT IN A
+          IN WHICH EITHER YOU OR MORE PERFECT UNIVERSITY ACTS OR PROPOSES TO ACT IN A
           REPRESENTATIVE CAPACITY SHALL BE PERMITTED, AND NEITHER YOU NOR
-          [insert company name here] WILL PARTICIPATE AS A CLASS MEMBER IN ANY LEGAL PROCEEDINGS
+          MORE PERFECT UNIVERSITY WILL PARTICIPATE AS A CLASS MEMBER IN ANY LEGAL PROCEEDINGS
           ARISING OUT OF OR RELATING TO THESE TERMS, THE SITE, THE SERVICES OR ANY
           OTHER PRODUCTS OR SERVICES RELATED THERETO. ANY RELIEF MAY BE AWARDED ONLY
           INDIVIDUALLY AND ONLY TO THE EXTENT NECESSARY TO REDRESS YOUR OR
-          [insert company name here]'S INDIVIDUAL CLAIM(S); RELIEF MAY NOT BE AWARDED ON BEHALF
+          MORE PERFECT UNIVERSITY'S INDIVIDUAL CLAIM(S); RELIEF MAY NOT BE AWARDED ON BEHALF
           OF OTHERS OR THE GENERAL PUBLIC
           <h2 id="-one-year-to-assert-claims-in-no-event-shall-you-or-rateyourlandlord-send-a-claimant-notice-or-commence-litigation-over-any-dispute-more-than-one-1-year-after-the-dispute-first-arose-after-such-time-the-dispute-is-permanently-barred-which-means-that-you-or-rateyourlandlord-will-no-longer-have-the-right-to-assert-that-dispute">
             <strong>F. One Year to Assert Claims.</strong>
           </h2>
           In no event shall you or
-          [insert company name here] send a Claimant Notice or commence litigation over any
+          More Perfect University send a Claimant Notice or commence litigation over any
           Dispute more than one (1) year after the Dispute first arose. After such
           time, the Dispute is permanently barred, which means that you or
-          [insert company name here] will no longer have the right to assert that Dispute.
+          More Perfect University will no longer have the right to assert that Dispute.
           <h2 id="-severability-if-any-part-of-this-section-1-is-found-to-be-unlawful-or-unenforceable-for-any-reason-including-because-it-is-found-to-be-unconscionable-i-the-unenforceable-or-unlawful-provision-will-be-severed-from-these-terms-and-ii-the-remainder-of-these-terms-will-remain-in-effect-if-the-class-action-waiver-in-section-1-e-is-found-to-be-unlawful-or-unenforceable-in-a-state-for-any-reason-to-the-fullest-extent-allowed-by-applicable-law-claimants-may-seek-certification-only-of-a-class-composed-of-residents-of-that-state-further-if-any-part-of-this-section-1-is-found-to-unlawfully-prohibit-an-individual-claim-seeking-public-injunctive-relief-that-provision-will-have-no-effect-to-the-extent-such-relief-is-allowed-to-be-sought-and-the-remainder-of-this-section-1-will-be-enforceable">
             <strong>G. Severability</strong>. 
           </h2>
@@ -247,11 +247,11 @@ const TermsAndConditionsPage: React.FC<TermsAndConditionsPageProps> = ({ title =
           </h2>
           You must resolve Disputes with
           our past, present, and future affiliates and agents as though they were or
-          are [insert company name here]. Such affiliates and agents are third-party
+          are More Perfect University. Such affiliates and agents are third-party
           beneficiaries of this Section 1 and can enforce this Section 1 as though
-          they were or are [insert company name here] in the event they become involved in a
+          they were or are More Perfect University in the event they become involved in a
           Dispute with you. Otherwise, these Terms are only for the benefit of, and
-          will only be enforceable by, you and [insert company name here] only and do not give
+          will only be enforceable by, you and More Perfect University only and do not give
           rights to any third parties
           <h1 id="-you-agree-to-our-privacy-policy-">
             <strong>2. YOU AGREE TO OUR PRIVACY POLICY</strong>
@@ -301,7 +301,7 @@ const TermsAndConditionsPage: React.FC<TermsAndConditionsPageProps> = ({ title =
             Account. We do not warrant the accuracy of such third-party verification
             services and are not responsible for user Accounts who have obtained such
             verification wrongfully. Verification of a user is solely for the purposes
-            of eligibility criterion, and [insert company name here] does not verify the truth or
+            of eligibility criterion, and More Perfect University does not verify the truth or
             accuracy of User Content.
           </p>
           <h1 id="-mobile-devices-">
@@ -349,7 +349,7 @@ const TermsAndConditionsPage: React.FC<TermsAndConditionsPageProps> = ({ title =
           <p>
             During the registration process, you may be required to choose a username
             and enter your email address. You acknowledge and agree that
-            [insert company name here] may rely on this email address or username to identify you.
+            More Perfect University may rely on this email address or username to identify you.
             You shall be responsible for protecting the confidentiality of your
             username(s) and/or password(s), if any. You are responsible for all use of
             your Account, regardless of whether you authorized such access or use, and
@@ -404,26 +404,26 @@ const TermsAndConditionsPage: React.FC<TermsAndConditionsPageProps> = ({ title =
             <strong>8. OUR MATERIALS</strong>
           </h1>
           <p>
-            [insert company name here] may make certain digital reproductions of materials,
+            More Perfect University may make certain digital reproductions of materials,
             information, content, software, or other materials (including intellectual
             property, database rights, graphics, videos, text, and logos) available to
             you from this Site from time to time (collectively, the "
-            <strong>[insert company name here] Materials</strong>").
+            <strong>More Perfect University Materials</strong>").
           </p>
           <h2 id="-intellectual-property-the-services-rateyourlandlord-materials-information-downloaded-and-all-intellectual-property-pertaining-to-or-contained-on-the-services-including-copyrights-patents-database-rights-graphics-designs-text-logos-trade-dress-trademarks-and-service-marks-are-owned-by-rateyourlandlord-or-third-parties-all-rights-title-and-interest-will-remain-the-property-of-rateyourlandlord-and-or-such-third-party-owner-as-applicable-all-rateyourlandlord-materials-are-protected-by-trade-dress-copyright-patent-and-trademark-laws-as-well-as-various-other-intellectual-property-and-unfair-competition-laws">
             <strong>A. Intellectual Property.</strong> 
           </h2>
-          The Services, [insert company name here]
+          The Services, More Perfect University
           Materials, information downloaded, and all intellectual property pertaining
           to or contained on the Services (including copyrights, patents, database
           rights, graphics, designs, text, logos, trade dress, trademarks, and service
-          marks) are owned by [insert company name here] or third parties; all rights, title,
-          and interest will remain the property of [insert company name here] and/or such
-          third-party owner, as applicable. All [insert company name here] Materials are
+          marks) are owned by More Perfect University or third parties; all rights, title,
+          and interest will remain the property of More Perfect University and/or such
+          third-party owner, as applicable. All More Perfect University Materials are
           protected by trade dress, copyright, patent, and trademark laws, as well as
           various other intellectual property and unfair competition laws
           <h2 id="-copies-of-rateyourlandlord-materials-you-are-authorized-to-view-and-retain-a-copy-of-pages-of-the-services-only-for-your-own-personal-non-commercial-use-you-may-also-view-and-make-copies-of-relevant-documents-pages-images-or-other-materials-on-the-services-for-the-purpose-of-transacting-business-with-us-you-may-not-tokenize-copies-of-the-pages-of-the-services-or-any-other-content-on-the-services-you-agree-that-you-will-not-duplicate-publish-modify-create-derivative-works-from-participate-in-the-transfer-of-or-in-any-way-distribute-or-exploit-the-services-or-any-portion-of-the-services-for-any-public-or-commercial-use-without-our-prior-express-written-consent-additionally-you-agree-that-you-a-will-not-remove-or-alter-any-author-trademark-other-proprietary-notice-or-legend-displayed-on-the-services-or-printed-pages-produced-from-the-services-and-b-will-not-make-any-other-modifications-to-any-documents-obtained-from-the-services-other-than-in-connection-with-completing-information-required-to-transact-business-with-rateyourlandlord">
-            <strong>B. Copies of [insert company name here] Materials.</strong>
+            <strong>B. Copies of More Perfect University Materials.</strong>
           </h2>
           You are authorized to
           view and retain a copy of pages of the Services only for your own personal,
@@ -439,17 +439,17 @@ const TermsAndConditionsPage: React.FC<TermsAndConditionsPageProps> = ({ title =
           displayed on the Services (or printed pages produced from the Services), and
           (b) will not make any other modifications to any documents obtained from the
           Services other than in connection with completing information required to
-          transact business with [insert company name here]
+          transact business with More Perfect University
           <h2 id="-license-to-use-rateyourlandlord-materials-by-using-the-services-we-grant-you-a-non-exclusive-non-transferrable-non-sublicensable-right-and-license-to-use-the-rateyourlandlord-materials-for-your-personal-use-only-if-you-download-access-or-use-any-rateyourlandlord-materials-you-agree-that-such-materials-i-may-only-be-used-for-your-personal-use-ii-may-not-be-modified-used-to-create-a-derivative-work-incorporated-into-any-other-work-or-otherwise-exploited-without-rateyourlandlord-s-prior-written-permission-iii-shall-not-be-submitted-to-processed-by-or-otherwise-fed-into-any-artificial-intelligence-or-automated-processing-software-and-iv-shall-only-be-used-in-compliance-with-any-additional-license-terms-accompanying-such-materials">
-            <strong>C. License to Use [insert company name here] Materials.</strong>
+            <strong>C. License to Use More Perfect University Materials.</strong>
           </h2>
           By using the
           Services, we grant you a non-exclusive, non-transferrable, non-sublicensable
-          right and license to use the [insert company name here] Materials for your personal
-          use only. If you download, access or use any [insert company name here] Materials, you
+          right and license to use the More Perfect University Materials for your personal
+          use only. If you download, access or use any More Perfect University Materials, you
           agree that such materials: (i) may only be used for your personal use; (ii)
           may not be modified, used to create a derivative work, incorporated into any
-          other work or otherwise exploited without [insert company name here]'s prior written
+          other work or otherwise exploited without More Perfect University's prior written
           permission; (iii) shall not be submitted to, processed by, or otherwise fed
           into any artificial intelligence or automated processing software; and (iv)
           shall only be used in compliance with any additional license terms
@@ -463,11 +463,11 @@ const TermsAndConditionsPage: React.FC<TermsAndConditionsPageProps> = ({ title =
             post or upload on the Services including feedback or questions.
           </p>
           <h2 id="-license-for-rateyourlandlord-for-user-content-by-submitting-user-content-to-the-services-you-automatically-grant-rateyourlandlord-the-royalty-free-perpetual-worldwide-irrevocable-non-exclusive-right-and-license-but-not-the-obligation-to-use-publish-reproduce-modify-adapt-edit-translate-create-derivative-works-from-incorporate-into-other-works-distribute-sub-license-and-otherwise-exploit-such-user-content-in-whole-or-in-part-worldwide-in-any-form-media-or-technology-now-known-or-hereafter-developed-for-the-full-term-of-any-copyright-that-may-exist-in-such-user-content-without-payment-to-you-or-to-any-third-parties-you-acknowledge-and-agree-that-this-license-includes-the-right-to-reproduce-user-content-including-any-personal-information-or-your-likeness-for-marketing-and-advertising-purposes">
-            <strong>A. License for [insert company name here] for User Content.</strong>
+            <strong>A. License for More Perfect University for User Content.</strong>
           </h2>
           By
           submitting User Content to the Services, you automatically grant
-          [insert company name here] the royalty-free, perpetual, worldwide, irrevocable,
+          More Perfect University the royalty-free, perpetual, worldwide, irrevocable,
           non-exclusive right and license, but not the obligation, to use, publish,
           reproduce, modify, adapt, edit, translate, create derivative works from,
           incorporate into other works, distribute, sub-license and otherwise exploit
@@ -478,7 +478,7 @@ const TermsAndConditionsPage: React.FC<TermsAndConditionsPageProps> = ({ title =
           right to reproduce User Content, including any personal information or your
           likeness, for marketing and advertising purposes
           <h2 id="-rateyourlandlord-s-use-of-user-content-you-agree-that-we-may-access-preserve-and-disclose-your-account-and-any-user-content-posted-uploaded-received-or-otherwise-communicated-if-required-to-do-so-by-law-or-with-the-good-faith-belief-that-such-access-preservation-or-disclosure-is-reasonably-necessary-to-i-comply-with-an-enforceable-subpoena-or-other-legal-process-ii-enforce-these-terms-iii-respond-to-claims-that-any-information-violates-the-rights-of-third-parties-iv-respond-to-your-requests-for-customer-service-or-allow-you-to-use-the-services-in-the-future-or-v-protect-the-rights-property-or-personal-safety-of-rateyourlandlord-or-its-members-employees-agents-affiliates-partners-communities-or-any-other-person">
-            <strong>B. [insert company name here]'s Use of User Content.</strong>
+            <strong>B. More Perfect University's Use of User Content.</strong>
           </h2>
           You agree that we
           may access, preserve and disclose your Account and any User Content posted,
@@ -489,17 +489,17 @@ const TermsAndConditionsPage: React.FC<TermsAndConditionsPageProps> = ({ title =
           information violates the rights of third parties; (iv) respond to your
           requests for customer service or allow you to use the Services in the
           future; or (v) protect the rights, property or personal safety of
-          [insert company name here] or its members, employees, agents, affiliates, partners,
+          More Perfect University or its members, employees, agents, affiliates, partners,
           communities or any other person
           <h2 id="-user-content-is-non-confidential-user-content-submitted-by-you-will-be-considered-non-confidential-and-rateyourlandlord-is-under-no-obligation-to-treat-such-user-content-as-proprietary-information-without-limiting-the-foregoing-we-reserve-the-right-to-use-any-user-content-as-it-deems-appropriate-including-without-limitation-deleting-editing-modifying-rejecting-or-refusing-to-post-it-rateyourlandlord-is-under-no-obligation-to-edit-delete-or-otherwise-modify-user-content-once-it-has-been-submitted-to-us-we-shall-have-no-duty-to-attribute-authorship-of-user-content-to-you-and-shall-not-be-obligated-to-enforce-any-form-of-attribution-by-third-parties">
             <strong>C. User Content is Non-Confidential.</strong> 
           </h2>
           User Content submitted by
-          you will be considered non-confidential and [insert company name here] is under no
+          you will be considered non-confidential and More Perfect University is under no
           obligation to treat such User Content as proprietary information. Without
           limiting the foregoing, we reserve the right to use any User Content as it
           deems appropriate, including, without limitation, deleting, editing,
-          modifying, rejecting, or refusing to post it. [insert company name here] is under no
+          modifying, rejecting, or refusing to post it. More Perfect University is under no
           obligation to edit, delete or otherwise modify User Content once it has been
           submitted to us. We shall have no duty to attribute authorship of User
           Content to you, and shall not be obligated to enforce any form of
@@ -514,11 +514,11 @@ const TermsAndConditionsPage: React.FC<TermsAndConditionsPageProps> = ({ title =
           be used in connection with the User Content, or any derivative works of or
           upgrades or updates thereto; (b) you have no objection to the publication,
           use, modification, deletion and exploitation of the User Content by
-          [insert company name here] or its licensees, successors and assigns; (c) you forever
+          More Perfect University or its licensees, successors and assigns; (c) you forever
           waive and agree not to claim or assert any entitlement to any and all moral
           rights of an author in any of the User Content; and (d) you forever release
-          [insert company name here], and its licensees, successors and assigns, from any claims
-          that you could otherwise assert against [insert company name here], or any of its
+          More Perfect University, and its licensees, successors and assigns, from any claims
+          that you could otherwise assert against More Perfect University, or any of its
           assigns or affiliates, by virtue of any such moral rights. You also permit
           any other user to access, view, store, or reproduce the User Content for
           that user's personal use
@@ -594,43 +594,43 @@ const TermsAndConditionsPage: React.FC<TermsAndConditionsPageProps> = ({ title =
               other forms of solicitation;
             </li>
             <li>
-              Imply a [insert company name here] endorsement or partnership of any kind without
+              Imply a More Perfect University endorsement or partnership of any kind without
               our prior express written permission;
             </li>
             <li>Attempt to identify anonymous reviewers;</li>
             <li>
               Introduce software or automated agents to the Services, or access
-              [insert company name here] or the Services so as to produce multiple accounts,
+              More Perfect University or the Services so as to produce multiple accounts,
               generate automated messages, or to scrape, strip or mine data from
-              [insert company name here] or the Services without our express written permission;
+              More Perfect University or the Services without our express written permission;
             </li>
             <li>
               "Frame" or "mirror" or otherwise incorporate part of the Services into any
-              website, or "deep-link" to any portion of [insert company name here] or the Services
+              website, or "deep-link" to any portion of More Perfect University or the Services
               without our express written permission;
             </li>
             <li>
               Copy or use the information, content, or data on the Services in
-              connection with a competitive service, as determined by [insert company name here];
+              connection with a competitive service, as determined by More Perfect University;
             </li>
             <li>
               Sell, resell, rent, lease, loan, trade, or otherwise monetize access to
-              [insert company name here] or the Services posted on the Site without our express
+              More Perfect University or the Services posted on the Site without our express
               written permission;
             </li>
             <li>
               Interfere with, disrupt, modify, reverse engineer, or decompile any data
-              or functionality of [insert company name here] or the Services;
+              or functionality of More Perfect University or the Services;
             </li>
             <li>
-              Interfere with, disrupt, or create an undue burden on [insert company name here] or
-              the Services or the networks or services connected to [insert company name here] or
+              Interfere with, disrupt, or create an undue burden on More Perfect University or
+              the Services or the networks or services connected to More Perfect University or
               the Services; or
             </li>
             <li>
               Introduce any viruses, Trojan horses, worms, time bombs, cancelbots,
-              corrupted files, or similar software to [insert company name here] or the Services
-              or attempt to circumvent any security feature of [insert company name here] or the
+              corrupted files, or similar software to More Perfect University or the Services
+              or attempt to circumvent any security feature of More Perfect University or the
               Services.
             </li>
           </ul>
@@ -664,7 +664,7 @@ const TermsAndConditionsPage: React.FC<TermsAndConditionsPageProps> = ({ title =
             </li>
           </ul>
           <h2 id="-rateyourlandlord-s-removal-of-user-content-">
-            <strong>C. [insert company name here]'s Removal of User Content</strong>
+            <strong>C. More Perfect University's Removal of User Content</strong>
           </h2>
           <p>
             You understand and agree that we, without any obligation to do so, may
@@ -680,7 +680,7 @@ const TermsAndConditionsPage: React.FC<TermsAndConditionsPageProps> = ({ title =
             <strong>11. INTELLECTUAL PROPERTY INFRINGEMENT</strong>
           </h1>
           <p>
-            [insert company name here] respects the intellectual property rights of others, and we
+            More Perfect University respects the intellectual property rights of others, and we
             ask you to do the same. This section discusses infringement of intellectual
             property, including under the Digital Millennium Copyright Act, 17 USC
             Section 512 <em>et seq.</em> ("<strong>DMCA</strong>").
@@ -691,7 +691,7 @@ const TermsAndConditionsPage: React.FC<TermsAndConditionsPageProps> = ({ title =
           If you believe that your work is
           the subject of copyright infringement and/or trademark infringement and
           appears on the Site and/or in the Services, please provide
-          [insert company name here]'s designated agent the following information
+          More Perfect University's designated agent the following information
           <ul>
             <li>
               A physical or electronic signature of a person authorized to act on behalf
@@ -707,10 +707,10 @@ const TermsAndConditionsPage: React.FC<TermsAndConditionsPageProps> = ({ title =
               Identification of the material that is claimed to be infringing or to be
               the subject of infringing activity and that is to be removed or access to
               which is to be disabled at the Site, and information reasonably sufficient
-              to permit [insert company name here] to locate the material;
+              to permit More Perfect University to locate the material;
             </li>
             <li>
-              Information reasonably sufficient to permit [insert company name here] to contact
+              Information reasonably sufficient to permit More Perfect University to contact
               you as the complaining party, such as an address, telephone number, and,
               if available, an e-mail address at which you may be contacted;
             </li>
@@ -726,7 +726,7 @@ const TermsAndConditionsPage: React.FC<TermsAndConditionsPageProps> = ({ title =
             </li>
           </ul>
           <p>
-            [insert company name here]'s agent for notice of claims of copyright or trademark
+            More Perfect University's agent for notice of claims of copyright or trademark
             infringement can be reached at{" "}
             rateyallslandlord@gmail.com.
           </p>
@@ -742,7 +742,7 @@ const TermsAndConditionsPage: React.FC<TermsAndConditionsPageProps> = ({ title =
           that we have removed or disabled access to copyright-protected material that
           you provided if such removal is pursuant to a valid DMCA take-down notice
           that we have received. If you receive such notice from us, you may provide
-          us with a counter-notification, in writing, to [insert company name here]'s designated
+          us with a counter-notification, in writing, to More Perfect University's designated
           agent that includes all of the following information
           <ul>
             <li>Your physical or electronic signature;</li>
@@ -761,7 +761,7 @@ const TermsAndConditionsPage: React.FC<TermsAndConditionsPageProps> = ({ title =
               you consent to the jurisdiction of a court for the judicial district in
               which your physical address is located, or if your physical address is
               outside of the United States, for any judicial district in which
-              [insert company name here] may be located, and that you will accept service of
+              More Perfect University may be located, and that you will accept service of
               process from the person who provided notification of allegedly infringing
               material or an agent of such person.
             </li>
@@ -769,7 +769,7 @@ const TermsAndConditionsPage: React.FC<TermsAndConditionsPageProps> = ({ title =
           <h2 id="-termination-of-infringers-rateyourlandlord-reserves-the-right-at-its-sole-discretion-to-terminate-the-account-or-access-of-any-user-of-the-site-who-is-the-subject-of-dmca-or-other-infringement-notifications">
             <strong>C. Termination of Infringers</strong>. 
           </h2>
-          [insert company name here] reserves the
+          More Perfect University reserves the
           right, at its sole discretion, to terminate the account or access of any
           user of the Site who is the subject of DMCA or other infringement
           notifications
@@ -793,7 +793,7 @@ const TermsAndConditionsPage: React.FC<TermsAndConditionsPageProps> = ({ title =
           </p>
           <p>
             Please note that the Internet is not a fully secure medium and any
-            communication may be lost, intercepted or altered. [insert company name here] is not
+            communication may be lost, intercepted or altered. More Perfect University is not
             liable for any damages related to communications to, or from, this Site or
             the Services.
           </p>
@@ -801,11 +801,11 @@ const TermsAndConditionsPage: React.FC<TermsAndConditionsPageProps> = ({ title =
             <strong>14. CURRENCY OF SITE</strong>
           </h1>
           <p>
-            [insert company name here] cannot and does not guarantee or accept any responsibility
+            More Perfect University cannot and does not guarantee or accept any responsibility
             or liability for the accuracy, currency or completeness of the information
             on this Site and the Services. We have the right, but not the obligation, to
             correct any errors, inaccuracies or omissions and to change or update this
-            Site (including the [insert company name here] Materials) and the Services at any
+            Site (including the More Perfect University Materials) and the Services at any
             time, without prior notice to you.
           </p>
           <h1 id="-links-to-other-sites-and-services-">
@@ -813,8 +813,8 @@ const TermsAndConditionsPage: React.FC<TermsAndConditionsPageProps> = ({ title =
           </h1>
           <p>
             This Site or the Services may contain links to outside services and
-            resources, the availability and content of which [insert company name here] does not
-            control. The inclusion of these links does not imply that [insert company name here]
+            resources, the availability and content of which More Perfect University does not
+            control. The inclusion of these links does not imply that More Perfect University
             monitors or endorses these sites. We are not responsible for examining or
             evaluating, and we do not warrant the offering of these services and
             resources or the content of these websites. We do not assume any
@@ -826,10 +826,10 @@ const TermsAndConditionsPage: React.FC<TermsAndConditionsPageProps> = ({ title =
             <strong>16. SECURITY</strong>
           </h1>
           <p>
-            [insert company name here] makes no warranty whatsoever to you, express or implied,
+            More Perfect University makes no warranty whatsoever to you, express or implied,
             regarding the security of the Services, including with respect to the
             ability of unauthorized persons to intercept or access information
-            transmitted by you through the Services. [insert company name here] is not responsible
+            transmitted by you through the Services. More Perfect University is not responsible
             for any losses resulting from the loss or theft of your device, the loss or
             theft of your information transmitted from or stored on your devices, or any
             losses arising from the use of your device by someone whom you have given
@@ -843,11 +843,11 @@ const TermsAndConditionsPage: React.FC<TermsAndConditionsPageProps> = ({ title =
             information contained on this Site or the Services. Due to the ability to
             share certain content and materials, computer viruses or other destructive
             programs may also be inadvertently downloaded from this Site or the
-            Services. [insert company name here] recommends that you install appropriate
+            Services. More Perfect University recommends that you install appropriate
             anti-virus or other protective software.
           </p>
           <p>
-            [insert company name here] SHALL NOT BE RESPONSIBLE OR LIABLE FOR ANY SOFTWARE,
+            MORE PERFECT UNIVERSITY SHALL NOT BE RESPONSIBLE OR LIABLE FOR ANY SOFTWARE,
             COMPUTER VIRUSES OR OTHER DESTRUCTIVE, HARMFUL OR DISRUPTIVE FILES OR
             PROGRAMS THAT MAY INFECT OR OTHERWISE IMPACT YOUR USE OF YOUR COMPUTER
             EQUIPMENT OR OTHER PROPERTY ON ACCOUNT OF YOUR ACCESS TO, USE OF, OR
@@ -861,7 +861,7 @@ const TermsAndConditionsPage: React.FC<TermsAndConditionsPageProps> = ({ title =
             If any provision of these Terms of Use is found to be unenforceable, then
             that provision shall be deemed severable from these Terms of Use and shall
             not affect the validity and enforceability of any remaining provisions.
-            [insert company name here]'s failure to enforce the strict performance of any
+            More Perfect University's failure to enforce the strict performance of any
             provision of these Terms or the additional terms and conditions for any
             Service will not constitute a waiver of our right to subsequently enforce
             such provision or any other provisions of these Terms or the additional
@@ -877,18 +877,18 @@ const TermsAndConditionsPage: React.FC<TermsAndConditionsPageProps> = ({ title =
             <strong>18. DISCLAIMERS: SITE, SERVICES AND MATERIALS PROVIDED "AS-IS"</strong>
           </h1>
           <p>
-            THIS SITE, THE SERVICES AND THE [insert company name here] MATERIALS ARE PROVIDED "AS
+            THIS SITE, THE SERVICES AND THE MORE PERFECT UNIVERSITY MATERIALS ARE PROVIDED "AS
             IS," "WHERE IS," AND "WITH ALL FAULTS," WITHOUT REPRESENTATION, WARRANTY OR
             CONDITION OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING THE IMPLIED
             REPRESENTATIONS, WARRANTIES OR CONDITIONS OF MERCHANTABILITY,
-            NON-INFRINGEMENT, OR FITNESS FOR A PARTICULAR PURPOSE. [insert company name here] DOES
+            NON-INFRINGEMENT, OR FITNESS FOR A PARTICULAR PURPOSE. MORE PERFECT UNIVERSITY DOES
             NOT REPRESENT OR WARRANT THAT THIS SITE, THE SERVICES, OR THE
-            [insert company name here] MATERIALS WILL MEET YOUR REQUIREMENTS. NO ADVICE OR
-            INFORMATION, WHETHER ORAL OR WRITTEN, OBTAINED BY YOU FROM [insert company name here],
+            MORE PERFECT UNIVERSITY MATERIALS WILL MEET YOUR REQUIREMENTS. NO ADVICE OR
+            INFORMATION, WHETHER ORAL OR WRITTEN, OBTAINED BY YOU FROM MORE PERFECT UNIVERSITY,
             OR THROUGH THE SITE SHALL CREATE ANY WARRANTY REGARDING THE SERVICES NOT
             EXPRESSLY STATED IN THESE TERMS. YOU UNDERSTAND AND ACKNOWLEDGE THAT
             ADDITIONAL DISCLAIMERS, LIMITATIONS, AND NOTICES REGARDING THE SERVICES AND
-            ITS CONTENT AND DATA MAY BE PROVIDED BY [insert company name here] FROM TIME TO TIME
+            ITS CONTENT AND DATA MAY BE PROVIDED BY MORE PERFECT UNIVERSITY FROM TIME TO TIME
             WITHIN THE SERVICES.
           </p>
           <p>
@@ -940,7 +940,7 @@ const TermsAndConditionsPage: React.FC<TermsAndConditionsPageProps> = ({ title =
             <strong>20. INDEMNIFICATION</strong>
           </h1>
           <p>
-          You will defend, indemnify, and hold [insert company name here], each third-party
+          You will defend, indemnify, and hold More Perfect University, each third-party
             service provider, their respective affiliates, subsidiaries, and parent
             companies, and their respective officers, directors, employees, agents,
             information providers, and partners (collectively, the "
@@ -952,7 +952,7 @@ const TermsAndConditionsPage: React.FC<TermsAndConditionsPageProps> = ({ title =
             or related to (a) your conduct with respect to the Services and/or (b)
             violation (or alleged violation) of these Terms by you or any other person
             accessing the Site or Services on your behalf. Under no circumstance will
-          [insert company name here] be liable for damages of any kind that result from your use
+          More Perfect University be liable for damages of any kind that result from your use
             of, or the inability to use, the Services.
           </p>
           <p>
@@ -964,13 +964,13 @@ const TermsAndConditionsPage: React.FC<TermsAndConditionsPageProps> = ({ title =
             <strong>21. TERM AND TERMINATION</strong>
           </h1>
           <p>
-          [insert company name here] may, from time to time, but is in no way obligated to,
+          More Perfect University may, from time to time, but is in no way obligated to,
             permit you to access and use this Site and the Services in accordance with
             these Terms of Use and in the manner more particularly set out herein. You
             acknowledge and agree (i) that access to this Site and the Services may not
             be available from time to time, may be amended, revised, replaced, suspended
             or terminated in whole or in part at any time and without notice, and (ii)
-          that [insert company name here] shall not, in any event, be responsible to you in any
+          that More Perfect University shall not, in any event, be responsible to you in any
             way should you be unable to access this Site and the Services at any time or
             from time to time. We may terminate these Terms of Use for convenience with
             no notice to you.
@@ -983,7 +983,7 @@ const TermsAndConditionsPage: React.FC<TermsAndConditionsPageProps> = ({ title =
             <strong>22. CHANGES</strong>
           </h1>
           <p>
-          You are responsible for reviewing these Terms regularly. [insert company name here]
+          You are responsible for reviewing these Terms regularly. More Perfect University
             reserves the right, at any time, without notice to you, and in its sole
             discretion, to modify or discontinue the Services, these Terms, or any of
             our policies related to use of the Services. We will not amend Section 1
@@ -1016,8 +1016,8 @@ const TermsAndConditionsPage: React.FC<TermsAndConditionsPageProps> = ({ title =
             <strong>C. Assignment.</strong> 
           </h2>
           These Terms of Use are not assignable,
-            transferable, or sublicensable by you except with [insert company name here]'s prior
-            written consent. [insert company name here] may assign its rights and duties under
+            transferable, or sublicensable by you except with More Perfect University's prior
+            written consent. More Perfect University may assign its rights and duties under
             these Terms of Use at any time without notice to you
           <h2 id="-waiver-no-waiver-by-either-party-of-any-breach-or-default-hereunder-shall-be-deemed-to-be-a-waiver-of-any-preceding-or-subsequent-breach-or-default">
             <strong>D. Waiver.</strong> 
@@ -1030,7 +1030,7 @@ const TermsAndConditionsPage: React.FC<TermsAndConditionsPageProps> = ({ title =
           </h1>
           <p>
             If you need to contact us regarding this Site, the Services or these Terms
-            of Use you can contact [insert company name here] at{" "}
+            of Use you can contact More Perfect University at{" "}
             rateyallslandlord@gmail.com.
           </p>
         </>
