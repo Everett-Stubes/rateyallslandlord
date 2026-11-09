@@ -252,8 +252,10 @@ CREATE POLICY "Students can insert landlords" ON public.landlords
 CREATE POLICY "Everyone can view all landlords" ON public.landlords
   FOR SELECT TO public USING (NOT is_deleted);
 
+-- Admins must be able to see every landlord, deleted ones included; otherwise deleting a
+-- landlord (marking it is_deleted) is rejected because the updated row would be hidden.
 CREATE POLICY "Admins can view all landlords" ON public.landlords
-  FOR SELECT TO public USING (NOT is_deleted);
+  FOR SELECT TO public USING (public.is_admin());
 
   
 CREATE POLICY "Users can view their pending landlords" ON public.landlords

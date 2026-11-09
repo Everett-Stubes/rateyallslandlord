@@ -283,6 +283,16 @@ const hoodEdit = await as(HOODIE, () => db.query(`UPDATE public.reviews SET neig
 check('the reviewer can change their review\'s neighborhood', hoodEdit.rows[0]?.neighborhood === 'Midtown');
 check('an absurdly long neighborhood is rejected', await throws(() => as(HOODIE, () => db.query(`UPDATE public.reviews SET neighborhood = $1 WHERE id = $2`, ['x'.repeat(101), hoodReview.rows[0].id]))));
 
+// ---- Deleting landlords (admin only) ----
+const delTarget = await db.query(`INSERT INTO public.landlords (name, city, status) VALUES ('Delete me', 'Atlanta', 'approved') RETURNING id`);
+// Same shape as SupabaseApiService.deleteLandlord: update, then read the row back.
+const softDeleteLandlord = (user, id) => as(user, () => db.query(
+  `UPDATE public.landlords SET is_deleted = true WHERE id = $1 AND is_deleted = false RETURNING id`, [id]));
+check('a regular student cannot delete a landlord', await (async () => { try { return (await softDeleteLandlord(STUDENT, delTarget.rows[0].id)).rows.length === 0; } catch { return true; } })());
+const adminDeleted = await (async () => { try { return (await softDeleteLandlord(ADMIN, delTarget.rows[0].id)).rows.length === 1; } catch (e) { return e.message; } })();
+check('an admin can delete a landlord', adminDeleted === true, String(adminDeleted));
+check('a deleted landlord is hidden from visitors', (await as(null, () => db.query(`SELECT id FROM public.landlords WHERE id = $1`, [delTarget.rows[0].id]))).rows.length === 0);
+
 // ---- Neighborhoods on landlords ----
 const tagged = await as(STUDENT, () => db.query(
   `INSERT INTO public.landlords (name, addresses, city, neighborhoods) VALUES ('Tagged Landlord', ARRAY['No Known Street'], 'Atlanta', ARRAY['Home Park']) RETURNING id, neighborhoods`));
