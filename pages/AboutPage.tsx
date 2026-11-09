@@ -57,7 +57,7 @@ const AboutPage: React.FC = () => {
         <section>
           <h2>Get Involved</h2>
           <p>
-            Know a landlord who isn't listed yet? Add them. Had a recent experience worth sharing? Write a review. The more people participate, the more useful this platform becomes for tenants. You can email us at <a href="mailto:[insert email here]">[insert email here]</a>.
+            Know a landlord who isn't listed yet? Add them. Had a recent experience worth sharing? Write a review. The more people participate, the more useful this platform becomes for tenants. You can email us at <a href="mailto:rateyallslandlord@gmail.com">rateyallslandlord@gmail.com</a>.
           </p>
         </section>
       </div>

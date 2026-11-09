@@ -62,7 +62,7 @@ Logo colors are separate. Change them in `logoSettings.ts`; see [logo_customizat
 
 ## About page
 
-Drafted in `pages/AboutPage.tsx` from the playbook's messaging: why the site exists, where we're starting, how it works, and who's behind it. **Still needed:** the team's contact email (replace `[insert email here]`), and any local story or motivation you want to add.
+Drafted in `pages/AboutPage.tsx` from the playbook's messaging: why the site exists, where we're starting, how it works, and who's behind it. **Still needed:** any local story or motivation you want to add.
 
 ## FAQ page
 

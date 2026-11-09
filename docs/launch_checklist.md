@@ -24,7 +24,7 @@ Your name and address on the domain registration are hidden from the public look
 
 The site's contact address is the team's Gmail account. There is no separate mailing list; the emails of people who create accounts are stored by Supabase.
 
-- [ ] **Code:** Put the Gmail address on the About and Contact pages (they still say `[insert email here]`).
+- [x] **Code:** Gmail address (rateyallslandlord@gmail.com) is on the About and Contact pages.
 - [ ] **You:** Supabase's built-in sender can't email the public, so connect a sender for sign-up and password-reset emails ([guide, part 5](replication_guide.md#configure-confirmation-and-password-reset-email)). Two free options:
   - **Gmail (works today, no domain needed):** turn on 2-Step Verification for the team Gmail account, create an **app password** in its Google Account security settings, and enter it in Supabase's SMTP settings with host `smtp.gmail.com`, port `587`, and the Gmail address as username and sender. Google limits a regular account to roughly 500 emails a day. Never paste the app password into chat or `.env.local`.
   - **Resend or Brevo (after the domain):** emails come from `@rateyallslandlord.com` and are less likely to land in spam. Each requires verifying the domain.
