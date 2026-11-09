@@ -47,6 +47,39 @@ Keep one shared vault in a password manager that supports sharing (Bitwarden's f
 
 Two-step codes are tied to a phone. Before handing off, move each authenticator entry to the new person's phone or give them the backup codes, and change the phone number on the Gmail account.
 
+## Credentials sheet (fill in on a PRIVATE copy)
+
+> **Do not type real passwords into this file and commit it.** This repository is on GitHub, and anything committed stays in its history even if you delete it later. Fill this sheet in on a printed copy, in a private note, or on the password manager's secure-note page, and keep the blanks here empty. Print this section and write on it, or paste it into a private document that only you and the next owner can open.
+
+For every row: the **where** column says where to find or create it. Write the value in the blank.
+
+| Item | Where it comes from | Value |
+| --- | --- | --- |
+| Password manager master password | Chosen when the vault is created | ______________________ |
+| Password manager recovery / emergency kit | Downloaded when the vault is created | ______________________ |
+| **Cloudflare** login email | Account sign-up | ______________________ |
+| Cloudflare password | Account sign-up | ______________________ |
+| Cloudflare 2-step backup codes | Shown once when 2-step was turned on | ______________________ |
+| Cloudflare 2-step authenticator app (which phone/app) | Profile → Authentication | ______________________ |
+| Cloudflare passkey / security key (if any) | Profile → Authentication | ______________________ |
+| Domain transfer (auth) code, only if ever moving the domain | Cloudflare → domain → Transfer | ______________________ |
+| **GitHub** username and password | Account sign-up | ______________________ |
+| GitHub 2-step recovery codes | Settings → Password and authentication | ______________________ |
+| GitHub passkey / security key (if any) | Same page | ______________________ |
+| **Supabase** login | "Continue with GitHub" (no separate password) | uses GitHub login |
+| Supabase database password | Chosen when the project was created | ______________________ |
+| Supabase personal access token (only if made; delete when done) | Account → Access Tokens | ______________________ |
+| **Gmail** address | Account sign-up | ______________________ |
+| Gmail password | Account sign-up | ______________________ |
+| Gmail 2-step phone number / backup codes | myaccount.google.com/security | ______________________ |
+| Gmail **app password** (16 characters, shown once) | myaccount.google.com/apppasswords | ______________________ |
+| **Turnstile** secret key | Cloudflare → Turnstile → widget | ______________________ |
+| **Mapbox** login and password | Account sign-up | ______________________ |
+| Mapbox public token (`pk.`) | account.mapbox.com → Access tokens | ______________________ |
+| **Privacy.com** login and password | Account sign-up | ______________________ |
+| Privacy.com 2-step method / backup codes | Account settings | ______________________ |
+| Virtual card: last 4 digits, expiry, spending limit | Privacy.com card page (full number stays in Privacy.com) | ______________________ |
+
 ## Things that need doing
 
 **Every semester:** check the links on the Resources page; skim pending reviews and landlords at `/admin`.
