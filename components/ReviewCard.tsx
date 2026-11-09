@@ -5,6 +5,7 @@ import type { Review } from '../types';
 import { useAuth } from '../context/AuthContext';
 import { useData } from '../context/DataContext';
 import { toLetterGrade, gradeColors } from '../utils/grading';
+import { toBuildingAddress } from '../utils/properties';
 
 interface ReviewCardProps {
   review: Review;
@@ -49,7 +50,7 @@ const ReviewCard: React.FC<ReviewCardProps> = ({ review, onApprove, onReject }) 
 
       <div className="review-card__topbar">
         <span className="review-card__address">
-          {review.property_address || 'Address not given'}
+          {review.property_address ? toBuildingAddress(review.property_address) : 'Address not given'}
         </span>
         <div className="review-card__date-row">
           <span className="review-card__date">{new Date(review.created_at).toLocaleDateString(undefined, { year: 'numeric', month: 'numeric', day: 'numeric' })}</span>

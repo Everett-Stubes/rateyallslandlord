@@ -87,5 +87,11 @@ DROP POLICY IF EXISTS "School-email users can insert their own reviews" ON publi
 DROP POLICY IF EXISTS "Students can insert reviews" ON public.reviews;
 CREATE POLICY "Students can insert reviews" ON public.reviews
   FOR INSERT TO authenticated WITH CHECK (
-    auth.uid() = user_id AND (public.is_school_email() OR public.is_admin())
+    auth.uid() = user_id AND public.is_school_email()
   );
+
+-- The list of admin emails is no longer public: signed-in users see only their own row.
+DROP POLICY IF EXISTS "Anyone can view admins" ON public.admins;
+DROP POLICY IF EXISTS "Users can see their own admin row" ON public.admins;
+CREATE POLICY "Users can see their own admin row" ON public.admins
+  FOR SELECT TO authenticated USING (email = auth.jwt() ->> 'email');

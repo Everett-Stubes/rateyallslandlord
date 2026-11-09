@@ -161,9 +161,7 @@ check('an Agnes Scott address can post', !(await blocked(AGNES_SCOTT)));
 check('a Mercer student address (live.mercer.edu) can post', !(await blocked(MERCER_STUDENT)));
 check('a Spelman address can post', !(await blocked(SPELMAN)));
 
-const adminPost = await as(ADMIN, () => db.query(
-  `INSERT INTO public.reviews (landlord_id, user_id, landlord_rating, building_rating, comment) VALUES (1, $1, 3, 3, 'admin post') RETURNING id`, [ADMIN.id]));
-check('admins can post without a school email', adminPost.rows.length === 1);
+check('admins without a school email cannot post reviews', await blocked(ADMIN));
 const adminLandlord = await as(ADMIN, () => db.query(
   `INSERT INTO public.landlords (name, city, status) VALUES ('Launch Landlord', 'Atlanta', 'approved') RETURNING id`));
 check('admins can add landlords without a school email', adminLandlord.rows.length === 1);
@@ -179,6 +177,14 @@ try { await as(STUDENT, () => db.query(`INSERT INTO public.school_email_domains 
 catch { domainEditBlocked = true; }
 const domainEdit = domainEditBlocked || (await db.query(`SELECT 1 FROM public.school_email_domains WHERE domain = 'example.com'`)).rows.length === 0;
 check('website users cannot add school domains', domainEdit);
+
+// The list of admin emails is not public.
+const anonAdmins = await as(null, () => db.query(`SELECT email FROM public.admins`));
+check('logged-out visitors cannot see the admin list', anonAdmins.rows.length === 0);
+const strangerAdmins = await as(STUDENT, () => db.query(`SELECT email FROM public.admins`));
+check('regular users cannot see the admin list', strangerAdmins.rows.length === 0);
+const ownAdmin = await as(ADMIN, () => db.query(`SELECT email FROM public.admins`));
+check('an admin can still see their own admin row', ownAdmin.rows.length === 1 && ownAdmin.rows[0].email === ADMIN.email);
 
 // The domain lists in init.sql must match siteSettings.ts, which the sign-up form uses.
 const settings = readFileSync(new URL('../siteSettings.ts', import.meta.url), 'utf8');

@@ -1,3 +1,4 @@
+import { removeUnitNumber } from '../utils/properties';
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useData } from '../context/DataContext';
@@ -68,7 +69,7 @@ const EditReviewPage: React.FC = () => {
         would_rent_again: wouldRentAgain,
         rent_amount: rentAmount ? parseFloat(rentAmount) : null,
         bedrooms: bedrooms ? parseInt(bedrooms, 10) : null,
-        property_address: propertyAddress || null,
+        property_address: propertyAddress ? removeUnitNumber(propertyAddress) : null,
         verification_status: review?.verification_status || 'unverified',
         tags,
       });

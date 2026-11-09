@@ -167,8 +167,10 @@ CREATE POLICY "Anyone can view school email domains" ON public.school_email_doma
   FOR SELECT TO public USING (true);
 
 -- Admins Table Policies
-CREATE POLICY "Anyone can view admins" ON public.admins
-  FOR SELECT TO public USING (true);
+-- Signed-in users can only see their own row (the website uses it to check "am I an admin?").
+-- The list of admin emails is not public.
+CREATE POLICY "Users can see their own admin row" ON public.admins
+  FOR SELECT TO authenticated USING (email = auth.jwt() ->> 'email');
 
 -- Landlords Table Policies
 CREATE POLICY "Admins can update landlords" ON public.landlords
@@ -199,12 +201,13 @@ CREATE POLICY "Users can view their pending landlords" ON public.landlords
 CREATE POLICY "Admins can view all reviews" ON public.reviews
   FOR SELECT TO public USING (public.is_admin());
 
--- Only confirmed school-email accounts (or admins) can post, and only as themselves. This is
+-- Only confirmed school-email accounts can post reviews, and only as themselves. This is
 -- enforced here, not just on the website, so scripts using the public database address
--- can't post without a verified school account.
+-- can't post without a verified school account. (Admins can add landlords but not reviews,
+-- so every review on the site really is from a verified school email.)
 CREATE POLICY "Students can insert reviews" ON public.reviews
   FOR INSERT TO authenticated WITH CHECK (
-    auth.uid() = user_id AND (public.is_school_email() OR public.is_admin())
+    auth.uid() = user_id AND public.is_school_email()
   );
 
 CREATE POLICY "Everyone can view all reviews" ON public.reviews

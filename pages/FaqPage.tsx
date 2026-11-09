@@ -46,6 +46,17 @@ const FaqPage: React.FC = () => {
       ),
     },
     {
+      q: 'Are reviews really from students? Are they anonymous?',
+      a: (
+        <>
+          Yes to both. Every review comes from someone who confirmed a school email address before posting, so you know it
+          wasn't written by a landlord, a bot, or a stranger. Reviews are anonymous: we never show names or email
+          addresses, only the building, the date, and what the reviewer wrote. We also remove unit numbers, so a landlord
+          can't tell which tenant wrote a review. Please don't include your name or unit in the review itself.
+        </>
+      ),
+    },
+    {
       q: 'What gets removed?',
       a: (
         <>

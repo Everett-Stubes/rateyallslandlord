@@ -1,3 +1,4 @@
+import { removeUnitNumber } from '../utils/properties';
 import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useData } from '../context/DataContext';
@@ -127,7 +128,7 @@ const AddLandlordPage: React.FC = () => {
         would_rent_again: wouldRentAgain,
         rent_amount: rentAmount ? parseFloat(rentAmount) : undefined,
         bedrooms: bedrooms ? parseInt(bedrooms, 10) : undefined,
-        property_address: propertyAddress || undefined,
+        property_address: propertyAddress ? removeUnitNumber(propertyAddress) : undefined,
         verification_status: 'pending' as const,
         created_by_student: isStudentEmail(user?.email),
         tags,

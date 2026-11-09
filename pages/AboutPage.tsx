@@ -38,7 +38,7 @@ const AboutPage: React.FC = () => {
           <h2>How It Works</h2>
           <p>
             It's Rate My Professor, but for your landlord. Grade your landlord and your building, and read what
-            your neighbors have to say about maintenance, communication, respect, and rent. Reviews are anonymous.
+            your neighbors have to say about maintenance, communication, respect, and rent. Every review comes from a student with a confirmed school email, and reviews are anonymous: no names, no emails, and no unit numbers.
           </p>
         </section>
 

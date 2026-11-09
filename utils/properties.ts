@@ -14,6 +14,22 @@ export function toBuildingAddress(address: string): string {
   return result.replace(/\s+/g, ' ').replace(/,\s*$/, '').trim();
 }
 
+// A unit on its own between commas, such as the "Apt 2B" in "123 Main St, Apt 2B, Atlanta, GA".
+const UNIT_SEGMENT = /^(?:(?:apt|apartment|unit|suite|ste|room|rm|bldg|building)\b\.?|#)\s*#?\s*(?:[\w-]*\d[\w-]*|[a-z])$/i;
+
+/**
+ * Removes the unit number from an address but keeps the city, state, and ZIP, so
+ * "123 Main St Apt 2B, Atlanta, GA 30318" becomes "123 Main St, Atlanta, GA 30318".
+ * Reviews are saved this way so a landlord can't tell which tenant wrote one.
+ */
+export function removeUnitNumber(address: string): string {
+  const parts = address.split(',').map(part => part.trim()).filter(Boolean);
+  if (parts.length === 0) return address.trim();
+  const kept = parts.filter((part, i) => i === 0 || !UNIT_SEGMENT.test(part));
+  while (UNIT_SUFFIX.test(kept[0])) kept[0] = kept[0].replace(UNIT_SUFFIX, '');
+  return kept.map(part => part.replace(/\s+/g, ' ').trim()).filter(Boolean).join(', ');
+}
+
 const buildingKey = (address: string) => toBuildingAddress(address).toLowerCase();
 
 export interface Property {
