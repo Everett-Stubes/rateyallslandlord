@@ -5,10 +5,15 @@ import type { User } from '../types';
 interface AuthContextType {
   user: User | null;
   isAdmin: boolean;
-  login: (email: string, password: string) => Promise<{ success: boolean; error?: string; emailNotVerified?: boolean }>;
-  register: (email: string, password: string) => Promise<boolean>;
+  login: (
+    email: string,
+    password: string,
+    captchaToken?: string
+  ) => Promise<{ success: boolean; error?: string; emailNotVerified?: boolean }>;
+  register: (email: string, password: string, captchaToken?: string) => Promise<boolean>;
   logout: () => void;
-  resetPassword: (email: string) => Promise<{ success: boolean; error?: string }>;
+  resetPassword: (email: string, captchaToken?: string) => Promise<{ success: boolean; error?: string }>;
+  resendVerification: (email: string, captchaToken?: string) => Promise<{ success: boolean; error?: string }>;
   updatePassword: (password: string) => Promise<{ success: boolean; error?: string }>;
   verifyOtp: (params: {
     tokenHash: string;
@@ -84,11 +89,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const login = async (
     email: string,
-    password: string
+    password: string,
+    captchaToken?: string
   ): Promise<{ success: boolean; error?: string; emailNotVerified?: boolean }> => {
     setLoading(true);
     try {
-      const result = await auth.signIn(email, password);
+      const result = await auth.signIn(email, password, captchaToken);
       if (result.success && result.user) {
         setUser(result.user);
         const adminStatus = await checkIsAdmin(result.user.email);
@@ -103,11 +109,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  const register = async (email: string, password: string): Promise<boolean> => {
+  const register = async (email: string, password: string, captchaToken?: string): Promise<boolean> => {
     setLoading(true);
     try {
       const result = await auth.signUp(email, password, {
         redirectTo: `${globalThis.location.origin}/verify-email?verification=1`,
+        captchaToken,
       });
       if (result.error) throw new Error(result.error);
       return result.success;
@@ -125,9 +132,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setIsAdmin(false);
   };
 
-  const resetPassword = async (email: string) =>
+  const resetPassword = async (email: string, captchaToken?: string) =>
     auth.resetPassword(email, {
       redirectTo: `${globalThis.location.origin}/reset-password`,
+      captchaToken,
+    });
+
+  const resendVerification = async (email: string, captchaToken?: string) =>
+    auth.resendVerification(email, {
+      redirectTo: `${globalThis.location.origin}/verify-email?verification=1`,
+      captchaToken,
     });
 
   const updatePassword = async (password: string) => auth.updatePassword(password);
@@ -147,6 +161,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       register,
       logout,
       resetPassword,
+      resendVerification,
       updatePassword,
       verifyOtp,
       exchangeCodeForSession,

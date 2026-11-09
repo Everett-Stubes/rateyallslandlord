@@ -180,7 +180,7 @@ Leave the default Supabase email templates unchanged for the first test. If chan
 
 ## 6. Set up Cloudflare Turnstile
 
-Turnstile is Cloudflare's security-challenge widget. The application displays it for registration, password-reset requests, adding a landlord, and adding a review. A **sitekey** is public; a **secret key** is private.
+Turnstile is Cloudflare's security-challenge widget. The application displays it for login, registration, resending the confirmation email, password-reset requests, adding a landlord, and adding a review. A **sitekey** is public; a **secret key** is private.
 
 1. Sign in to [Cloudflare](https://dash.cloudflare.com/).
 2. Open **Turnstile → Add widget**.
@@ -191,9 +191,17 @@ Turnstile is Cloudflare's security-challenge widget. The application displays it
 7. Save and restart `npm run dev`, then open `/register`. **You should see a challenge instead of “Security verification is not configured.”** Allow the challenge to complete before submitting.
 8. Once Pages gives you a hostname, return to this widget's **Settings** and add that exact `pages.dev` hostname. Add your custom hostname later too, and click **Save**. Do not add broad unrelated hostnames.
 
-**Important limit:** the current application checks that the browser received a token, but does not send it to Cloudflare's server-side verification service or pass `captchaToken` to Supabase Auth. Cloudflare requires server verification for meaningful protection. A completed widget is **not** proof of complete bot protection.
+### Turn on server-side checking in Supabase
 
-Do **not** enable Supabase Auth's CAPTCHA requirement as a supposed no-code fix: the current auth calls do not pass the required token, so enabling it can break registration or password resets. A developer must connect verification to the relevant server-side requests and test it before you rely on this protection. There is no implemented verification endpoint in the sample Pages Function.
+The website sends each Turnstile token to Supabase with login, registration, resend-confirmation, and password-reset requests. Supabase checks the token with Cloudflare on its server, but only after you turn this on:
+
+1. In Supabase, open **Authentication → Attack Protection** (**TO CONFIRM:** the page may be labelled differently in your dashboard).
+2. Turn on **Enable Captcha protection**, choose **Turnstile by Cloudflare**, and paste the Turnstile **secret key** from step 5. The secret key goes only here, never in `.env.local` or Cloudflare Pages settings.
+3. Save, then test: register, log in, and request a password reset. Each should work after completing the challenge.
+
+Once this is on, every login and sign-up must include a fresh challenge, so the site's Turnstile sitekey must work on the hostname you are testing. If login fails with a captcha error, check the widget's hostname list first.
+
+**What this covers:** accounts can't be created, logged into, or sent emails without passing the challenge. Adding landlords and posting reviews requires a signed-in account (the database rules in `init.sql` enforce this), so those are covered too. The challenge shown on the add-landlord and add-review forms is an extra step in the browser only; Supabase does not check those two tokens.
 
 ## 7. Set up Mapbox address suggestions
 

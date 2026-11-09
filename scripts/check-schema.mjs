@@ -113,6 +113,20 @@ try {
 } catch { anonLandlordBlocked = true; }
 check('logged-out visitors cannot add landlords', anonLandlordBlocked);
 
+let anonReviewBlocked = false;
+try {
+  await as(null, () => db.query(
+    `INSERT INTO public.reviews (landlord_id, landlord_rating, building_rating, comment) VALUES (1, 1, 1, 'spam')`));
+} catch { anonReviewBlocked = true; }
+check('logged-out visitors cannot post reviews', anonReviewBlocked);
+
+let impersonationBlocked = false;
+try {
+  await as(OTHER, () => db.query(
+    `INSERT INTO public.reviews (landlord_id, user_id, landlord_rating, building_rating, comment) VALUES (1, '${STUDENT.id}', 1, 1, 'fake')`));
+} catch { impersonationBlocked = true; }
+check('users cannot post reviews under someone else\'s account', impersonationBlocked);
+
 console.log(failures === 0 ? '\nALL CHECKS PASSED' : `\n${failures} CHECK(S) FAILED`);
 await db.close();
 process.exitCode = failures === 0 ? 0 : 1;

@@ -42,6 +42,7 @@ export function createMockAuthService(overrides?: Partial<IAuthService>): IAuthS
     signUp: vi.fn().mockResolvedValue({ success: true }),
     signOut: vi.fn().mockResolvedValue(undefined),
     resetPassword: vi.fn().mockResolvedValue({ success: true }),
+    resendVerification: vi.fn().mockResolvedValue({ success: true }),
     updatePassword: vi.fn().mockResolvedValue({ success: true }),
     verifyOtp: vi.fn().mockResolvedValue({ error: undefined }),
     checkIsAdmin: vi.fn().mockResolvedValue(false),

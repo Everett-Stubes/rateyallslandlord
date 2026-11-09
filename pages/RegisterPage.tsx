@@ -22,7 +22,7 @@ const RegisterPage: React.FC = () => {
     if (password !== confirmPassword) { setError('Passwords do not match.'); return; }
     if (password.length < 6) { setError('Password must be at least 6 characters long.'); return; }
     try {
-      const result = await register(email, password);
+      const result = await register(email, password, turnstileToken);
       if (result) {
         setSuccess(true);
       } else {

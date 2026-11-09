@@ -39,15 +39,23 @@ export interface IAuthService {
   ): { unsubscribe: () => void };
   signIn(
     email: string,
-    password: string
+    password: string,
+    captchaToken?: string
   ): Promise<{ success: boolean; user?: { id: string; email: string }; error?: string; emailNotVerified?: boolean }>;
   signUp(
     email: string,
     password: string,
-    options: { redirectTo: string }
+    options: { redirectTo: string; captchaToken?: string }
   ): Promise<{ success: boolean; error?: string }>;
   signOut(): Promise<void>;
-  resetPassword(email: string, options: { redirectTo: string }): Promise<{ success: boolean; error?: string }>;
+  resetPassword(
+    email: string,
+    options: { redirectTo: string; captchaToken?: string }
+  ): Promise<{ success: boolean; error?: string }>;
+  resendVerification(
+    email: string,
+    options: { redirectTo: string; captchaToken?: string }
+  ): Promise<{ success: boolean; error?: string }>;
   updatePassword(password: string): Promise<{ success: boolean; error?: string }>;
   verifyOtp(params: {
     tokenHash: string;

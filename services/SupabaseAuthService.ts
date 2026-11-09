@@ -25,8 +25,15 @@ export class SupabaseAuthService implements IAuthService {
     return { unsubscribe: () => subscription.unsubscribe() };
   }
 
-  async signIn(email: string, password: string) {
-    const { data, error } = await this.client.auth.signInWithPassword({ email, password });
+  // captchaToken is the Turnstile token from the page. When CAPTCHA protection is
+  // turned on in Supabase (Authentication → Attack Protection), Supabase checks it
+  // with Cloudflare on its server and rejects the request if it is missing or fake.
+  async signIn(email: string, password: string, captchaToken?: string) {
+    const { data, error } = await this.client.auth.signInWithPassword({
+      email,
+      password,
+      options: { captchaToken },
+    });
 
     if (error) {
       const message = error.message.toLowerCase();
@@ -53,11 +60,11 @@ export class SupabaseAuthService implements IAuthService {
     return { success: false, error: 'Invalid email or password.' };
   }
 
-  async signUp(email: string, password: string, options: { redirectTo: string }) {
+  async signUp(email: string, password: string, options: { redirectTo: string; captchaToken?: string }) {
     const { data, error } = await this.client.auth.signUp({
       email,
       password,
-      options: { emailRedirectTo: options.redirectTo },
+      options: { emailRedirectTo: options.redirectTo, captchaToken: options.captchaToken },
     });
 
     if (error) return { success: false, error: error.message };
@@ -68,9 +75,20 @@ export class SupabaseAuthService implements IAuthService {
     await this.client.auth.signOut();
   }
 
-  async resetPassword(email: string, options: { redirectTo: string }) {
+  async resetPassword(email: string, options: { redirectTo: string; captchaToken?: string }) {
     const { error } = await this.client.auth.resetPasswordForEmail(email, {
       redirectTo: options.redirectTo,
+      captchaToken: options.captchaToken,
+    });
+    if (error) return { success: false, error: error.message };
+    return { success: true };
+  }
+
+  async resendVerification(email: string, options: { redirectTo: string; captchaToken?: string }) {
+    const { error } = await this.client.auth.resend({
+      type: 'signup',
+      email,
+      options: { emailRedirectTo: options.redirectTo, captchaToken: options.captchaToken },
     });
     if (error) return { success: false, error: error.message };
     return { success: true };
