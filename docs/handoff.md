@@ -29,7 +29,7 @@ When someone edits the code on GitHub's `main` branch, Cloudflare Pages rebuilds
 | Cloudflare | Domain, hosting (Pages), bot check (Turnstile), DNS | Email + 2-step (authenticator app) | Domain only | Domain: rateyallslandlord.com, registered 2026-11-09. Renews: **TBD (check Cloudflare → Domain Registration)**. Pages address: **TBD** |
 | Supabase | Database, user accounts, sign-up emails | "Continue with GitHub" | Free | Project ref `ywgbwddksbvsaoxycwmv`, region East US. URL `https://ywgbwddksbvsaoxycwmv.supabase.co` |
 | Gmail (team address) | Sends confirmation and password-reset emails; contact address | Email + password + 2-step | Free | Address: **TBD**. Uses an *app password* (see below) |
-| Mapbox | Address suggestions | **TBD** | Free tier | Public token starts `pk.`; limited to the site's web addresses |
+| Mapbox | Address suggestions | **TBD** | Free tier | Public token `pk.eyJ1IjoicmF0ZXlhbGxzbGFuZGxvcmQi...` (full value is in Cloudflare Pages' build variables); limit it to the site's web addresses in Mapbox |
 | Turnstile | Bot check | Part of Cloudflare | Free | Sitekey: `0x4AAAAAAF6fq7QhK5vwxdeG` (public). Secret key is stored in Supabase only |
 
 Public values (safe to see; they ship inside the website): the Supabase URL above, the Supabase publishable key `sb_publishable_l2BqAp-7bi-rzNeLlp1ULA_6FGFMTy0`, the Turnstile sitekey, and the Mapbox `pk.` token. These are set as build variables in Cloudflare Pages (see `docs/replication_guide.md`, part 8).
