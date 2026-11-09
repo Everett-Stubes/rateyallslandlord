@@ -4,10 +4,9 @@ Everything here uses free plans except the domain. **You** = steps that need the
 
 ## 1. Domain (the only cost)
 
-- [ ] **You:** Ask More Perfect University first. The playbook says they will pay for a domain for at least two years.
 - [ ] **You:** Check that `rateyallslandlord.com` is available. Pick one or two backups and add them to [website_customization.md](website_customization.md).
 - [ ] **You:** Buy it through **Cloudflare Registrar** (sold at cost, about $10–11 a year for a .com; check at checkout). It then uses the same Cloudflare account as the hosting.
-- [ ] **You:** Pay with the virtual card. Load about $15 for one year or $25 for two, and lock the card to Cloudflare if your bank allows it.
+- [ ] **You:** Create the virtual card, then pay with it. Load about $15 for one year or $25 for two, and lock the card to Cloudflare if your bank allows it.
 - [ ] **You:** Cloudflare auto-renews. Put a calendar reminder one month before the renewal date to make sure the card has money, or the domain can lapse.
 - [ ] **You:** Turn on two-step login (2FA) for Cloudflare, Supabase, and GitHub.
 
@@ -23,10 +22,12 @@ Your name and address on the domain registration are hidden from the public look
 
 ## 3. Email
 
-- [ ] **You:** Set up a free email-sending service (for example Resend or Brevo), verify the domain with it, and enter its SMTP settings in Supabase ([guide, part 5](replication_guide.md#configure-confirmation-and-password-reset-email)). Supabase's built-in sender can't email the public. Needs the domain first.
-- [ ] **You:** Turn on Cloudflare **Email Routing** so an address like `hello@rateyallslandlord.com` forwards to your inbox.
-- [ ] **Code:** Put that contact address on the About page (it still says `[insert email here]`).
-- [ ] **Decide:** Do you want a "get updates" mailing-list form for people who don't create an account? Accounts' emails are already stored by Supabase.
+The site's contact address is the team's Gmail account. There is no separate mailing list; the emails of people who create accounts are stored by Supabase.
+
+- [ ] **Code:** Put the Gmail address on the About and Contact pages (they still say `[insert email here]`).
+- [ ] **You:** Supabase's built-in sender can't email the public, so connect a sender for sign-up and password-reset emails ([guide, part 5](replication_guide.md#configure-confirmation-and-password-reset-email)). Two free options:
+  - **Gmail (works today, no domain needed):** turn on 2-Step Verification for the team Gmail account, create an **app password** in its Google Account security settings, and enter it in Supabase's SMTP settings with host `smtp.gmail.com`, port `587`, and the Gmail address as username and sender. Google limits a regular account to roughly 500 emails a day. Never paste the app password into chat or `.env.local`.
+  - **Resend or Brevo (after the domain):** emails come from `@rateyallslandlord.com` and are less likely to land in spam. Each requires verifying the domain.
 
 ## 4. Hosting: Cloudflare Pages (free)
 

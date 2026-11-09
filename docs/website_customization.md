@@ -10,7 +10,7 @@ This is the "Website Customization" form from More Perfect University's Rate You
 | Backup 1 | | | |
 | Backup 2 | | | |
 
-The playbook says More Perfect University will pay for a domain for at least two years. Ask them before buying one.
+The team is paying for the domain directly (the playbook mentions More Perfect University may cover it; we're not using that).
 
 ## Schools
 
