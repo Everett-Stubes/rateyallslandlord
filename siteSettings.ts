@@ -11,6 +11,8 @@ export const siteSettings = {
   // Shown next to the big title on the homepage.
   tagline: "For Atlanta College Students",
   domain: "rateyallslandlord.com",
+  // Where people email questions and suggestions, such as a neighborhood we're missing.
+  contactEmail: "rateyallslandlord@gmail.com",
   city: "Atlanta",
   state: "GA",
   // Shown as an example inside the address boxes on the forms.

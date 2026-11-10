@@ -13,6 +13,7 @@ import { siteSettings } from '../siteSettings';
 import { isStudentEmail } from '../utils/studentVerification';
 import { neighborhoods as allNeighborhoods, inferNeighborhoodNames } from '../utils/schools';
 import { getSemester, semesterLabel, SEMESTER_RULE_EXPLANATION } from '../utils/semester';
+import SuggestNeighborhood from '../components/SuggestNeighborhood';
 
 const MAPBOX_TOKEN = import.meta.env.VITE_MAPBOX_TOKEN as string;
 
@@ -274,6 +275,7 @@ const AddLandlordPage: React.FC = () => {
           <p className="neighborhood-hint">
             Pick every neighborhood this landlord rents in. This is how students find them when they browse by neighborhood. Choose "Other" if none fit.
           </p>
+          <SuggestNeighborhood />
         </div>
 
         <div className="form-divider">

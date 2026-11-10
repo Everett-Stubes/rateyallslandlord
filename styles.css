@@ -3631,3 +3631,16 @@ ol {
   font-weight: 400;
   color: var(--neutral-300);
 }
+
+.focus-areas__suggest {
+  flex: 0 0 100%;
+  text-align: center;
+  margin: 0;
+  font-size: 0.8125rem;
+  opacity: 0.85;
+}
+
+.focus-areas__suggest a {
+  color: inherit;
+  text-decoration: underline;
+}

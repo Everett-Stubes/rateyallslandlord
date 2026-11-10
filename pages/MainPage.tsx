@@ -11,6 +11,7 @@ import { siteSettings } from '../siteSettings';
 import { getAllLandlordAddresses, getLandlordProperties } from '../utils/properties';
 import { groupNeighborhoodsForSchool, getLandlordNeighborhoodNames, type Neighborhood } from '../utils/schools';
 import { useSchool } from '../context/SchoolContext';
+import SuggestNeighborhood from '../components/SuggestNeighborhood';
 
 const MainPage: React.FC = () => {
   const { landlords, loading, deleteLandlord } = useData();
@@ -174,6 +175,7 @@ const MainPage: React.FC = () => {
                 </button>
               )}
             </div>
+            <SuggestNeighborhood className="focus-areas__suggest" />
           </div>
         </div>
       </div>
