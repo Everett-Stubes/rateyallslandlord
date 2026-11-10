@@ -212,7 +212,7 @@ const ReviewForm: React.FC<ReviewFormProps> = ({
           />
         </AddressAutofill>
         <p className="form-hint">
-          We only show the building. Your unit number is removed before your review is saved.
+          The building address is shown publicly with your review. Your unit number is removed before your review is saved.
         </p>
       </div>
 
