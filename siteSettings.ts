@@ -121,6 +121,26 @@ export const siteSettings = {
       colors: { background: "#B84F00", text: "#FFFFFF", accent: "#FF9A4D" },
       campus: { lat: 33.8860, lng: -84.2680 },
     },
+    {
+      id: "oglethorpe",
+      name: "Oglethorpe University",
+      shortName: "Oglethorpe",
+      // One domain, oglethorpe.edu, is used for Oglethorpe email (subdomains are covered too).
+      emailDomains: ["oglethorpe.edu"],
+      // Approximate: Oglethorpe's black and gold. Black is from its style guide; the gold came from a team-color site. Campus: 4484 Peachtree Rd NE.
+      colors: { background: "#231F20", text: "#FDDD04", accent: "#FDDD04" },
+      campus: { lat: 33.8738, lng: -84.3354 },
+    },
+    {
+      id: "amsc",
+      name: "Atlanta Metropolitan State College",
+      shortName: "AMSC",
+      // Employees use atlm.edu; the student address format wasn't found, so check with a student.
+      emailDomains: ["atlm.edu"],
+      // Approximate and unconfirmed: the college's brand book shows red, black, and white. Campus: 1630 Metropolitan Pkwy SW.
+      colors: { background: "#A6192E", text: "#FFFFFF", accent: "#F3B6BF" },
+      campus: { lat: 33.7140, lng: -84.4060 },
+    },
   ],
   // Email addresses under these domains are NOT accepted, even though they sit under a school's domain.
   // They are alumni accounts, which prove graduation and not current enrollment. Keep in step with the
@@ -189,14 +209,14 @@ export const siteSettings = {
     },
     {
       name: "Grant Park",
-      schools: ["gsu"],
+      schools: ["gsu", "amsc"],
       center: { lat: 33.7370, lng: -84.3700 },
       streets: ["Cherokee Ave", "Boulevard SE", "Park Ave SE", "Grant St SE", "Sydney St", "Augusta Ave", "Atlanta Ave"],
     },
     {
       // Between Downtown and the AUC, so it's near both.
       name: "Castleberry Hill",
-      schools: ["gsu", "morehouse", "spelman", "cau", "msm"],
+      schools: ["gsu", "morehouse", "spelman", "cau", "msm", "amsc"],
       center: { lat: 33.7480, lng: -84.4000 },
       streets: ["Walker St", "Peters St", "Nelson St", "Haynes St", "Markham St", "Elliott St", "Mangum St"],
     },
@@ -209,7 +229,7 @@ export const siteSettings = {
     },
     {
       name: "West End",
-      schools: ["morehouse", "spelman", "cau", "msm"],
+      schools: ["morehouse", "spelman", "cau", "msm", "amsc"],
       center: { lat: 33.7360, lng: -84.4130 },
       streets: ["Ralph David Abernathy Blvd", "Lee St", "Oak St", "Lawton St", "Peeples St", "Cascade Ave", "Lucile Ave", "Gordon St"],
     },
@@ -245,9 +265,37 @@ export const siteSettings = {
       // Mercer's campus (3001 Mercer University Dr, ZIP 30341) is near Chamblee and Doraville. The address
       // box sometimes writes these addresses as "Atlanta", so ZIP codes are listed too.
       name: "Chamblee & Doraville",
-      schools: ["mercer"],
+      schools: ["mercer", "oglethorpe"],
       center: { lat: 33.8860, lng: -84.2680 },
       streets: [", Chamblee", ", Doraville", "30340", "30341", "Mercer University Dr", "University Cir", "Flowers Rd", "Peachtree Industrial Blvd"],
+    },
+    // --- Around Oglethorpe University (4484 Peachtree Rd NE, Brookhaven) ---
+    {
+      // Oglethorpe's own neighborhood. The address box sometimes writes these addresses as "Atlanta", so the
+      // ZIP code is listed too.
+      name: "Brookhaven",
+      schools: ["oglethorpe"],
+      center: { lat: 33.8590, lng: -84.3350 },
+      streets: [", Brookhaven", "30319", "Peachtree Rd NE", "Dresden Dr", "Apple Valley Rd", "Osborne Rd", "Ashford Dunwoody Rd", "Caldwell Rd", "Windsor Pkwy"],
+    },
+    {
+      name: "Buckhead",
+      schools: ["oglethorpe"],
+      center: { lat: 33.8390, lng: -84.3790 },
+      streets: ["30305", "30326", "Piedmont Rd NE", "Roswell Rd NE", "Lenox Rd NE", "Lenox Pkwy", "E Paces Ferry Rd", "W Paces Ferry Rd", "Pharr Rd NE", "Peachtree Hills Ave"],
+    },
+    // --- Around Atlanta Metropolitan State College (1630 Metropolitan Pkwy SW) ---
+    {
+      name: "Pittsburgh / Mechanicsville",
+      schools: ["amsc"],
+      center: { lat: 33.7330, lng: -84.3980 },
+      streets: ["Metropolitan Pkwy", "McDaniel St", "Crumley St", "Pryor St SW", "Rawson St"],
+    },
+    {
+      name: "Adair Park / Capitol View",
+      schools: ["amsc"],
+      center: { lat: 33.7260, lng: -84.4140 },
+      streets: ["Allene Ave", "Avon Ave", "Deckner Ave", "Murphy Ave", "Sylvan Rd", "Whitehall Terrace"],
     },
     {
       name: "Other",

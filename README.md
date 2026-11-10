@@ -1,6 +1,6 @@
 # Rate Y'all's Landlord — Atlanta
 
-Landlord reviews for Atlanta college students: Georgia Tech, Georgia State, Emory, the four AUC schools (Morehouse, Spelman, Clark Atlanta, Morehouse School of Medicine), SCAD Atlanta, Agnes Scott, and Mercer. The planned address is [rateyallslandlord.com](https://rateyallslandlord.com). On first visit a pop-up asks for the visitor's school, recolors the site in that school's colors, and sorts the neighborhood buttons closest-to-campus first. Anyone can read; posting needs an account made with a school email. Landlords with several properties are supported: each building gets its own grades on the landlord's page.
+Landlord reviews for Atlanta college students: Georgia Tech, Georgia State, Emory, the four AUC schools (Morehouse, Spelman, Clark Atlanta, Morehouse School of Medicine), SCAD Atlanta, Agnes Scott, Mercer, Oglethorpe, and Atlanta Metropolitan State College. The planned address is [rateyallslandlord.com](https://rateyallslandlord.com). On first visit a pop-up asks for the visitor's school, recolors the site in that school's colors, and sorts the neighborhood buttons closest-to-campus first. Anyone can read; posting needs an account made with a school email. Landlords with several properties are supported: each building gets its own grades on the landlord's page.
 
 This repository started from More Perfect University's [Rate Your Landlord template](https://github.com/moreperfectuniversity/rateyourlandlord-template), including the editable-logo work from its pull request #4.
 

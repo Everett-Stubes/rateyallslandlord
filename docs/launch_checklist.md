@@ -9,7 +9,7 @@ Keep [handoff.md](handoff.md) up to date as each service is set up; it is the on
 - [x] Turnstile widget created and CAPTCHA protection turned on in Supabase; login, sign-up, resend-confirmation, and password-reset requests send the token for server-side checking.
 - [x] Mapbox token created.
 - [x] Site code merged to `main` and deployed by Cloudflare (a Worker named `rateyallslandlord`).
-- [x] School picker with ten schools: Georgia Tech, Georgia State, Emory, Morehouse, Spelman, Clark Atlanta, Morehouse School of Medicine, SCAD, Agnes Scott, Mercer.
+- [x] School picker with twelve schools: Georgia Tech, Georgia State, Emory, Morehouse, Spelman, Clark Atlanta, Morehouse School of Medicine, SCAD, Agnes Scott, Mercer, Oglethorpe, Atlanta Metropolitan State College.
 - [x] Only confirmed school-email accounts can post reviews or add landlords (subdomains count, alumni addresses are blocked); admins can add landlords but not post reviews, so every review is from a verified school email. The site says so on landlord pages, the FAQ, and the About page.
 - [x] Reviewer privacy: unit numbers are removed before a review is saved and never shown, and the list of admin emails is not public.
 - [x] Sign-up bot-check fix, Gmail sending, and the live address `rateyallslandlord.com` work (the confirmation email can land in spam at some schools).
@@ -46,5 +46,5 @@ Keep [handoff.md](handoff.md) up to date as each service is set up; it is the on
 ## Open decisions
 
 - `gsu.edu` also covers Georgia State faculty and staff, and `mercer.edu` also covers Mercer's other campuses (such as Macon), so those users can post too.
-- The SCAD and Morehouse School of Medicine student email domains are listed but not confirmed; check with a student at each school.
+- The SCAD, Morehouse School of Medicine, and Atlanta Metropolitan State College student email domains are listed but not confirmed; check with a student at each school. AMSC's colors and the streets for the new Oglethorpe and AMSC neighborhoods are also best guesses.
 - Each review carries a random reviewer ID, visible only through the public database address. It doesn't name anyone, but it lets someone link one person's reviews together. Hiding it needs a bigger database change.
