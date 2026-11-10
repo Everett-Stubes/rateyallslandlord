@@ -26,7 +26,6 @@ const AddLandlordPage: React.FC = () => {
   const [comment, setComment] = useState('');
   const [wouldRentAgain, setWouldRentAgain] = useState(false);
   const [rentAmount, setRentAmount] = useState('');
-  const [bedrooms, setBedrooms] = useState('');
   const [propertyAddress, setPropertyAddress] = useState('');
   const [reviewNeighborhood, setReviewNeighborhood] = useState('');
   const [tags, setTags] = useState<string[]>([]);
@@ -164,7 +163,6 @@ const AddLandlordPage: React.FC = () => {
         landlord_rating, building_rating, comment,
         would_rent_again: wouldRentAgain,
         rent_amount: rentAmount ? parseFloat(rentAmount) : undefined,
-        bedrooms: bedrooms ? parseInt(bedrooms, 10) : undefined,
         property_address: propertyAddress ? removeUnitNumber(propertyAddress) : undefined,
         neighborhood: reviewNeighborhood || undefined,
         verification_status: 'pending' as const,
@@ -305,7 +303,6 @@ const AddLandlordPage: React.FC = () => {
               comment={comment} setComment={setComment}
               wouldRentAgain={wouldRentAgain} setWouldRentAgain={setWouldRentAgain}
               rentAmount={rentAmount} setRentAmount={setRentAmount}
-              bedrooms={bedrooms} setBedrooms={setBedrooms}
               propertyAddress={propertyAddress} setPropertyAddress={setPropertyAddress}
               neighborhood={reviewNeighborhood} setNeighborhood={setReviewNeighborhood}
               tags={tags} setTags={setTags}
