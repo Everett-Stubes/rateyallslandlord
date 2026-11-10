@@ -148,6 +148,11 @@ export const siteSettings = {
   // They are alumni accounts, which prove graduation and not current enrollment. Keep in step with the
   // blocked rows of school_email_domains in Supabase (npm run check:schema checks that).
   blockedEmailDomains: ["alumni.emory.edu", "alumnae.spelman.edu"],
+  // Words that count as a school email on their own: any email domain with the word as a whole dot-separated
+  // part is accepted (word "atlm" accepts atlm.edu, student.atlm.edu, and atlm.org, but not notatlm.edu).
+  // Used when a school's student domain isn't known. Keep in step with the match_word rows of
+  // school_email_domains in Supabase (npm run check:schema checks that).
+  schoolEmailWords: [{ word: "atlm", school: "amsc" }],
   // The neighborhood buttons on the homepage. Each neighborhood is listed once, even when students
   // from several schools live there.
   //   schools: ids of the schools whose students commonly live there (see the school list above).

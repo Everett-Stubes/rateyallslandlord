@@ -19,6 +19,10 @@ const getEmailDomain = (email: string | undefined | null): string | null => {
 const matchesDomain = (emailDomain: string, domain: string) =>
   emailDomain === domain || emailDomain.endsWith(`.${domain}`);
 
+/** Words that count as a school email when they are a whole dot-separated part of the domain ("atlm" matches student.atlm.edu). */
+const hasWord = (emailDomain: string, word: string) => emailDomain.split('.').includes(word.toLowerCase());
+const SCHOOL_EMAIL_WORDS = siteSettings.schoolEmailWords;
+
 /** Alumni domains under a school's domain (such as alumni.emory.edu). These are never accepted. */
 const BLOCKED_DOMAINS = siteSettings.blockedEmailDomains.map((domain) => domain.toLowerCase());
 
@@ -30,15 +34,22 @@ export const isStudentEmail = (email: string | undefined | null): boolean => {
   const emailDomain = getEmailDomain(email);
   if (!emailDomain) return false;
   if (BLOCKED_DOMAINS.some((d) => matchesDomain(emailDomain, d))) return false;
-  return VERIFIED_STUDENT_DOMAINS.some((d) => matchesDomain(emailDomain, d));
+  return (
+    VERIFIED_STUDENT_DOMAINS.some((d) => matchesDomain(emailDomain, d)) ||
+    SCHOOL_EMAIL_WORDS.some((w) => hasWord(emailDomain, w.word))
+  );
 };
 
 /** The school an email belongs to, if any. */
 export const getSchoolForEmail = (email: string | undefined | null) => {
   const emailDomain = getEmailDomain(email);
   if (!emailDomain || !isStudentEmail(email)) return undefined;
-  return siteSettings.schools.find((school) =>
-    school.emailDomains.some((d) => matchesDomain(emailDomain, d.toLowerCase()))
+  return (
+    siteSettings.schools.find((school) =>
+      school.emailDomains.some((d) => matchesDomain(emailDomain, d.toLowerCase()))
+    ) ?? siteSettings.schools.find((school) =>
+      SCHOOL_EMAIL_WORDS.some((w) => w.school === school.id && hasWord(emailDomain, w.word))
+    )
   );
 };
 
