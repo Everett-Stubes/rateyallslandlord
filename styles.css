@@ -641,8 +641,9 @@ ol {
 
 .header-user-info {
   display: flex;
-  flex-direction: column;
-  align-items: flex-end;
+  flex-direction: row;
+  align-items: center;
+  gap: 0.5rem;
 }
 
 .header-user-email {
@@ -654,6 +655,9 @@ ol {
 .header-user-role {
   font-size: 0.75rem;
   color: var(--primary-300);
+  padding-left: 0.5rem;
+  border-left: 1px solid var(--primary-300);
+  line-height: 1;
 }
 
 .avatar {

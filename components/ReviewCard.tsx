@@ -6,6 +6,7 @@ import { useAuth } from '../context/AuthContext';
 import { useData } from '../context/DataContext';
 import { toLetterGrade, gradeColors } from '../utils/grading';
 import { toBuildingAddress } from '../utils/properties';
+import { getSchoolByName } from '../utils/schools';
 
 interface ReviewCardProps {
   review: Review;
@@ -43,6 +44,7 @@ const ReviewCard: React.FC<ReviewCardProps> = ({ review, onApprove, onReject, vo
   };
 
   const isOwnReview = user && review.user_id === user.id;
+  const school = getSchoolByName(review.reviewer_school);
 
   return (
     <div className={`review-card${review.is_deleted ? ' review-card--deleted' : ''}`}>
@@ -63,7 +65,13 @@ const ReviewCard: React.FC<ReviewCardProps> = ({ review, onApprove, onReject, vo
         <div className="review-card__date-row">
           <span className="review-card__date">{new Date(review.created_at).toLocaleDateString(undefined, { year: 'numeric', month: 'numeric', day: 'numeric' })}</span>
           {review.reviewer_school && (
-            <span className="review-school-tag" title={`This reviewer goes to ${review.reviewer_school}`}>{review.reviewer_school}</span>
+            <span
+              className="review-school-tag"
+              title={`This reviewer goes to ${review.reviewer_school}`}
+              style={school ? { backgroundColor: school.colors.background, color: school.colors.text, borderColor: school.colors.accent } : undefined}
+            >
+              {review.reviewer_school}
+            </span>
           )}
           {isOwnReview && <span className="review-you-badge">You</span>}
         </div>

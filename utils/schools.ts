@@ -17,6 +17,18 @@ const OTHER_NEIGHBORHOOD = 'Other';
 const isOnStreets = (addresses: string[], streets: string[]) =>
   streets.some((street) => addresses.some((a) => a.toLowerCase().includes(street.toLowerCase())));
 
+/**
+ * The configured school for a name saved on a review (the database's school_email_domains name,
+ * such as 'Georgia Tech' or 'Emory'), so its colors can be used. Matches the full or short name.
+ */
+export function getSchoolByName(name: string | null | undefined) {
+  if (!name) return undefined;
+  const wanted = name.trim().toLowerCase();
+  return siteSettings.schools.find(
+    (s) => s.name.toLowerCase() === wanted || s.shortName.toLowerCase() === wanted
+  );
+}
+
 /** Names of the neighborhoods whose streets appear in these addresses. */
 export function inferNeighborhoodNames(addresses: string[]): string[] {
   return neighborhoods
