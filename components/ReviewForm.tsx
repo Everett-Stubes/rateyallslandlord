@@ -36,8 +36,6 @@ interface ReviewFormProps {
   setWouldRentAgain: (value: boolean) => void;
   rentAmount: string;
   setRentAmount: (value: string) => void;
-  bedrooms: string;
-  setBedrooms: (value: string) => void;
   propertyAddress: string;
   setPropertyAddress: (value: string) => void;
   /** Name of the neighborhood the property is in (one of the names in siteSettings.ts). */
@@ -53,7 +51,6 @@ const ReviewForm: React.FC<ReviewFormProps> = ({
   wouldRentAgain, setWouldRentAgain,
   comment, setComment,
   rentAmount, setRentAmount,
-  bedrooms, setBedrooms,
   propertyAddress, setPropertyAddress,
   neighborhood, setNeighborhood,
   tags = [], setTags,
@@ -156,7 +153,7 @@ const ReviewForm: React.FC<ReviewFormProps> = ({
       </div>
 
       <div>
-        <label htmlFor="rentAmount" className="form-label">How much was rent plus utilities?</label>
+        <label htmlFor="rentAmount" className="form-label">How much was YOUR rent per month, plus utilities?</label>
         <input
           type="number"
           id="rentAmount"
@@ -168,20 +165,10 @@ const ReviewForm: React.FC<ReviewFormProps> = ({
           className="form-input"
           required
         />
-      </div>
-
-      <div>
-        <label htmlFor="bedrooms" className="form-label">Number of Bedrooms</label>
-        <input
-          type="number"
-          id="bedrooms"
-          value={bedrooms}
-          onChange={e => setBedrooms(e.target.value)}
-          min="0"
-          step="1"
-          placeholder="e.g., 2"
-          className="form-input"
-        />
+        <p className="form-hint">
+          Enter only what <strong>you</strong> pay each month, not the rent for the whole unit. If you split a unit with
+          roommates, enter your share.
+        </p>
       </div>
 
       <div>

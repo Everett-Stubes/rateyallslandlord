@@ -173,14 +173,8 @@ const AdminPage: React.FC = () => {
                                   )}
                                   {attachedReview.rent_amount && (
                                     <div className="review-foot-item">
-                                      <span className="review-foot-label">Rent:</span>
+                                      <span className="review-foot-label">Reviewer's rent:</span>
                                       <span>${attachedReview.rent_amount.toFixed(2)}/mo</span>
-                                    </div>
-                                  )}
-                                  {attachedReview.bedrooms != null && (
-                                    <div className="review-foot-item">
-                                      <span className="review-foot-label">Bedrooms:</span>
-                                      <span>{attachedReview.bedrooms}</span>
                                     </div>
                                   )}
                                   <div className="review-foot-item">

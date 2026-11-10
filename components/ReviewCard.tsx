@@ -134,14 +134,8 @@ const ReviewCard: React.FC<ReviewCardProps> = ({ review, onApprove, onReject, vo
         </div>
         {review.rent_amount && (
           <div className="review-foot-item">
-            <span className="review-foot-label">Rent:</span>
+            <span className="review-foot-label">Reviewer's rent:</span>
             <span>${review.rent_amount.toFixed(2)}/mo</span>
-          </div>
-        )}
-        {review.bedrooms != null && (
-          <div className="review-foot-item">
-            <span className="review-foot-label">Bedrooms:</span>
-            <span>{review.bedrooms}</span>
           </div>
         )}
       </div>
