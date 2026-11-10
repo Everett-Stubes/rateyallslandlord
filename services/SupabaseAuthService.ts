@@ -1,5 +1,10 @@
-import type { SupabaseClient } from '@supabase/supabase-js';
+import type { SupabaseClient, User } from '@supabase/supabase-js';
 import type { IAuthService } from './interfaces';
+
+// A session only counts as logged in once the person has confirmed their email. Supabase normally
+// refuses to sign in an unconfirmed account (Authentication -> Sign In / Providers -> Email ->
+// "Confirm email"); this is a second check in case that setting is ever loosened.
+const isConfirmed = (user: User | null | undefined): user is User => Boolean(user?.email_confirmed_at);
 
 export class SupabaseAuthService implements IAuthService {
   constructor(private client: SupabaseClient) {}
@@ -8,7 +13,7 @@ export class SupabaseAuthService implements IAuthService {
     const {
       data: { session },
     } = await this.client.auth.getSession();
-    if (!session?.user) return null;
+    if (!isConfirmed(session?.user)) return null;
     return { id: session.user.id, email: session.user.email! };
   }
 
@@ -16,7 +21,7 @@ export class SupabaseAuthService implements IAuthService {
     const {
       data: { subscription },
     } = this.client.auth.onAuthStateChange((_event, session) => {
-      if (session?.user) {
+      if (isConfirmed(session?.user)) {
         callback({ id: session.user.id, email: session.user.email! });
       } else {
         callback(null);
@@ -51,6 +56,15 @@ export class SupabaseAuthService implements IAuthService {
         };
       }
       return { success: false, error: 'Invalid email or password.' };
+    }
+
+    if (data.user && !isConfirmed(data.user)) {
+      await this.client.auth.signOut();
+      return {
+        success: false,
+        error: 'Your email is not verified yet. Please verify your email and try again.',
+        emailNotVerified: true,
+      };
     }
 
     if (data.user) {
