@@ -348,6 +348,12 @@ export class MockApiService implements IApiService {
     return true;
   }
 
+  async updateLandlordName(landlordId: number, name: string): Promise<boolean> {
+    const landlord = MOCK_LANDLORDS.find((l) => l.id === landlordId);
+    if (landlord) landlord.name = name.trim();
+    return true;
+  }
+
   async updateLandlordNeighborhoods(landlordId: number, neighborhoods: string[]): Promise<boolean> {
     const landlord = MOCK_LANDLORDS.find((l) => l.id === landlordId);
     if (landlord) landlord.neighborhoods = neighborhoods;

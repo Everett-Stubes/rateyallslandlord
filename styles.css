@@ -1655,6 +1655,13 @@ ol {
   flex-wrap: wrap;
 }
 
+.landlord-name-input {
+  flex: 1 1 14rem;
+  max-width: 28rem;
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
 .landlord-title {
   font-size: 2.25rem;
   color: var(--neutral-500);

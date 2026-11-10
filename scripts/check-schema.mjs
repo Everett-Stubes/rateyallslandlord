@@ -337,6 +337,12 @@ check('students cannot re-tag a landlord', studentRetag.rows.length === 0);
 const adminRetag = await as(ADMIN, () => db.query(`UPDATE public.landlords SET neighborhoods = ARRAY['Midtown', 'Home Park'] WHERE id = $1 RETURNING neighborhoods`, [tagged.rows[0].id]));
 check('admins can re-tag a landlord', adminRetag.rows[0]?.neighborhoods?.length === 2);
 
+// Only admins can rename a landlord.
+const studentRename = await as(STUDENT, () => db.query(`UPDATE public.landlords SET name = 'Hijacked' WHERE id = $1 RETURNING id`, [tagged.rows[0].id]));
+check('students cannot rename a landlord', studentRename.rows.length === 0);
+const adminRename = await as(ADMIN, () => db.query(`UPDATE public.landlords SET name = 'Renamed Landlord' WHERE id = $1 RETURNING name`, [tagged.rows[0].id]));
+check('admins can rename a landlord', adminRename.rows[0]?.name === 'Renamed Landlord');
+
 // The domain lists in init.sql must match siteSettings.ts, which the sign-up form uses.
 const settings = readFileSync(new URL('../siteSettings.ts', import.meta.url), 'utf8');
 const quoted = (text) => [...text.matchAll(/"([^"]+)"/g)].map((d) => d[1].toLowerCase());

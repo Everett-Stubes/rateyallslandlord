@@ -32,6 +32,8 @@ export interface IApiService {
   ): Promise<boolean>;
   updateLandlordAddresses(landlordId: number, addresses: string[]): Promise<boolean>;
   updateLandlordNeighborhoods(landlordId: number, neighborhoods: string[]): Promise<boolean>;
+  /** Admins only: renames a landlord. */
+  updateLandlordName(landlordId: number, name: string): Promise<boolean>;
   getReviewVotes(landlordId: number, userId?: string): Promise<ReviewVotes>;
   /** value 1 = up, -1 = down, 0 = remove the user's vote. */
   setReviewVote(reviewId: number, userId: string, value: 1 | -1 | 0): Promise<void>;
