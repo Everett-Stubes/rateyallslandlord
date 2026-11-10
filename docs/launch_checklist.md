@@ -46,5 +46,5 @@ Keep [handoff.md](handoff.md) up to date as each service is set up; it is the on
 ## Open decisions
 
 - `gsu.edu` also covers Georgia State faculty and staff, and `mercer.edu` also covers Mercer's other campuses (such as Macon), so those users can post too.
-- The SCAD, Morehouse School of Medicine, and Atlanta Metropolitan State College student email domains are listed but not confirmed; check with a student at each school. AMSC's colors and the streets for the new Oglethorpe and AMSC neighborhoods are also best guesses.
+- The SCAD, Morehouse School of Medicine, and Atlanta Metropolitan State College student email domains are listed but not confirmed; check with a student at each school. AMSC's exact colors (red and black; codes are in its brand book PDF) and the Oglethorpe and AMSC neighborhood streets are best guesses; see reports/AMSC colors email and housing.md.
 - Each review carries a random reviewer ID, visible only through the public database address. It doesn't name anyone, but it lets someone link one person's reviews together. Hiding it needs a bigger database change.
