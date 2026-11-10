@@ -229,6 +229,19 @@ export class SupabaseApiService implements IApiService {
     return true;
   }
 
+  async updateLandlordName(landlordId: number, name: string): Promise<boolean> {
+    const trimmed = name.trim();
+    if (!trimmed) throw new Error('The name cannot be empty.');
+    // count: the database silently skips rows you aren't allowed to change, so check one row was updated.
+    const { error, count } = await this.client
+      .from('landlords')
+      .update({ name: trimmed }, { count: 'exact' })
+      .eq('id', landlordId);
+    if (error) throw error;
+    if (!count) throw new Error('Landlord not found, or you do not have permission to rename it.');
+    return true;
+  }
+
   async updateLandlordNeighborhoods(landlordId: number, neighborhoods: string[]): Promise<boolean> {
     const { error } = await this.client
       .from('landlords')

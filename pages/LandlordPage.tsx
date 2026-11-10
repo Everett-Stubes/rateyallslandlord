@@ -21,7 +21,7 @@ const MAPBOX_TOKEN = import.meta.env.VITE_MAPBOX_TOKEN as string;
 const LandlordPage: React.FC = () => {
   const api = useApiService();
   const { id } = useParams<{ id: string }>();
-  const { getLandlord, getReviewsForLandlord, loading } = useData();
+  const { getLandlord, getReviewsForLandlord, loading, landlords, refreshLandlords } = useData();
   const { isAdmin, user } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
@@ -33,6 +33,8 @@ const LandlordPage: React.FC = () => {
   const [selectedPropertyKey, setSelectedPropertyKey] = useState<string | null>(null);
   const [votes, setVotes] = useState<ReviewVotes>({ counts: {}, mine: {} });
   const [isEditingNeighborhoods, setIsEditingNeighborhoods] = useState(false);
+  const [isEditingName, setIsEditingName] = useState(false);
+  const [draftName, setDraftName] = useState('');
   const [draftNeighborhoods, setDraftNeighborhoods] = useState<string[]>([]);
 
   useEffect(() => {
@@ -79,6 +81,31 @@ const LandlordPage: React.FC = () => {
       setVotes(before);
       alert('Could not save your vote. Only accounts with a confirmed school email can vote, and you can\'t vote on your own review.');
     }
+  };
+
+  const startEditingName = () => {
+    if (!landlord) return;
+    setDraftName(landlord.name);
+    setIsEditingName(true);
+  };
+
+  const saveName = async () => {
+    if (!landlord) return;
+    const name = draftName.trim();
+    if (!name) { alert('The name cannot be empty.'); return; }
+    if (name === landlord.name) { setIsEditingName(false); return; }
+    const duplicate = landlords.some(l => l.id !== landlord.id && l.name.trim().toLowerCase() === name.toLowerCase());
+    if (duplicate && !window.confirm(`Another landlord is already named "${name}". Rename anyway?`)) return;
+    setIsSaving(true);
+    try {
+      await api.updateLandlordName(landlord.id, name);
+      setLandlord({ ...landlord, name });
+      setIsEditingName(false);
+      refreshLandlords();
+    } catch (error) {
+      console.error('Error renaming landlord:', error);
+      alert(`Failed to rename landlord: ${(error as Error)?.message || 'Unknown error'}`);
+    } finally { setIsSaving(false); }
   };
 
   const startEditingNeighborhoods = () => {
@@ -169,7 +196,29 @@ const LandlordPage: React.FC = () => {
           <div className="landlord-top">
             <div className="landlord-top__info">
               <div className="landlord-title-row">
-                <h1 className="landlord-title">{landlord.name}</h1>
+                {isEditingName ? (
+                  <>
+                    <input
+                      type="text"
+                      value={draftName}
+                      onChange={e => setDraftName(e.target.value)}
+                      onKeyDown={e => { if (e.key === 'Enter') saveName(); if (e.key === 'Escape') setIsEditingName(false); }}
+                      maxLength={100}
+                      className="form-input landlord-name-input"
+                      aria-label="Landlord name"
+                      autoFocus
+                    />
+                    <button onClick={saveName} disabled={isSaving} className="landlord-address-btn landlord-address-btn-add">Save</button>
+                    <button onClick={() => setIsEditingName(false)} disabled={isSaving} className="landlord-address-btn landlord-address-btn-done">Cancel</button>
+                  </>
+                ) : (
+                  <>
+                    <h1 className="landlord-title">{landlord.name}</h1>
+                    {isAdmin && (
+                      <button onClick={startEditingName} className="landlord-address-manage-btn">Edit name</button>
+                    )}
+                  </>
+                )}
                 {landlord.status === 'pending' && (
                   <span className="badge badge-yellow">NEW</span>
                 )}
