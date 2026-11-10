@@ -14,6 +14,7 @@ export interface Review {
   created_by_student: boolean; // True if user email matches a school domain in siteSettings.ts
   semester?: string; // e.g. '2026-fall'; set by the database when the review is posted
   neighborhood?: string | null; // Name from siteSettings.ts, picked by the reviewer
+  reviewer_school?: string | null; // School of the reviewer's email, e.g. 'Georgia Tech'; set by the database
   tags?: string[];
   is_deleted: boolean;
   created_at: string;

@@ -2212,6 +2212,14 @@ ol {
   gap: 1rem;
 }
 
+.review-card__date-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.5rem;
+}
+
 .review-card__address {
   font-size: 1.25rem;
   color: var(--neutral-400);
@@ -2282,6 +2290,17 @@ ol {
   border-radius: var(--radius-full);
   font-size: 0.75rem;
   font-weight: 500;
+}
+
+.review-school-tag {
+  padding: 0.125rem 0.5rem;
+  background-color: var(--primary-100);
+  color: var(--primary-400);
+  border: 1px solid var(--lavender);
+  border-radius: var(--radius-full);
+  font-size: 0.75rem;
+  font-weight: 500;
+  white-space: nowrap;
 }
 
 .review-card__badges {
