@@ -28,19 +28,25 @@ export function gradeColors(grade: string): {
   };
 }
 
+/**
+ * Turns a 1-5 rating (or an average of ratings) into a letter grade:
+ * 1 = F, 2 = D, 3 = C, 4 = B, 5 = A. Averages in between get a + or -, so a 3.6 is a B-
+ * and a 4.5 is an A-. The best possible grade is an A.
+ */
 export function toLetterGrade(rating: number): string {
-  const score = rating * 20;
-  if (score >= 97) return "A+";
-  if (score >= 93) return "A";
-  if (score >= 90) return "A-";
-  if (score >= 87) return "B+";
-  if (score >= 83) return "B";
-  if (score >= 80) return "B-";
-  if (score >= 77) return "C+";
-  if (score >= 73) return "C";
-  if (score >= 70) return "C-";
-  if (score >= 67) return "D+";
-  if (score >= 63) return "D";
-  if (score >= 60) return "D-";
+  // Rating 1 is 0 grade points (F) and rating 5 is 4.0 (A), like a GPA. The cutoffs sit halfway
+  // between neighboring grades, so a whole-number rating always lands on the plain letter.
+  const points = rating - 1;
+  if (points >= 3.85) return "A";
+  if (points >= 3.5) return "A-";
+  if (points >= 3.15) return "B+";
+  if (points >= 2.85) return "B";
+  if (points >= 2.5) return "B-";
+  if (points >= 2.15) return "C+";
+  if (points >= 1.85) return "C";
+  if (points >= 1.5) return "C-";
+  if (points >= 1.15) return "D+";
+  if (points >= 0.85) return "D";
+  if (points >= 0.5) return "D-";
   return "F";
 }
