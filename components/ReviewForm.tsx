@@ -3,6 +3,7 @@ import { AddressAutofill } from '@mapbox/search-js-react';
 import type { AddressAutofillRetrieveResponse } from '@mapbox/search-js-core';
 import { siteSettings } from '../siteSettings';
 import { neighborhoods, inferNeighborhoodNames } from '../utils/schools';
+import SuggestNeighborhood from './SuggestNeighborhood';
 
 const MAPBOX_TOKEN = import.meta.env.VITE_MAPBOX_TOKEN as string;
 
@@ -232,6 +233,7 @@ const ReviewForm: React.FC<ReviewFormProps> = ({
         <p className="form-hint">
           This is how students find this landlord when they browse by neighborhood. Choose "Other" if none fit.
         </p>
+        <SuggestNeighborhood className="form-hint" />
       </div>
     </div>
   );
