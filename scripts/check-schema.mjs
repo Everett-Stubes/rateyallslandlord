@@ -41,6 +41,8 @@ const FAKE_PREFIX = { id: '77777777-7777-7777-7777-777777777777', email: 'gatech
 const NOT_GT = { id: '88888888-8888-8888-8888-888888888888', email: 'fake@notgatech.edu' };
 const EMORY_ALUMNUS = { id: '99999999-9999-9999-9999-999999999999', email: 'grad@alumni.emory.edu' };
 const SPELMAN_ALUMNA = { id: 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', email: 'grad@alumnae.spelman.edu' };
+const OGLETHORPE = { id: 'f1f1f1f1-f1f1-f1f1-f1f1-f1f1f1f1f1f1', email: 'petrel@oglethorpe.edu' };
+const AMSC_STUDENT = { id: 'f2f2f2f2-f2f2-f2f2-f2f2-f2f2f2f2f2f2', email: 'trojan@student.atlm.edu' };
 const AGNES_SCOTT = { id: 'bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb', email: 'scottie@agnesscott.edu' };
 const MERCER_STUDENT = { id: 'cccccccc-cccc-cccc-cccc-cccccccccccc', email: 'bear@live.mercer.edu' };
 const SPELMAN = { id: 'dddddddd-dddd-dddd-dddd-dddddddddddd', email: 'jag@spelman.edu' };
@@ -54,7 +56,7 @@ await db.exec(`
   INSERT INTO auth.users (id, email) VALUES ('${STUDENT.id}', '${STUDENT.email}'), ('${OTHER.id}', '${OTHER.email}'), ('${ADMIN.id}', '${ADMIN.email}'),
     ('${GSU_STUDENT.id}', '${GSU_STUDENT.email}'), ('${LOOKALIKE.id}', '${LOOKALIKE.email}'), ('${FAKE_PREFIX.id}', '${FAKE_PREFIX.email}'),
     ('${NOT_GT.id}', '${NOT_GT.email}'), ('${EMORY_ALUMNUS.id}', '${EMORY_ALUMNUS.email}'), ('${SPELMAN_ALUMNA.id}', '${SPELMAN_ALUMNA.email}'),
-    ('${AGNES_SCOTT.id}', '${AGNES_SCOTT.email}'), ('${MERCER_STUDENT.id}', '${MERCER_STUDENT.email}'), ('${SPELMAN.id}', '${SPELMAN.email}'),
+    ('${AGNES_SCOTT.id}', '${AGNES_SCOTT.email}'), ('${OGLETHORPE.id}', '${OGLETHORPE.email}'), ('${AMSC_STUDENT.id}', '${AMSC_STUDENT.email}'), ('${MERCER_STUDENT.id}', '${MERCER_STUDENT.email}'), ('${SPELMAN.id}', '${SPELMAN.email}'),
     ('${NEWCOMER.id}', '${NEWCOMER.email}'), ('${SECOND_GT.id}', '${SECOND_GT.email}'), ('${BACKDATER.id}', '${BACKDATER.email}'), ('${PEER.id}', '${PEER.email}'), ('${HOODIE.id}', '${HOODIE.email}');
   INSERT INTO auth.users (id, email, email_confirmed_at) VALUES ('${UNCONFIRMED.id}', '${UNCONFIRMED.email}', NULL);
   INSERT INTO public.admins (email) VALUES ('${ADMIN.email}');
@@ -191,6 +193,8 @@ check('a look-alike domain (notgatech.edu) cannot post', await blocked(NOT_GT));
 check('Emory alumni addresses (alumni.emory.edu) cannot post', await blocked(EMORY_ALUMNUS));
 check('Spelman alumnae addresses (alumnae.spelman.edu) cannot post', await blocked(SPELMAN_ALUMNA));
 check('an Agnes Scott address can post', !(await blocked(AGNES_SCOTT)));
+check('an Oglethorpe address can post', !(await blocked(OGLETHORPE)));
+check('an Atlanta Metropolitan State College address (student.atlm.edu) can post', !(await blocked(AMSC_STUDENT)));
 check('a Mercer student address (live.mercer.edu) can post', !(await blocked(MERCER_STUDENT)));
 check('a Spelman address can post', !(await blocked(SPELMAN)));
 

@@ -104,6 +104,8 @@ INSERT INTO public.school_email_domains (domain, school, blocked) VALUES
   ('scad.edu', 'SCAD Atlanta', false),
   ('agnesscott.edu', 'Agnes Scott College', false),
   ('mercer.edu', 'Mercer University', false),
+  ('oglethorpe.edu', 'Oglethorpe University', false),
+  ('atlm.edu', 'Atlanta Metropolitan State College', false),
   ('alumni.emory.edu', 'Emory', true),
   ('alumnae.spelman.edu', 'Spelman College', true)
 ON CONFLICT (domain) DO NOTHING;
