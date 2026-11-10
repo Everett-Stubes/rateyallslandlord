@@ -654,9 +654,9 @@ ol {
 
 .header-user-role {
   font-size: 0.75rem;
-  color: var(--primary-300);
+  color: var(--lavender);
   padding-left: 0.5rem;
-  border-left: 1px solid var(--primary-300);
+  border-left: 1px solid var(--lavender);
   line-height: 1;
 }
 
