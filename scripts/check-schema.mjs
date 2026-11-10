@@ -93,6 +93,13 @@ check('student can submit a review with bedrooms', inserted.rows[0]?.bedrooms ==
 check('new review starts as pending even if client says verified', inserted.rows[0]?.verification_status === 'pending');
 check('student flag is saved', inserted.rows[0]?.created_by_student === true);
 
+// The school tag comes from the reviewer's email, never from the website.
+const taggedRow = (await db.query(`SELECT reviewer_school FROM public.reviews WHERE id = $1`, [reviewId])).rows[0];
+check('a new review is tagged with the reviewer\'s school (gatech.edu -> Georgia Tech)', taggedRow?.reviewer_school === 'Georgia Tech', taggedRow?.reviewer_school);
+const forgedSchool = await as(STUDENT, () => db.query(
+  `UPDATE public.reviews SET reviewer_school = 'Emory' WHERE id = $1 RETURNING reviewer_school`, [reviewId]));
+check('editing a review cannot change its school tag', forgedSchool.rows[0]?.reviewer_school === 'Georgia Tech', forgedSchool.rows[0]?.reviewer_school);
+
 // What EditReviewPage sends, plus an attempt to self-verify.
 const edited = await as(STUDENT, () => db.query(
   `UPDATE public.reviews SET comment = 'Edited comment', bedrooms = 3, verification_status = 'verified'

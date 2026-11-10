@@ -62,6 +62,9 @@ const ReviewCard: React.FC<ReviewCardProps> = ({ review, onApprove, onReject, vo
         </span>
         <div className="review-card__date-row">
           <span className="review-card__date">{new Date(review.created_at).toLocaleDateString(undefined, { year: 'numeric', month: 'numeric', day: 'numeric' })}</span>
+          {review.reviewer_school && (
+            <span className="review-school-tag" title={`This reviewer goes to ${review.reviewer_school}`}>{review.reviewer_school}</span>
+          )}
           {isOwnReview && <span className="review-you-badge">You</span>}
         </div>
       </div>

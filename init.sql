@@ -42,6 +42,7 @@ CREATE TABLE IF NOT EXISTS public.reviews (
   created_by_student boolean DEFAULT false,
   semester text NOT NULL, -- e.g. '2026-fall'; filled in by a trigger from created_at
   neighborhood text CHECK (neighborhood IS NULL OR length(neighborhood) <= 100), -- name from siteSettings.ts, picked by the reviewer
+  reviewer_school text, -- school of the reviewer's email (from school_email_domains); filled in by a trigger
   CONSTRAINT reviews_pkey PRIMARY KEY (id),
   CONSTRAINT reviews_landlord_id_fkey FOREIGN KEY (landlord_id) REFERENCES public.landlords(id) ON DELETE CASCADE,
   CONSTRAINT reviews_user_id_fkey FOREIGN KEY (user_id) REFERENCES auth.users(id) ON DELETE SET NULL
@@ -125,6 +126,32 @@ RETURNS boolean SECURITY DEFINER SET search_path = public AS $$
   ), false);
 $$ LANGUAGE sql STABLE;
 
+-- 6a2. Each review shows which school its author goes to. The database reads it from the
+-- author's confirmed school email (never from the website), so it can't be faked or edited,
+-- and the email address itself stays private.
+CREATE OR REPLACE FUNCTION public.set_review_school()
+RETURNS trigger SECURITY DEFINER SET search_path = public AS $$
+BEGIN
+  NEW.reviewer_school := (
+    SELECT CASE WHEN d.blocked THEN NULL ELSE d.school END
+    FROM auth.users u
+    CROSS JOIN LATERAL (SELECT lower(split_part(u.email, '@', 2)) AS email_domain) e
+    JOIN public.school_email_domains d
+      ON e.email_domain = d.domain
+      OR right(e.email_domain, length(d.domain) + 1) = '.' || d.domain
+    WHERE u.id = NEW.user_id
+    ORDER BY length(d.domain) DESC
+    LIMIT 1
+  );
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE TRIGGER trigger_reviews_set_school
+  BEFORE INSERT ON public.reviews
+  FOR EACH ROW
+  EXECUTE FUNCTION public.set_review_school();
+
 -- 6b. One review per person per semester (across all landlords).
 -- Semesters (Atlanta time): spring = Jan-Apr, summer = May-Jul, fall = Aug-Dec.
 -- Keep this in step with utils/semester.ts.
@@ -158,7 +185,7 @@ CREATE UNIQUE INDEX IF NOT EXISTS idx_reviews_one_per_semester
 
 -- 6c. Keep moderation fields under admin control.
 -- New reviews from non-admins always start as 'pending' and are dated now, and non-admins
--- cannot change a review's verification status, student flag, landlord, author, date, or
+-- cannot change a review's verification status, student flag, landlord, author, school, date, or
 -- semester. They can delete their own review (so they may post a new one) but never bring
 -- back one that was deleted. (Locking the date and semester keeps the one-live-review-per-
 -- semester rule from being dodged.) Applies only to website requests (the anon and
@@ -184,6 +211,7 @@ BEGIN
     NEW.user_id := OLD.user_id;
     NEW.created_at := OLD.created_at;
     NEW.semester := OLD.semester;
+    NEW.reviewer_school := OLD.reviewer_school;
     NEW.is_deleted := OLD.is_deleted OR NEW.is_deleted;
   END IF;
   RETURN NEW;

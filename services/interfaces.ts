@@ -1,7 +1,7 @@
 import type { Landlord, Review, ReviewVotes } from '../types';
 
 export type ReviewUpdate = Partial<
-  Omit<Review, 'id' | 'landlord_id' | 'is_deleted' | 'created_at' | 'user_id' | 'created_by_student' | 'semester'>
+  Omit<Review, 'id' | 'landlord_id' | 'is_deleted' | 'created_at' | 'user_id' | 'created_by_student' | 'semester' | 'reviewer_school'>
 >;
 
 export interface IApiService {
