@@ -132,6 +132,14 @@ const restored = await as(ADMIN, () => db.query(
   `UPDATE public.reviews SET is_deleted = false WHERE id = $1 RETURNING id`, [reviewId]));
 check('admin can restore a review', restored.rows.length === 1);
 
+// Admins can edit anyone's review text; other users can't.
+const adminEdit = await as(ADMIN, () => db.query(
+  `UPDATE public.reviews SET comment = 'Edited by an admin' WHERE id = $1 RETURNING comment, user_id`, [reviewId]));
+check('admin can edit another person\'s review', adminEdit.rows[0]?.comment === 'Edited by an admin' && adminEdit.rows[0]?.user_id === STUDENT.id);
+const strangerEdit = await as(OTHER, () => db.query(
+  `UPDATE public.reviews SET comment = 'Hijacked' WHERE id = $1 RETURNING id`, [reviewId]));
+check('other users cannot edit someone else\'s review', strangerEdit.rows.length === 0);
+
 // What AddLandlordPage does: new pending landlord, then an attached review.
 const landlord = await as(NEWCOMER, () => db.query(
   `INSERT INTO public.landlords (name, addresses, city, status) VALUES ('Test Landlord', ARRAY['10 State St NW'], 'Atlanta', 'pending')

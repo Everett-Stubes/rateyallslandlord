@@ -6,6 +6,7 @@ import { renderWithRoutes } from '../utils/renderWithProviders';
 import {
   createMockApiService,
   createLoggedInAuth,
+  createAdminAuth,
   TEST_LANDLORD,
   TEST_REVIEW,
   TEST_USER,
@@ -80,5 +81,31 @@ describe('Flow 6: Edit Review', () => {
     await waitFor(() => {
       expect(window.alert).toHaveBeenCalledWith(expect.stringContaining('only edit your own reviews'));
     });
+  });
+  it('admin: can open and save an edit to a review written by someone else', async () => {
+    const user = userEvent.setup();
+    const api = createMockApiService({
+      getLandlordById: vi.fn().mockResolvedValue(TEST_LANDLORD),
+      getReviewById: vi.fn().mockResolvedValue({ ...TEST_REVIEW, user_id: 'other-user-id' }),
+      updateReview: vi.fn().mockResolvedValue(undefined),
+    });
+    const auth = createAdminAuth();
+
+    const { default: EditReviewPage } = await import('../../pages/EditReviewPage');
+
+    renderWithRoutes(
+      [{ path: '/landlord/:id/review/:reviewId/edit', element: <EditReviewPage /> }],
+      { api, auth, initialRoute: '/landlord/1/review/10/edit' }
+    );
+
+    const commentBox = await screen.findByDisplayValue('Great landlord overall.');
+    await user.clear(commentBox);
+    await user.type(commentBox, 'Edited by an admin.');
+    await user.click(getUpdateReviewButton());
+
+    await waitFor(() => {
+      expect(api.updateReview).toHaveBeenCalledWith(10, expect.objectContaining({ comment: 'Edited by an admin.' }));
+    });
+    expect(window.alert).not.toHaveBeenCalledWith(expect.stringContaining('only edit your own reviews'));
   });
 });

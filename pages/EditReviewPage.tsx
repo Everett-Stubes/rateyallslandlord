@@ -6,10 +6,11 @@ import { useAuth } from '../context/AuthContext';
 import type { Review } from '../types';
 import ReviewForm from '../components/ReviewForm';
 import LoadingSpinner from '../components/LoadingSpinner';
-import { useApiService } from '../context/ServicesContext';
+import { useApiService, useServices } from '../context/ServicesContext';
 
 const EditReviewPage: React.FC = () => {
   const api = useApiService();
+  const { auth } = useServices();
   const { id, reviewId } = useParams<{ id: string; reviewId: string }>();
   const navigate = useNavigate();
   const { getLandlord, loading } = useData();
@@ -39,7 +40,9 @@ const EditReviewPage: React.FC = () => {
         navigate(`/landlord/${landlordId}`);
         return;
       }
-      if (!user || reviewData.user_id !== user.id) {
+      // Reviewers can edit their own review; admins can edit any review.
+      const canEdit = Boolean(user) && (reviewData.user_id === user!.id || (await auth.checkIsAdmin(user!.email)));
+      if (!canEdit) {
         alert('You can only edit your own reviews');
         navigate(`/landlord/${landlordId}`);
         return;
@@ -57,7 +60,7 @@ const EditReviewPage: React.FC = () => {
       if (landlord) setLandlordName(landlord.name);
     };
     fetchReviewAndLandlord();
-  }, [reviewIdNum, landlordId, user, authLoading, navigate, getLandlord]);
+  }, [reviewIdNum, landlordId, user, authLoading, navigate, getLandlord, auth]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

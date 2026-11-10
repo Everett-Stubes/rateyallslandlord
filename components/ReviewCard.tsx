@@ -182,7 +182,7 @@ const ReviewCard: React.FC<ReviewCardProps> = ({ review, onApprove, onReject, vo
 
       {(isOwnReview || isAdmin) && (
         <div className="review-card__actions">
-            {isOwnReview && !review.is_deleted && (
+            {(isOwnReview || (isAdmin && !onApprove)) && !review.is_deleted && (
               <button onClick={handleEdit} className="review-action-btn review-action-btn--edit">Edit</button>
             )}
             {isOwnReview && !isAdmin && !review.is_deleted && !onApprove && (
