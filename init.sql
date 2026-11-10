@@ -90,7 +90,10 @@ $$ LANGUAGE plpgsql;
 CREATE TABLE IF NOT EXISTS public.school_email_domains (
   domain text PRIMARY KEY CHECK (domain = lower(domain) AND domain <> '' AND domain NOT LIKE '%@%'),
   school text NOT NULL,
-  blocked boolean NOT NULL DEFAULT false
+  blocked boolean NOT NULL DEFAULT false,
+  -- true = a "word" row: the domain column holds one word (such as 'atlm'), and any email domain that has it as a
+  -- whole dot-separated word matches (atlm.edu, student.atlm.edu, atlm.org), but not notatlm.edu.
+  match_word boolean NOT NULL DEFAULT false
 );
 
 INSERT INTO public.school_email_domains (domain, school, blocked) VALUES
@@ -110,6 +113,12 @@ INSERT INTO public.school_email_domains (domain, school, blocked) VALUES
   ('alumnae.spelman.edu', 'Spelman College', true)
 ON CONFLICT (domain) DO NOTHING;
 
+-- Atlanta Metropolitan State College: its student email domain isn't confirmed, so any domain with the
+-- word 'atlm' in it is accepted (in addition to atlm.edu above).
+INSERT INTO public.school_email_domains (domain, school, blocked, match_word) VALUES
+  ('atlm', 'Atlanta Metropolitan State College', false, true)
+ON CONFLICT (domain) DO NOTHING;
+
 CREATE OR REPLACE FUNCTION public.is_school_email()
 RETURNS boolean SECURITY DEFINER SET search_path = public AS $$
   SELECT COALESCE((
@@ -119,6 +128,7 @@ RETURNS boolean SECURITY DEFINER SET search_path = public AS $$
     JOIN public.school_email_domains d
       ON e.email_domain = d.domain
       OR right(e.email_domain, length(d.domain) + 1) = '.' || d.domain
+      OR (d.match_word AND position('.' || d.domain || '.' IN '.' || e.email_domain || '.') > 0)
     WHERE u.id = auth.uid()
       AND u.email_confirmed_at IS NOT NULL
       AND u.email ~ '^[^@[:space:]]+@[^@[:space:]]+$'
@@ -141,6 +151,7 @@ BEGIN
     JOIN public.school_email_domains d
       ON e.email_domain = d.domain
       OR right(e.email_domain, length(d.domain) + 1) = '.' || d.domain
+      OR (d.match_word AND position('.' || d.domain || '.' IN '.' || e.email_domain || '.') > 0)
     WHERE u.id = NEW.user_id
     ORDER BY length(d.domain) DESC
     LIMIT 1

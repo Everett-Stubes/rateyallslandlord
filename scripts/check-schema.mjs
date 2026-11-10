@@ -43,6 +43,8 @@ const EMORY_ALUMNUS = { id: '99999999-9999-9999-9999-999999999999', email: 'grad
 const SPELMAN_ALUMNA = { id: 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', email: 'grad@alumnae.spelman.edu' };
 const OGLETHORPE = { id: 'f1f1f1f1-f1f1-f1f1-f1f1-f1f1f1f1f1f1', email: 'petrel@oglethorpe.edu' };
 const AMSC_STUDENT = { id: 'f2f2f2f2-f2f2-f2f2-f2f2-f2f2f2f2f2f2', email: 'trojan@student.atlm.edu' };
+const AMSC_WORD = { id: 'f3f3f3f3-f3f3-f3f3-f3f3-f3f3f3f3f3f3', email: 'x@mail.atlm.example.org' };
+const AMSC_LOOKALIKE = { id: 'f4f4f4f4-f4f4-f4f4-f4f4-f4f4f4f4f4f4', email: 'x@notatlm.edu' };
 const AGNES_SCOTT = { id: 'bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb', email: 'scottie@agnesscott.edu' };
 const MERCER_STUDENT = { id: 'cccccccc-cccc-cccc-cccc-cccccccccccc', email: 'bear@live.mercer.edu' };
 const SPELMAN = { id: 'dddddddd-dddd-dddd-dddd-dddddddddddd', email: 'jag@spelman.edu' };
@@ -56,7 +58,7 @@ await db.exec(`
   INSERT INTO auth.users (id, email) VALUES ('${STUDENT.id}', '${STUDENT.email}'), ('${OTHER.id}', '${OTHER.email}'), ('${ADMIN.id}', '${ADMIN.email}'),
     ('${GSU_STUDENT.id}', '${GSU_STUDENT.email}'), ('${LOOKALIKE.id}', '${LOOKALIKE.email}'), ('${FAKE_PREFIX.id}', '${FAKE_PREFIX.email}'),
     ('${NOT_GT.id}', '${NOT_GT.email}'), ('${EMORY_ALUMNUS.id}', '${EMORY_ALUMNUS.email}'), ('${SPELMAN_ALUMNA.id}', '${SPELMAN_ALUMNA.email}'),
-    ('${AGNES_SCOTT.id}', '${AGNES_SCOTT.email}'), ('${OGLETHORPE.id}', '${OGLETHORPE.email}'), ('${AMSC_STUDENT.id}', '${AMSC_STUDENT.email}'), ('${MERCER_STUDENT.id}', '${MERCER_STUDENT.email}'), ('${SPELMAN.id}', '${SPELMAN.email}'),
+    ('${AGNES_SCOTT.id}', '${AGNES_SCOTT.email}'), ('${OGLETHORPE.id}', '${OGLETHORPE.email}'), ('${AMSC_WORD.id}', '${AMSC_WORD.email}'), ('${AMSC_LOOKALIKE.id}', '${AMSC_LOOKALIKE.email}'), ('${AMSC_STUDENT.id}', '${AMSC_STUDENT.email}'), ('${MERCER_STUDENT.id}', '${MERCER_STUDENT.email}'), ('${SPELMAN.id}', '${SPELMAN.email}'),
     ('${NEWCOMER.id}', '${NEWCOMER.email}'), ('${SECOND_GT.id}', '${SECOND_GT.email}'), ('${BACKDATER.id}', '${BACKDATER.email}'), ('${PEER.id}', '${PEER.email}'), ('${HOODIE.id}', '${HOODIE.email}');
   INSERT INTO auth.users (id, email, email_confirmed_at) VALUES ('${UNCONFIRMED.id}', '${UNCONFIRMED.email}', NULL);
   INSERT INTO public.admins (email) VALUES ('${ADMIN.email}');
@@ -195,6 +197,8 @@ check('Spelman alumnae addresses (alumnae.spelman.edu) cannot post', await block
 check('an Agnes Scott address can post', !(await blocked(AGNES_SCOTT)));
 check('an Oglethorpe address can post', !(await blocked(OGLETHORPE)));
 check('an Atlanta Metropolitan State College address (student.atlm.edu) can post', !(await blocked(AMSC_STUDENT)));
+check('any domain with the word atlm in it can post (atlm.example.org)', !(await blocked(AMSC_WORD)));
+check('a look-alike that only contains the letters (notatlm.edu) cannot post', await blocked(AMSC_LOOKALIKE));
 check('a Mercer student address (live.mercer.edu) can post', !(await blocked(MERCER_STUDENT)));
 check('a Spelman address can post', !(await blocked(SPELMAN)));
 
@@ -338,8 +342,12 @@ const settings = readFileSync(new URL('../siteSettings.ts', import.meta.url), 'u
 const quoted = (text) => [...text.matchAll(/"([^"]+)"/g)].map((d) => d[1].toLowerCase());
 const siteAllowed = [...settings.matchAll(/emailDomains:\s*\[([^\]]*)\]/g)].flatMap((m) => quoted(m[1])).sort();
 const siteBlocked = quoted(settings.match(/blockedEmailDomains:\s*\[([^\]]*)\]/)?.[1] ?? '').sort();
-const dbRows = (await db.query(`SELECT domain, blocked FROM public.school_email_domains ORDER BY domain`)).rows;
-const dbAllowed = dbRows.filter((r) => !r.blocked).map((r) => r.domain);
+const siteWords = [...(settings.match(/schoolEmailWords:\s*\[([^\]]*)\]/)?.[1] ?? '').matchAll(/word:\s*"([^"]+)"/g)].map((m) => m[1].toLowerCase()).sort();
+const dbRows = (await db.query(`SELECT domain, blocked, match_word FROM public.school_email_domains ORDER BY domain`)).rows;
+const dbWords = dbRows.filter((r) => r.match_word).map((r) => r.domain);
+check('accepted email words in init.sql match siteSettings.ts', JSON.stringify(siteWords) === JSON.stringify(dbWords),
+  `settings: ${siteWords.join(', ')} | database: ${dbWords.join(', ')}`);
+const dbAllowed = dbRows.filter((r) => !r.blocked && !r.match_word).map((r) => r.domain);
 const dbBlocked = dbRows.filter((r) => r.blocked).map((r) => r.domain);
 check('accepted school domains in init.sql match siteSettings.ts', JSON.stringify(siteAllowed) === JSON.stringify(dbAllowed),
   `settings: ${siteAllowed.join(', ')} | database: ${dbAllowed.join(', ')}`);

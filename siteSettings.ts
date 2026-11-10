@@ -135,17 +135,24 @@ export const siteSettings = {
       id: "amsc",
       name: "Atlanta Metropolitan State College",
       shortName: "AMSC",
-      // Employees use atlm.edu; the student address format wasn't found, so check with a student.
+      // Staff use atlm.edu. The student domain isn't confirmed (students are on Microsoft 365), but atlm.edu also
+      // accepts subdomains such as student.atlm.edu, so either way works.
       emailDomains: ["atlm.edu"],
-      // Approximate and unconfirmed: the college's brand book shows red, black, and white. Campus: 1630 Metropolitan Pkwy SW.
+      // The college's colors are red and black (Trailblazers). The exact codes are in its brand book PDF and
+      // weren't readable, so these are placeholders. Campus: 1630 Metropolitan Pkwy SW (coordinates not geocoded).
       colors: { background: "#A6192E", text: "#FFFFFF", accent: "#F3B6BF" },
-      campus: { lat: 33.7140, lng: -84.4060 },
+      campus: { lat: 33.7099, lng: -84.4079 },
     },
   ],
   // Email addresses under these domains are NOT accepted, even though they sit under a school's domain.
   // They are alumni accounts, which prove graduation and not current enrollment. Keep in step with the
   // blocked rows of school_email_domains in Supabase (npm run check:schema checks that).
   blockedEmailDomains: ["alumni.emory.edu", "alumnae.spelman.edu"],
+  // Words that count as a school email on their own: any email domain with the word as a whole dot-separated
+  // part is accepted (word "atlm" accepts atlm.edu, student.atlm.edu, and atlm.org, but not notatlm.edu).
+  // Used when a school's student domain isn't known. Keep in step with the match_word rows of
+  // school_email_domains in Supabase (npm run check:schema checks that).
+  schoolEmailWords: [{ word: "atlm", school: "amsc" }],
   // The neighborhood buttons on the homepage. Each neighborhood is listed once, even when students
   // from several schools live there.
   //   schools: ids of the schools whose students commonly live there (see the school list above).
@@ -209,14 +216,14 @@ export const siteSettings = {
     },
     {
       name: "Grant Park",
-      schools: ["gsu", "amsc"],
+      schools: ["gsu"],
       center: { lat: 33.7370, lng: -84.3700 },
       streets: ["Cherokee Ave", "Boulevard SE", "Park Ave SE", "Grant St SE", "Sydney St", "Augusta Ave", "Atlanta Ave"],
     },
     {
       // Between Downtown and the AUC, so it's near both.
       name: "Castleberry Hill",
-      schools: ["gsu", "morehouse", "spelman", "cau", "msm", "amsc"],
+      schools: ["gsu", "morehouse", "spelman", "cau", "msm"],
       center: { lat: 33.7480, lng: -84.4000 },
       streets: ["Walker St", "Peters St", "Nelson St", "Haynes St", "Markham St", "Elliott St", "Mangum St"],
     },
@@ -231,7 +238,7 @@ export const siteSettings = {
       name: "West End",
       schools: ["morehouse", "spelman", "cau", "msm", "amsc"],
       center: { lat: 33.7360, lng: -84.4130 },
-      streets: ["Ralph David Abernathy Blvd", "Lee St", "Oak St", "Lawton St", "Peeples St", "Cascade Ave", "Lucile Ave", "Gordon St"],
+      streets: ["Ralph David Abernathy Blvd", "Lee St", "Oak St", "Lawton St", "Peeples St", "Cascade Ave", "Lucile Ave", "Gordon St", "Woodrow St", "Donnelly Ave"],
     },
     {
       name: "Westview / Ashview Heights",
@@ -284,18 +291,46 @@ export const siteSettings = {
       center: { lat: 33.8390, lng: -84.3790 },
       streets: ["30305", "30326", "Piedmont Rd NE", "Roswell Rd NE", "Lenox Rd NE", "Lenox Pkwy", "E Paces Ferry Rd", "W Paces Ferry Rd", "Pharr Rd NE", "Peachtree Hills Ave"],
     },
-    // --- Around Atlanta Metropolitan State College (1630 Metropolitan Pkwy SW) ---
+    // --- Around Atlanta Metropolitan State College (1630 Metropolitan Pkwy SW, Atlanta, GA 30310) ---
+    // AMSC has no dorms, so these are the neighborhoods around the campus, not a survey of where students live.
+    // ZIP code 30310 is left out on purpose because it covers all of them plus West End.
     {
-      name: "Pittsburgh / Mechanicsville",
+      // The stretch of Metropolitan Pkwy the campus sits on.
+      name: "Capitol View",
       schools: ["amsc"],
-      center: { lat: 33.7330, lng: -84.3980 },
-      streets: ["Metropolitan Pkwy", "McDaniel St", "Crumley St", "Pryor St SW", "Rawson St"],
+      center: { lat: 33.7130, lng: -84.4080 },
+      streets: ["Metropolitan Pkwy", "Dill Ave", "Deckner Ave", "Avon Ave", "Murphy Ave"],
     },
     {
-      name: "Adair Park / Capitol View",
+      name: "Sylvan Hills",
       schools: ["amsc"],
-      center: { lat: 33.7260, lng: -84.4140 },
-      streets: ["Allene Ave", "Avon Ave", "Deckner Ave", "Murphy Ave", "Sylvan Rd", "Whitehall Terrace"],
+      center: { lat: 33.7090, lng: -84.4180 },
+      streets: ["Sylvan Rd"],
+    },
+    {
+      name: "Pittsburgh",
+      schools: ["amsc"],
+      center: { lat: 33.7293, lng: -84.4016 },
+      streets: ["McDaniel St", "University Ave", "Metropolitan Pkwy"],
+    },
+    {
+      name: "Adair Park",
+      schools: ["amsc"],
+      center: { lat: 33.7270, lng: -84.4150 },
+      streets: ["Allene Ave", "Murphy Ave"],
+    },
+    {
+      name: "Oakland City",
+      schools: ["amsc"],
+      center: { lat: 33.7254, lng: -84.4265 },
+      streets: ["Lee St", "Oakland Dr", "Arden Ave", "Woodrow St", "Donnelly Ave"],
+    },
+    {
+      // Zip 30312 is shared with Grant Park and Downtown, so it is not used for matching.
+      name: "Mechanicsville",
+      schools: ["amsc"],
+      center: { lat: 33.7440, lng: -84.3945 },
+      streets: ["Pryor St SW", "Crumley St", "Rawson St", "Whitehall Terrace"],
     },
     {
       name: "Other",

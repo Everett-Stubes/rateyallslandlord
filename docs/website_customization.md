@@ -29,7 +29,7 @@ When someone first opens the site, a pop-up asks which school they go to. Each b
 | Agnes Scott College | Agnes Scott | agnesscott.edu | #5B2D86 / #FFFFFF / #CDB8E8 (approximate) |
 | Mercer University | Mercer | mercer.edu | #B84F00 / #FFFFFF / #FF9A4D (approximate: Mercer orange, darkened so white lettering is readable) |
 | Oglethorpe University | Oglethorpe | oglethorpe.edu | #231F20 / #FDDD04 / #FDDD04 (approximate: black and gold) |
-| Atlanta Metropolitan State College | AMSC | atlm.edu | #A6192E / #FFFFFF / #F3B6BF (approximate and unconfirmed: the brand book shows red, black, and white) |
+| Atlanta Metropolitan State College | AMSC | atlm.edu | #A6192E / #FFFFFF / #F3B6BF (placeholder: the college's colors are red and black, but the exact codes are in its brand book PDF, which couldn't be read; replace these) |
 
 All of this is set in `siteSettings.ts` (`schools`), including each campus's map location. "Approximate" colors came from team-color sites, not the school's brand guide; check them before launch.
 
@@ -37,7 +37,7 @@ All of this is set in `siteSettings.ts` (`schools`), including each campus's map
 
 **To add a school or domain:** add it in **both** places: `siteSettings.ts` and Supabase → Table Editor → `school_email_domains` → Insert row (new databases get the list from `init.sql`). `npm run check:schema` fails if the two lists differ. A database set up before this rule existed needs `migrations/2026-11-09-school-email-only-posting.sql` run once in the Supabase SQL Editor (safe to run again).
 
-Domain notes: Georgia State students use `student.gsu.edu` and faculty/staff use `gsu.edu`, both covered by `gsu.edu`. Clark Atlanta students use `students.cau.edu`, covered by `cau.edu`. Mercer students use `live.mercer.edu`, covered by `mercer.edu`, and these domains are shared with Mercer's other campuses (such as Macon). Oglethorpe uses `oglethorpe.edu`, and AMSC uses `atlm.edu` (its student address format wasn't found, but any subdomain works). `msm.edu`, the SCAD student domain (`student.scad.edu`), and AMSC's student addresses are not confirmed for students; check with a student at each school. A database set up before these two schools were added needs `migrations/2026-11-12-add-oglethorpe-and-amsc.sql` run once.
+Domain notes: Georgia State students use `student.gsu.edu` and faculty/staff use `gsu.edu`, both covered by `gsu.edu`. Clark Atlanta students use `students.cau.edu`, covered by `cau.edu`. Mercer students use `live.mercer.edu`, covered by `mercer.edu`, and these domains are shared with Mercer's other campuses (such as Macon). Oglethorpe uses `oglethorpe.edu`, and AMSC uses `atlm.edu`. AMSC's student address format wasn't found, so AMSC also accepts any email domain with the word `atlm` in it (`schoolEmailWords` in `siteSettings.ts`, a `match_word` row in `school_email_domains`): `atlm.edu`, `student.atlm.edu`, and `atlm.org` work, `notatlm.edu` does not. Tighten this once the real domain is known. A database set up before this needs `migrations/2026-11-13-accept-any-atlm-domain.sql` run once. `msm.edu`, the SCAD student domain (`student.scad.edu`), and AMSC's student addresses are not confirmed for students; check with a student at each school. A database set up before these two schools were added needs `migrations/2026-11-12-add-oglethorpe-and-amsc.sql` run once.
 
 ## Neighborhoods
 
@@ -53,10 +53,10 @@ Each neighborhood is listed once in `siteSettings.ts` (`neighborhoods`) and tagg
 | Downtown | GSU | Around campus and the GSU dorms. |
 | Old Fourth Ward | GSU | The most-named GSU off-campus area. |
 | Inman Park / Cabbagetown | GSU | Quieter, historic houses and duplexes east of Downtown. |
-| Grant Park | GSU, AMSC | Quieter, residential, south-east of Downtown. |
-| Castleberry Hill | GSU, AUC, AMSC | Lofts between Downtown and the AUC. |
+| Grant Park | GSU | Quieter, residential, south-east of Downtown. |
+| Castleberry Hill | GSU, AUC | Lofts between Downtown and the AUC. |
 | AUC / Vine City | AUC | The streets around the four campuses and just north of them. |
-| West End | AUC, AMSC | South of the AUC. |
+| West End | AUC, AMSC | South of the AUC; also on the AMSC corridor (Woodrow St and Donnelly Ave). |
 | Westview / Ashview Heights | AUC | West of the AUC; houses often shared by groups of AUC students. |
 | Druid Hills / Emory | Emory | Emory's own neighborhood: apartment complexes and duplexes. |
 | Virginia-Highland / Morningside | Emory | Large apartment complexes; popular with Emory grad students. |
@@ -64,8 +64,12 @@ Each neighborhood is listed once in `siteSettings.ts` (`neighborhoods`) and tagg
 | Chamblee & Doraville | Mercer, Oglethorpe | Around Mercer's Atlanta campus (3001 Mercer University Dr, ZIP 30341). The address box sometimes writes these as "Atlanta", so ZIP codes 30340 and 30341 are matched too. |
 | Brookhaven | Oglethorpe | Oglethorpe's own neighborhood (ZIP 30319). |
 | Buckhead | Oglethorpe | Matched mainly by ZIP codes 30305 and 30326 and main roads. |
-| Pittsburgh / Mechanicsville | AMSC | Around AMSC's campus on Metropolitan Pkwy SW. Street list is a best guess. |
-| Adair Park / Capitol View | AMSC | Residential neighborhoods west of AMSC. Street list is a best guess. |
+| Capitol View | AMSC | Around AMSC's campus on Metropolitan Pkwy SW. |
+| Sylvan Hills | AMSC | Just southwest of the campus. |
+| Pittsburgh | AMSC | North of the campus. |
+| Adair Park | AMSC | Residential, northwest of the campus. |
+| Oakland City | AMSC | West of the campus, around the MARTA station. |
+| Mechanicsville | AMSC | North-east of the campus. Its ZIP code (30312) is shared with Grant Park and Downtown, so it matches by street only. |
 | Other | — | Every landlord outside the named neighborhoods. Always last. |
 
 "AUC" means Morehouse, Spelman, Clark Atlanta, and Morehouse School of Medicine. The list came from school housing guides, student newspapers, and rental sites, which are uneven sources. Ask students at each school whether it matches where they actually live, and edit the `schools` tags to match.
