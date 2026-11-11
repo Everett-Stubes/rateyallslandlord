@@ -74,6 +74,12 @@ const ReviewForm: React.FC<ReviewFormProps> = ({
 
   return (
     <div className="review-form">
+      <p className="review-privacy-note">
+        <strong>🔒 Students only, and anonymous.</strong> Only verified students can post, and we never show your name or
+        email. Exact addresses are only visible to logged-in students. Anyone can read the review itself, so
+        don't include anything that could point back to you.
+      </p>
+
       <div>
         <label className="form-label">Landlord Quality: {landlord_rating}/5</label>
         <div className="rating-btn-row">
@@ -129,8 +135,7 @@ const ReviewForm: React.FC<ReviewFormProps> = ({
           required
         />
         <p className="form-hint">
-          Reviews are anonymous. Don't include your name, unit number, or other details a landlord could use to
-          figure out who you are.
+          Don't include your name, unit number, or other details a landlord could use to figure out who you are.
         </p>
         <p className="review-rules">
           <strong>Review rules:</strong> Only write about what you personally experienced, and keep it true. Share your

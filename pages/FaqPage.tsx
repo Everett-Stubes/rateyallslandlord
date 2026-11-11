@@ -76,6 +76,16 @@ const FaqPage: React.FC = () => {
       ),
     },
     {
+      q: 'Why do I have to log in to see addresses?',
+      a: (
+        <>
+          Anyone can see a landlord's overall grades, "would rent again" percentage, and building condition. Exact
+          property addresses, and reading reviews by address, are for logged-in students and need a confirmed school
+          email. It keeps the site a student community rather than a public list of buildings.
+        </>
+      ),
+    },
+    {
       q: 'What gets removed?',
       a: (
         <>

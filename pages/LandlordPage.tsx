@@ -22,7 +22,7 @@ const LandlordPage: React.FC = () => {
   const api = useApiService();
   const { id } = useParams<{ id: string }>();
   const { getLandlord, getReviewsForLandlord, loading, landlords, refreshLandlords } = useData();
-  const { isAdmin, user } = useAuth();
+  const { isAdmin, user, canSeeAddresses } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const [landlord, setLandlord] = useState<Landlord | null>(null);
@@ -268,7 +268,17 @@ const LandlordPage: React.FC = () => {
                 )}
               </div>
 
-              {properties.length > 0 && (
+              {properties.length > 0 && !canSeeAddresses && (
+                <div className="addresses-locked-box">
+                  <span aria-hidden="true">🔒</span>
+                  <span>
+                    <Link to="/login" state={{ from: `${location.pathname}${location.search}` }} className="addresses-locked-note__link">Log in</Link>{' '}
+                    with your school email to see this landlord's {properties.length === 1 ? 'property' : `${properties.length} properties`} and read reviews by address. The grades below are open to everyone.
+                  </span>
+                </div>
+              )}
+
+              {properties.length > 0 && canSeeAddresses && (
                 <div className="landlord-addresses">
                   <div className="landlord-addresses__label">
                     {properties.length === 1 ? 'Property' : `${properties.length} Properties`}

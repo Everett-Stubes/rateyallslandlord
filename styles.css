@@ -3665,6 +3665,54 @@ ol {
   border-radius: var(--radius-lg);
 }
 
+.review-privacy-note {
+  margin: 0;
+  padding: 0.75rem 1rem;
+  background-color: var(--primary-100);
+  border: 1px solid var(--lavender);
+  border-radius: var(--radius-md, 0.5rem);
+  font-size: 0.875rem;
+  color: var(--neutral-500);
+  line-height: 1.4;
+}
+
+.address-locked-link {
+  color: var(--primary-300);
+  font-size: 1rem;
+  font-weight: 600;
+  text-decoration: underline;
+}
+
+.addresses-locked-note {
+  margin: 0.75rem 0 0;
+  font-size: 0.875rem;
+  color: var(--neutral-100);
+  text-align: center;
+}
+
+.addresses-locked-note__link {
+  color: var(--lavender);
+  font-weight: 600;
+  text-decoration: underline;
+}
+
+.addresses-locked-box {
+  display: flex;
+  gap: 0.5rem;
+  align-items: flex-start;
+  margin: 0.75rem 0;
+  padding: 0.75rem 1rem;
+  background-color: var(--primary-100);
+  border: 1px dashed var(--lavender);
+  border-radius: var(--radius-md, 0.5rem);
+  font-size: 0.9rem;
+  color: var(--neutral-500);
+}
+
+.addresses-locked-box .addresses-locked-note__link {
+  color: var(--primary-300);
+}
+
 .review-card__neighborhood {
   font-weight: 400;
   color: var(--neutral-300);

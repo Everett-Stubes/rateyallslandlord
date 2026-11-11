@@ -1,6 +1,6 @@
 
 import React, { useState, useMemo, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { useData } from '../context/DataContext';
 import { useAuth } from '../context/AuthContext';
 import { useServices } from '../context/ServicesContext';
@@ -15,7 +15,7 @@ import SuggestNeighborhood from '../components/SuggestNeighborhood';
 
 const MainPage: React.FC = () => {
   const { landlords, loading, deleteLandlord } = useData();
-  const { isAdmin } = useAuth();
+  const { isAdmin, canSeeAddresses } = useAuth();
   const { api } = useServices();
   const navigate = useNavigate();
   const { school } = useSchool();
@@ -63,11 +63,12 @@ const MainPage: React.FC = () => {
       if (activeFocus && !getLandlordNeighborhoodNames(landlord.neighborhoods, addresses, reviews.map(r => r.neighborhood)).has(activeFocus.name)) return false;
       if (!term) return true;
       if (landlord.name.toLowerCase().includes(term)) return true;
-      if (addresses.some(a => a.toLowerCase().includes(term))) return true;
+      // Searching by address would let anyone confirm an address, so it needs a student log-in.
+      if (canSeeAddresses && addresses.some(a => a.toLowerCase().includes(term))) return true;
       if (reviews.some(r => r.comment?.toLowerCase().includes(term))) return true;
       return false;
     });
-  }, [searchTerm, activeFocus, landlords, reviewsByLandlord]);
+  }, [searchTerm, activeFocus, landlords, reviewsByLandlord, canSeeAddresses]);
 
   const focusTitle = activeFocus
     ? activeFocus.streets.length > 0
@@ -121,12 +122,17 @@ const MainPage: React.FC = () => {
               </div>
               <input
                 type="text"
-                placeholder="Search by landlord name, address, or review content..."
+                placeholder={canSeeAddresses ? 'Search by landlord name, address, or review content...' : 'Search by landlord name or review content...'}
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="hero__search-input"
               />
             </div>
+            {!canSeeAddresses && (
+              <p className="addresses-locked-note">
+                🔒 <Link to="/login" className="addresses-locked-note__link">Log in</Link> with your school email to see exact addresses and search by address.
+              </p>
+            )}
 
             <div className="hero__add-cta">
               <span className="hero__add-cta-label">Can't find your landlord?</span>
@@ -209,6 +215,7 @@ const MainPage: React.FC = () => {
                   key={landlord.id}
                   landlord={landlord}
                   propertyAddresses={getLandlordProperties(landlord, reviewsByLandlord[landlord.id] ?? []).map(p => p.address)}
+                  showAddresses={canSeeAddresses}
                   onDelete={isAdmin ? () => handleDeleteLandlord(landlord) : undefined}
                   deleting={deletingLandlordId === landlord.id}
                   averageRating={ratings[landlord.id] ?? null}
