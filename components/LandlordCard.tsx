@@ -9,6 +9,8 @@ interface LandlordCardProps {
   landlord: Landlord;
   // One address per building, including buildings only mentioned in reviews.
   propertyAddresses?: string[];
+  // False for visitors who aren't signed-in students: the exact addresses are replaced by a log-in note.
+  showAddresses?: boolean;
   averageRating?: number | null;
   reviewCount?: number;
   wouldRentAgainPct?: number | null;
@@ -20,6 +22,7 @@ interface LandlordCardProps {
 const LandlordCard: React.FC<LandlordCardProps> = ({
   landlord,
   propertyAddresses,
+  showAddresses = true,
   averageRating,
   reviewCount,
   wouldRentAgainPct,
@@ -30,7 +33,7 @@ const LandlordCard: React.FC<LandlordCardProps> = ({
   const displayCity = getDisplayLandlordCity(landlord.city);
   const addresses = propertyAddresses ?? (landlord.addresses ?? []).map(formatLandlordAddress).filter(Boolean);
   const displayAddress = [
-    ...addresses,
+    ...(showAddresses ? addresses : []),
     ...(displayCity ? [displayCity] : []),
   ].join(' · ');
 
@@ -82,11 +85,13 @@ const LandlordCard: React.FC<LandlordCardProps> = ({
             )}
           </div>
 
-          {displayAddress && (
+          {(displayAddress || !showAddresses) && (
             <div className="landlord-card__footer">
               <div className="landlord-card__address">
-                <span aria-hidden="true">📍</span>
-                <span className="landlord-card__address-text">{displayAddress}</span>
+                <span aria-hidden="true">{showAddresses ? '📍' : '🔒'}</span>
+                <span className="landlord-card__address-text">
+                  {showAddresses ? displayAddress : [displayAddress, 'Log in to see by address'].filter(Boolean).join(' · ')}
+                </span>
               </div>
             </div>
           )}

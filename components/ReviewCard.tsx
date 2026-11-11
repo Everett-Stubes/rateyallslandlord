@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation, Link } from 'react-router-dom';
 import type { Review } from '../types';
 import { useAuth } from '../context/AuthContext';
 import { useData } from '../context/DataContext';
@@ -20,7 +20,8 @@ interface ReviewCardProps {
 
 
 const ReviewCard: React.FC<ReviewCardProps> = ({ review, onApprove, onReject, votes, onVote }) => {
-  const { isAdmin, user } = useAuth();
+  const { isAdmin, user, canSeeAddresses } = useAuth();
+  const location = useLocation();
   const { deleteReview, restoreReview } = useData();
   const navigate = useNavigate();
 
@@ -59,7 +60,13 @@ const ReviewCard: React.FC<ReviewCardProps> = ({ review, onApprove, onReject, vo
 
       <div className="review-card__topbar">
         <span className="review-card__address">
-          {review.property_address ? toBuildingAddress(review.property_address) : 'Address not given'}
+          {canSeeAddresses ? (
+            review.property_address ? toBuildingAddress(review.property_address) : 'Address not given'
+          ) : (
+            <Link to="/login" state={{ from: `${location.pathname}${location.search}` }} className="address-locked-link">
+              🔒 Log in to see the address
+            </Link>
+          )}
           {review.neighborhood && <span className="review-card__neighborhood"> · {review.neighborhood}</span>}
         </span>
         <div className="review-card__date-row">

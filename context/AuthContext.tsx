@@ -1,10 +1,13 @@
 import React, { createContext, useState, useContext, useEffect, useMemo } from 'react';
 import { useServices } from './ServicesContext';
 import type { User } from '../types';
+import { isStudentEmail } from '../utils/studentVerification';
 
 interface AuthContextType {
   user: User | null;
   isAdmin: boolean;
+  /** True for a signed-in student (confirmed school email) or admin. Everyone else sees buildings' grades but not exact addresses. */
+  canSeeAddresses: boolean;
   login: (
     email: string,
     password: string,
@@ -155,10 +158,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const exchangeCodeForSession = async (code: string) => auth.exchangeCodeForSession(code);
 
+  const canSeeAddresses = Boolean(user) && (isAdmin || isStudentEmail(user?.email));
+
   const value = useMemo(
     () => ({
       user,
       isAdmin,
+      canSeeAddresses,
       login,
       register,
       logout,
@@ -169,7 +175,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       exchangeCodeForSession,
       loading,
     }),
-    [user, isAdmin, loading, auth]
+    [user, isAdmin, canSeeAddresses, loading, auth]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
