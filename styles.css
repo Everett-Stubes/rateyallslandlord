@@ -3665,6 +3665,17 @@ ol {
   border-radius: var(--radius-lg);
 }
 
+.review-privacy-note {
+  margin: 0;
+  padding: 0.75rem 1rem;
+  background-color: var(--primary-100);
+  border: 1px solid var(--lavender);
+  border-radius: var(--radius-md, 0.5rem);
+  font-size: 0.875rem;
+  color: var(--neutral-500);
+  line-height: 1.4;
+}
+
 .address-locked-link {
   color: var(--primary-300);
   font-size: 1rem;
