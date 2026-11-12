@@ -65,7 +65,12 @@ const VerifyEmailPage: React.FC = () => {
     const callbackError = queryParams.get('error_description') || hashParams.get('error_description');
 
     if (callbackError) {
-      handleError(`Email verification failed: ${callbackError}`);
+      const lower = callbackError.toLowerCase();
+      handleError(
+        lower.includes('invalid') || lower.includes('expired')
+          ? 'This link was already used or has expired. Your account may already be verified, so try logging in. If that fails, request a new verification email from the login page.'
+          : `Email verification failed: ${callbackError}`
+      );
       return;
     }
 
@@ -163,9 +168,14 @@ const VerifyEmailPage: React.FC = () => {
             </div>
             <h1 className="verify-title">Verification Failed</h1>
             <p className="verify-text">{errorMessage}</p>
-            <button onClick={() => navigate('/register')} className="btn btn-primary">
-              Return to Registration
-            </button>
+            <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'center', flexWrap: 'wrap' }}>
+              <button onClick={() => navigate('/login')} className="btn btn-primary">
+                Go to Login
+              </button>
+              <button onClick={() => navigate('/register')} className="btn btn-secondary">
+                Return to Registration
+              </button>
+            </div>
           </>
         )}
       </div>
