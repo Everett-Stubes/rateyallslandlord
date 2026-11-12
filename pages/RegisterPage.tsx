@@ -66,7 +66,8 @@ const RegisterPage: React.FC = () => {
               Return to Login
             </Link>
             <p style={{ fontSize: '0.875rem', color: 'var(--neutral-400)' }}>
-              Didn't receive the email? Check your spam folder.
+              Didn't receive the email? Check your spam and quarantine folders. If you've signed up with this email before,
+              just log in instead (or reset your password). We don't send a new link for an account that's already verified.
             </p>
           </div>
         </div>
