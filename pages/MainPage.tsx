@@ -57,7 +57,8 @@ const MainPage: React.FC = () => {
 
   const filteredLandlords = useMemo(() => {
     const term = searchTerm.trim().toLowerCase();
-    return landlords.filter(landlord => {
+    const reviewCountOf = (id: number) => (reviewsByLandlord[id] ?? []).length;
+    const filtered = landlords.filter(landlord => {
       const reviews = reviewsByLandlord[landlord.id] ?? [];
       const addresses = getAllLandlordAddresses(landlord, reviews);
       if (activeFocus && !getLandlordNeighborhoodNames(landlord.neighborhoods, addresses, reviews.map(r => r.neighborhood)).has(activeFocus.name)) return false;
@@ -68,6 +69,10 @@ const MainPage: React.FC = () => {
       if (reviews.some(r => r.comment?.toLowerCase().includes(term))) return true;
       return false;
     });
+    // Most reviewed first, with or without a neighborhood filter; ties go alphabetically.
+    return filtered.sort(
+      (a, b) => reviewCountOf(b.id) - reviewCountOf(a.id) || a.name.localeCompare(b.name)
+    );
   }, [searchTerm, activeFocus, landlords, reviewsByLandlord, canSeeAddresses]);
 
   const focusTitle = activeFocus
