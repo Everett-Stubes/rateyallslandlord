@@ -13,6 +13,23 @@ import { groupNeighborhoodsForSchool, getLandlordNeighborhoodNames, type Neighbo
 import { useSchool } from '../context/SchoolContext';
 import SuggestNeighborhood from '../components/SuggestNeighborhood';
 
+type SortKey =
+  | 'reviews-desc' | 'reviews-asc'
+  | 'grade-desc' | 'grade-asc'
+  | 'name-asc' | 'name-desc'
+  | 'building-desc' | 'rent-again-desc';
+
+const SORT_OPTIONS: { value: SortKey; label: string }[] = [
+  { value: 'reviews-desc', label: 'Most reviews' },
+  { value: 'reviews-asc', label: 'Fewest reviews' },
+  { value: 'grade-desc', label: 'Grade: high to low' },
+  { value: 'grade-asc', label: 'Grade: low to high' },
+  { value: 'name-asc', label: 'Name: A to Z' },
+  { value: 'name-desc', label: 'Name: Z to A' },
+  { value: 'building-desc', label: 'Best building condition' },
+  { value: 'rent-again-desc', label: 'Most would rent again' },
+];
+
 const MainPage: React.FC = () => {
   const { landlords, loading, deleteLandlord } = useData();
   const { isAdmin, canSeeAddresses } = useAuth();
@@ -22,6 +39,7 @@ const MainPage: React.FC = () => {
   const neighborhoodGroups = useMemo(() => groupNeighborhoodsForSchool(school), [school]);
   const [showAllNeighborhoods, setShowAllNeighborhoods] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
+  const [sortKey, setSortKey] = useState<SortKey>('reviews-desc');
   const [activeFocus, setActiveFocus] = useState<Neighborhood | null>(null);
   const [ratings, setRatings] = useState<{ [landlordId: number]: number | null }>({});
   const [reviewsByLandlord, setReviewsByLandlord] = useState<{ [landlordId: number]: Review[] }>({});
@@ -69,11 +87,39 @@ const MainPage: React.FC = () => {
       if (reviews.some(r => r.comment?.toLowerCase().includes(term))) return true;
       return false;
     });
-    // Most reviewed first, with or without a neighborhood filter; ties go alphabetically.
-    return filtered.sort(
-      (a, b) => reviewCountOf(b.id) - reviewCountOf(a.id) || a.name.localeCompare(b.name)
-    );
-  }, [searchTerm, activeFocus, landlords, reviewsByLandlord, canSeeAddresses]);
+    // Landlords with no data for the chosen measure always go last, whichever direction is picked.
+    const avg = (id: number, pick: (r: Review) => number) => {
+      const list = reviewsByLandlord[id] ?? [];
+      return list.length ? list.reduce((sum, r) => sum + pick(r), 0) / list.length : null;
+    };
+    const metric = (id: number): number | null => {
+      switch (sortKey) {
+        case 'grade-desc':
+        case 'grade-asc':
+          return ratings[id] ?? null;
+        case 'building-desc':
+          return avg(id, r => Number(r.building_rating) || 0);
+        case 'rent-again-desc':
+          return avg(id, r => (r.would_rent_again ? 1 : 0));
+        default:
+          return null;
+      }
+    };
+    const byName = (a: Landlord, b: Landlord) => a.name.localeCompare(b.name);
+    return filtered.sort((a, b) => {
+      if (sortKey === 'name-asc') return byName(a, b);
+      if (sortKey === 'name-desc') return byName(b, a);
+      if (sortKey === 'reviews-desc') return reviewCountOf(b.id) - reviewCountOf(a.id) || byName(a, b);
+      if (sortKey === 'reviews-asc') return reviewCountOf(a.id) - reviewCountOf(b.id) || byName(a, b);
+      const ma = metric(a.id);
+      const mb = metric(b.id);
+      if (ma === null && mb === null) return byName(a, b);
+      if (ma === null) return 1;
+      if (mb === null) return -1;
+      const diff = sortKey === 'grade-asc' ? ma - mb : mb - ma;
+      return diff || reviewCountOf(b.id) - reviewCountOf(a.id) || byName(a, b);
+    });
+  }, [searchTerm, activeFocus, sortKey, landlords, reviewsByLandlord, ratings, canSeeAddresses]);
 
   const focusTitle = activeFocus
     ? activeFocus.streets.length > 0
@@ -208,6 +254,21 @@ const MainPage: React.FC = () => {
             </span>
           )}
         </div>
+        {!loading && (
+          <div className="sort-bar">
+            <label htmlFor="landlord-sort" className="sort-bar__label">Sort by</label>
+            <select
+              id="landlord-sort"
+              className="sort-bar__select"
+              value={sortKey}
+              onChange={(e) => setSortKey(e.target.value as SortKey)}
+            >
+              {SORT_OPTIONS.map(o => (
+                <option key={o.value} value={o.value}>{o.label}</option>
+              ))}
+            </select>
+          </div>
+        )}
         {loading ? (
           <div className="spinner-center">
             <div className="spinner"></div>
