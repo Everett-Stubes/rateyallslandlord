@@ -4,7 +4,8 @@ import { useAuth } from '../context/AuthContext';
 
 const VerifyEmailPage: React.FC = () => {
   const { verifyOtp, exchangeCodeForSession, user, loading: authLoading } = useAuth();
-  const [status, setStatus] = useState<'verifying' | 'success' | 'error'>('verifying');
+  const [status, setStatus] = useState<'verifying' | 'ready' | 'success' | 'error'>('verifying');
+  const [pendingToken, setPendingToken] = useState<{ tokenHash: string; rawType: string | null } | null>(null);
   const [errorMessage, setErrorMessage] = useState<string>('');
   const navigate = useNavigate();
   const hasChecked = useRef(false);
@@ -18,6 +19,38 @@ const VerifyEmailPage: React.FC = () => {
     setStatus('error');
     setErrorMessage(message);
   }, []);
+
+  const confirmToken = useCallback(async (tokenHash: string, rawType: string | null) => {
+    setStatus('verifying');
+    try {
+      const allowedTypes = ['signup', 'invite', 'email', 'email_change'] as const;
+      const explicitType = (allowedTypes as readonly string[]).includes(rawType ?? '')
+        ? (rawType as (typeof allowedTypes)[number])
+        : null;
+      const candidateTypes: Array<(typeof allowedTypes)[number]> = explicitType ? [explicitType] : ['signup', 'email'];
+      let lastErrorMessage = 'Email verification failed.';
+
+      for (const otpType of candidateTypes) {
+        const { error } = await verifyOtp({ tokenHash, type: otpType });
+        if (!error) { handleSuccess(); return; }
+        lastErrorMessage = error || lastErrorMessage;
+        if (lastErrorMessage.toLowerCase().includes('expired') || lastErrorMessage.toLowerCase().includes('already')) break;
+      }
+
+      if (lastErrorMessage.toLowerCase().includes('expired')) {
+        handleError('The verification link has expired. Please request a new one by registering again.');
+        return;
+      }
+      if (lastErrorMessage.toLowerCase().includes('already')) {
+        handleError('This verification link was already used. Try logging in, or request another verification email.');
+        return;
+      }
+      handleError(`Email verification failed: ${lastErrorMessage}`);
+    } catch (error) {
+      console.error('Error verifying email token:', error);
+      handleError('An error occurred while verifying your email. Please try again later.');
+    }
+  }, [verifyOtp, handleSuccess, handleError]);
 
   useEffect(() => {
     if (hasChecked.current || authLoading) return;
@@ -66,29 +99,10 @@ const VerifyEmailPage: React.FC = () => {
           return;
         }
 
-        const allowedTypes = ['signup', 'invite', 'email', 'email_change'] as const;
-        const explicitType = (allowedTypes as readonly string[]).includes(rawType ?? '')
-          ? (rawType as (typeof allowedTypes)[number])
-          : null;
-        const candidateTypes: Array<(typeof allowedTypes)[number]> = explicitType ? [explicitType] : ['signup', 'email'];
-        let lastErrorMessage = 'Email verification failed.';
-
-        for (const otpType of candidateTypes) {
-          const { error } = await verifyOtp({ tokenHash, type: otpType });
-          if (!error) { handleSuccess(); return; }
-          lastErrorMessage = error || lastErrorMessage;
-          if (lastErrorMessage.toLowerCase().includes('expired') || lastErrorMessage.toLowerCase().includes('already')) break;
-        }
-
-        if (lastErrorMessage.toLowerCase().includes('expired')) {
-          handleError('The verification link has expired. Please request a new one by registering again.');
-          return;
-        }
-        if (lastErrorMessage.toLowerCase().includes('already')) {
-          handleError('This verification link was already used. Try logging in, or request another verification email.');
-          return;
-        }
-        handleError(`Email verification failed: ${lastErrorMessage}`);
+        // Email security scanners open every link in a message, which would confirm the account
+        // before the student does. So the link only loads this page; confirming needs a click.
+        setPendingToken({ tokenHash, rawType });
+        setStatus('ready');
       } catch (error) {
         console.error('Error verifying email token:', error);
         handleError('An error occurred while verifying your email. Please try again later.');
@@ -108,6 +122,20 @@ const VerifyEmailPage: React.FC = () => {
             </div>
             <h1 className="verify-title">Verifying Your Email</h1>
             <p className="verify-text">Please wait while we verify your email address...</p>
+          </>
+        )}
+
+        {status === 'ready' && pendingToken && (
+          <>
+            <h1 className="verify-title">Confirm Your Email</h1>
+            <p className="verify-text">One last step: click the button below to confirm your email address.</p>
+            <button
+              type="button"
+              onClick={() => { void confirmToken(pendingToken.tokenHash, pendingToken.rawType); }}
+              className="btn btn-primary"
+            >
+              Confirm my email
+            </button>
           </>
         )}
 
