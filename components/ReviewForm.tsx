@@ -45,6 +45,9 @@ interface ReviewFormProps {
   setTags?: (tags: string[]) => void;
 }
 
+/** Neighborhoods where a street address is optional (big areas where the address isn't needed to place the review). */
+const ADDRESS_OPTIONAL_NEIGHBORHOODS = ['Midtown', 'Downtown'];
+
 const ReviewForm: React.FC<ReviewFormProps> = ({
   landlord_rating, setRating,
   building_rating, setBuildingCondition,
@@ -62,6 +65,8 @@ const ReviewForm: React.FC<ReviewFormProps> = ({
     const guess = inferNeighborhoodNames([propertyAddress])[0];
     if (guess) setNeighborhood(guess);
   }, [propertyAddress, neighborhoodPicked, setNeighborhood]);
+
+  const addressOptional = ADDRESS_OPTIONAL_NEIGHBORHOODS.includes(neighborhood);
 
   const toggleTag = (tag: string) => {
     if (!setTags) return;
@@ -177,7 +182,9 @@ const ReviewForm: React.FC<ReviewFormProps> = ({
       </div>
 
       <div>
-        <label htmlFor="propertyAddress" className="form-label">Property Address</label>
+        <label htmlFor="propertyAddress" className="form-label">
+          Property Address{addressOptional && <span style={{ color: 'var(--primary-300)', fontWeight: 400, textTransform: 'none' }}> (optional for {neighborhood})</span>}
+        </label>
         <AddressAutofill
           accessToken={MAPBOX_TOKEN}
           options={{ country: 'US', language: 'en' }}
@@ -200,11 +207,13 @@ const ReviewForm: React.FC<ReviewFormProps> = ({
             placeholder={siteSettings.addressExample}
             className="form-input"
             autoComplete="street-address"
-            required
+            required={!addressOptional}
           />
         </AddressAutofill>
         <p className="form-hint">
-          The building address is shown publicly with your review. Your unit number is removed before your review is saved.
+          {addressOptional
+            ? `You can skip the address for ${neighborhood} reviews. If you add it, the building address is shown to logged-in students and your unit number is removed before your review is saved.`
+            : 'The building address is shown publicly with your review. Your unit number is removed before your review is saved.'}
         </p>
       </div>
 
