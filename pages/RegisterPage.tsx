@@ -59,14 +59,18 @@ const RegisterPage: React.FC = () => {
           <h2 style={{ fontSize: '1.5rem', fontWeight: 700, color: 'var(--neutral-500)', marginBottom: '1rem' }}>Verify your email</h2>
           <p style={{ color: 'var(--neutral-300)', marginBottom: '2rem' }}>
             We've sent a verification link to <strong style={{ color: 'var(--neutral-500)' }}>{email}</strong>.
-            Please check your inbox and click the link to activate your account.
+            Click the link in that email to activate your account.
+          </p>
+          <p style={{ background: 'var(--neutral-100, rgba(0,0,0,0.05))', borderRadius: '0.5rem', padding: '0.75rem 1rem', marginBottom: '2rem', fontSize: '0.95rem', color: 'var(--neutral-500)' }}>
+            <strong>It will most likely land in your spam or junk folder.</strong> Check there first, and give it
+            about 1 minute to arrive.
           </p>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
             <Link to="/login" className="btn btn-primary btn-full btn-lg">
               Return to Login
             </Link>
             <p style={{ fontSize: '0.875rem', color: 'var(--neutral-400)' }}>
-              Didn't receive the email? Check your spam and quarantine folders. If you've signed up with this email before,
+              Still nothing after a few minutes? Check your spam and quarantine folders once more. If you've signed up with this email before,
               just log in instead (or reset your password). We don't send a new link for an account that's already verified.
             </p>
           </div>
