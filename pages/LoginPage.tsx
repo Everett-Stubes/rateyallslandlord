@@ -57,7 +57,7 @@ const LoginPage: React.FC = () => {
       console.error('Error resending verification email:', err);
     }
     resetLoginCheck();
-    setResendMessage('If this account exists and is unverified, a new verification email has been sent. Please check your inbox and spam folder.');
+    setResendMessage('If this account exists and is unverified, a new verification email has been sent. It will most likely be in your spam or junk folder, and can take about 1 minute to arrive.');
   };
 
   const handleResetPassword = async (e: React.FormEvent) => {
