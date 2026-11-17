@@ -150,7 +150,19 @@ const ReviewCard: React.FC<ReviewCardProps> = ({ review, onApprove, onReject, vo
         {review.rent_amount && (
           <div className="review-foot-item">
             <span className="review-foot-label">Reviewer's rent:</span>
-            <span>${review.rent_amount.toFixed(2)}/mo</span>
+            {user ? (
+              <span>${review.rent_amount.toFixed(2)}/mo</span>
+            ) : (
+              // Logged-out visitors get a blurred placeholder, not the real number.
+              <Link
+                to="/login"
+                className="review-rent-blur"
+                title="Log in to see this reviewer's rent"
+                aria-label="Reviewer's rent is hidden. Log in to see it."
+              >
+                <span aria-hidden="true">$0,000.00/mo</span>
+              </Link>
+            )}
           </div>
         )}
       </div>
